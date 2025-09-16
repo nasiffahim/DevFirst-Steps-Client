@@ -1,10 +1,12 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Search, Menu, X, Github } from 'lucide-react';
+import Link from 'next/link';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [showSearch, setShowSearch] = useState(false); // ✅ NEW
   const timeoutRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -15,11 +17,12 @@ const Navbar = () => {
     };
   }, []);
 
-  // Close dropdown when clicking outside navbar
+  // Close dropdown & search when clicking outside navbar
   useEffect(() => {
     const handleDocClick = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setActiveDropdown(null);
+        setShowSearch(false); // ✅ close search when clicking outside
       }
     };
     document.addEventListener('mousedown', handleDocClick);
@@ -45,78 +48,37 @@ const Navbar = () => {
     {
       name: 'Platform',
       hasDropdown: true,
-      sections: [
-        {
-          title: 'Discovery',
-          items: [
-            { name: 'Project Explorer', description: 'Browse trending open source projects', icon: '🔍' },
-            { name: 'Topic Search', description: 'Find projects by technology and topic', icon: '🏷️' },
-            { name: 'Advanced Filters', description: 'Filter by language, license, and more', icon: '⚙️' }
-          ]
-        },
-        {
-          title: 'Core Features',
-          items: [
-            { name: 'Project Analytics', description: 'Detailed insights and statistics', icon: '📊' },
-            { name: 'Contribution Guide', description: 'Learn how to contribute effectively', icon: '🤝' },
-            { name: 'Issue Tracker', description: 'Find beginner-friendly issues', icon: '🐛' }
-          ]
-        }
+      items: [
+        { name: 'Project Explorer', description: 'Browse trending open source projects with advanced filtering and sorting capabilities.', icon: '🔍' },
+        { name: 'AI Code Review', description: 'Get AI-powered feedback on your code contributions and pull requests.', icon: '🤖' },
+        { name: 'Issue Tracker', description: 'Find beginner-friendly issues across thousands of repositories.', icon: '🐛' },
+        { name: 'Analytics Dashboard', description: 'Track your contributions and project insights with detailed analytics.', icon: '📊' },
+        { name: 'Skill Matcher', description: 'Discover projects that match your programming skills and interests.', icon: '⚡' },
+        { name: 'Community Hub', description: 'Connect with maintainers and contributors in project communities.', icon: '👥' }
       ]
     },
     {
       name: 'Solutions',
       hasDropdown: true,
-      sections: [
-        {
-          title: 'By Experience Level',
-          items: [
-            { name: 'Beginner Projects', description: 'Perfect for first-time contributors', icon: '🌱' },
-            { name: 'Intermediate', description: 'Projects for growing developers', icon: '🚀' },
-            { name: 'Expert Level', description: 'Complex projects for experts', icon: '⚡' }
-          ]
-        },
-        {
-          title: 'By Technology',
-          items: [
-            { name: 'JavaScript', description: 'Node.js, React, Vue projects', icon: '💛' },
-            { name: 'Python', description: 'Django, Flask, ML projects', icon: '🐍' },
-            { name: 'Go', description: 'Cloud-native and CLI tools', icon: '🔵' }
-          ]
-        },
-        {
-          title: 'By Use Case',
-          items: [
-            { name: 'Web Development', description: 'Frontend and backend projects', icon: '🌐' },
-            { name: 'DevOps & Tools', description: 'Infrastructure and automation', icon: '🔧' }
-          ]
-        }
+      items: [
+        { name: 'For Beginners', description: 'Curated projects perfect for first-time open source contributors.', icon: '🌱' },
+        { name: 'JavaScript Hub', description: 'Discover React, Node.js, Vue, and other JavaScript projects.', icon: '💛' },
+        { name: 'Python Projects', description: 'Explore Django, Flask, ML, and data science repositories.', icon: '🐍' },
+        { name: 'DevOps Tools', description: 'Infrastructure, CI/CD, and automation project opportunities.', icon: '🔧' },
+        { name: 'Mobile Development', description: 'React Native, Flutter, and native mobile app projects.', icon: '📱' },
+        { name: 'AI & Machine Learning', description: 'Cutting-edge ML, AI, and data science project contributions.', icon: '🧠' }
       ]
     },
     {
       name: 'Resources',
       hasDropdown: true,
-      sections: [
-        {
-          title: 'Learn & Grow',
-          items: [
-            { name: 'Contribution Guide', description: 'Step-by-step contribution tutorials', icon: '📚' },
-            { name: 'Open Source Stories', description: 'Success stories from contributors', icon: '💡' },
-            { name: 'Best Practices', description: 'Code quality and project management', icon: '⭐' }
-          ]
-        },
-        {
-          title: 'Community',
-          items: [
-            { name: 'Developer Blog', description: 'Latest trends in open source', icon: '✍️' },
-            { name: 'Newsletter', description: 'Weekly project recommendations', icon: '📧' },
-            { name: 'Community Forum', description: 'Connect with other developers', icon: '💬' }
-          ]
-        }
-      ],
-      featured: [
-        { title: 'Featured Project of the Week', description: 'Discover React Native Paper - Material Design components', image: '🎨' },
-        { title: 'Trending: AI/ML Projects', description: 'Explore the hottest machine learning repositories', image: '🤖' }
+      items: [
+        { name: 'Contribution Guide', description: 'Step-by-step tutorials for making your first open source contribution.', icon: '📚' },
+        { name: 'Best Practices', description: 'Learn code quality standards and project management techniques.', icon: '⭐' },
+        { name: 'Developer Blog', description: 'Latest trends, tips, and success stories in open source development.', icon: '✍️' },
+        { name: 'API Documentation', description: 'Complete API reference for integrating with our platform.', icon: '📋' },
+        { name: 'Community Forum', description: 'Connect, ask questions, and share knowledge with other developers.', icon: '💬' },
+        { name: 'Newsletter', description: 'Weekly curated project recommendations and industry insights.', icon: '📧' }
       ]
     },
     { name: 'Pricing', hasDropdown: false },
@@ -125,7 +87,6 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      {/* containerRef ensures dropdowns positioned relative to this block */}
       <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -139,7 +100,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block grid grid-cols-3">
+          <div className="hidden md:block">
             <div className="flex items-center space-x-8">
               {navItems.map((item, index) => (
                 <div key={item.name}>
@@ -170,17 +131,23 @@ const Navbar = () => {
               <span className="text-sm font-medium text-gray-700">69.6k</span>
             </div>
 
-            <button className="hidden md:block text-gray-400 hover:text-gray-600 p-2">
-              <Search className="h-5 w-5" />
-            </button>
-
-            <button className="hidden md:block text-gray-700 hover:text-gray-900 px-4 py-2 text-sm font-medium">
-              Contact Sales
-            </button>
-
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-              Get Started
-            </button>
+            {/* ✅ Search Toggle */}
+            <div className="hidden md:flex items-center">
+              <button
+                onClick={() => setShowSearch(!showSearch)}
+                className="text-gray-400 hover:text-gray-600 p-2"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+              {showSearch && (
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  className="ml-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64 transition-all duration-200"
+                  autoFocus
+                />
+              )}
+            </div>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
@@ -195,16 +162,11 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* =========================
-            DROPDOWNS (positioned relative to the container)
-            They span center w-4/5 and are capped with max-w-6xl.
-            They also have max-height + overflow for large content.
-           ========================= */}
+        {/* Dropdown Menus */}
         {navItems.map((item, index) =>
           item.hasDropdown && activeDropdown === index ? (
             <div
               key={item.name}
-              // this absolute is relative to containerRef (we set containerRef on the outer div)
               className="absolute left-0 right-0 top-full mt-2 z-50"
               onMouseEnter={() => {
                 if (timeoutRef.current) {
@@ -215,76 +177,45 @@ const Navbar = () => {
               onMouseLeave={handleMouseLeave}
             >
               <div
-                className={`mx-auto w-4/5 max-w-6xl bg-white border bg-red-700 border-gray-200 rounded-lg shadow-xl py-6 transform transition-all duration-300 ease-out ${
+                className={`mx-auto w-full max-w-6xl bg-white border border-gray-300 rounded-lg shadow-2xl py-8 transform transition-all duration-300 ease-out ${
                   activeDropdown === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-2 scale-95'
                 }`}
                 style={{ transformOrigin: 'center top' }}
               >
-                <div className="flex gap-6 max-h-[60vh] overflow-auto px-4 grid grid-cols-2 w-full">
-                  {/* Left side - Navigation sections */}
-                  <div className={`${item.featured ? 'w-3/5 pr-6 grid grid-cols-3' : 'w-full'} py-2`}>
-                    {item.sections && item.sections.map((section, sectionIndex) => (
-                      <div key={section.title} className={sectionIndex > 0 ? 'mt-6' : ''}>
-                        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                          {section.title}
-                        </h3>
-                        <div className="space-y-1">
-                          {section.items.map((dropdownItem) => (
-                            <a
-                              key={dropdownItem.name}
-                              href="#"
-                              className="flex items-start p-3 rounded-md hover:bg-gray-50 transition-colors duration-150 group"
-                            >
-                              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md">
-                                <span className="text-lg">{dropdownItem.icon}</span>
-                              </div>
-                              <div className="ml-3 flex-1">
-                                <p className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors duration-150">
-                                  {dropdownItem.name}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                                  {dropdownItem.description}
-                                </p>
-                              </div>
-                            </a>
-                          ))}
+                {/* Grid Layout - 2 columns for 6 items */}
+                <div className="px-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-auto">
+                  {item.items.map((dropdownItem) => (
+                    <Link
+                      key={dropdownItem.name}
+                      href="#"
+                      className="group p-4 rounded-lg hover:bg-gray-100 transition-all duration-200 border border-transparent"
+                    >
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-200 rounded-lg transition-colors duration-200 mr-4 hover:text-black">
+                          <span className="text-2xl">{dropdownItem.icon}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-black group-hover:text-blue-400 transition-colors duration-200 mb-2 text-gray-950">
+                            {dropdownItem.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 group-hover:text-gray-950 transition-colors duration-200 leading-relaxed">
+                            {dropdownItem.description}
+                          </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Right side - Featured (if present) */}
-                  {item.featured && (
-                    <div className="w-2/5 pl-6 border-l border-gray-100 py-2">
-                      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-                        Don't miss it
-                      </h3>
-                      <div className="space-y-4">
-                        {item.featured.map((feature, idx) => (
-                          <div key={idx} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-                            <div className="flex items-start">
-                              <div className="text-2xl mr-3 mt-1">{feature.image}</div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-900 mb-1">{feature.title}</h4>
-                                <p className="text-xs text-gray-600 leading-relaxed">{feature.description}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    </Link>
+                  ))}
                 </div>
 
-                {/* Bottom CTA */}
-                <div className="border-t border-gray-100 mt-6 pt-4 px-4">
+                {/* Bottom Section */}
+                <div className="border-t border-gray-800 mt-8 pt-6 px-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Start exploring projects</p>
-                      <p className="text-xs text-gray-500">Find your next contribution today</p>
+                      <p className="text-lg font-medium text-white mb-1">Ready to start contributing?</p>
+                      <p className="text-sm text-gray-400">Join thousands of developers building the future of open source</p>
                     </div>
-                    <button className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex items-center">
-                      Browse now →
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                      Explore Projects →
                     </button>
                   </div>
                 </div>
@@ -311,33 +242,19 @@ const Navbar = () => {
 
                   {item.hasDropdown && activeDropdown === index && (
                     <div className="pl-6 space-y-3 mt-2">
-                      {item.sections && item.sections.map((section) => (
-                        <div key={section.title} className="space-y-2">
-                          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{section.title}</h4>
-                          {section.items.map((dropdownItem) => (
-                            <a key={dropdownItem.name} href="#" className="flex items-center text-gray-600 hover:text-gray-900 py-2 text-sm transition-colors duration-150">
-                              <span className="mr-3 text-base">{dropdownItem.icon}</span>
-                              <div>
-                                <div className="font-medium">{dropdownItem.name}</div>
-                                <div className="text-xs text-gray-400 mt-1">{dropdownItem.description}</div>
-                              </div>
-                            </a>
-                          ))}
-                        </div>
+                      {item.items.map((dropdownItem) => (
+                        <a key={dropdownItem.name} href="#" className="flex items-start text-gray-600 hover:text-gray-900 py-3 text-sm transition-colors duration-150">
+                          <span className="mr-3 text-lg mt-1">{dropdownItem.icon}</span>
+                          <div>
+                            <div className="font-medium mb-1">{dropdownItem.name}</div>
+                            <div className="text-xs text-gray-400 leading-relaxed">{dropdownItem.description}</div>
+                          </div>
+                        </a>
                       ))}
                     </div>
                   )}
                 </div>
               ))}
-
-              <div className="flex items-center px-3 py-2">
-                <Github className="h-4 w-4 text-gray-600 mr-2" />
-                <span className="text-sm font-medium text-gray-700">69.6k</span>
-              </div>
-
-              <div className="px-3 py-2 space-y-2">
-                <button className="w-full text-left text-gray-700 hover:text-gray-900 py-2 text-sm font-medium">Contact Sales</button>
-              </div>
             </div>
           </div>
         )}

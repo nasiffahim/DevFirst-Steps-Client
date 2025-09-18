@@ -78,12 +78,12 @@
     "techStack": ["Next.js", "Express", "MongoDB"],
     "githubLink": "https://github.com/example/learning-platform",
     "liveLink": "https://learning-platform-demo.vercel.app",
-    "image": "https://images.unsplash.com/photo-1584697964192-f3ed3f1d65c1"
+    "image": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b"
   },
   {
     "_id": "650f1c1a8f1b2c3d4e5f6790",
     "title": "Fitness Tracker",
-    "description": "Track workouts, calories, and progress with charts.",
+    "description": "Track workouts, calories, and progress with charts earn certificates.",
     "techStack": ["React", "Node.js", "MongoDB"],
     "githubLink": "https://github.com/example/fitness-tracker",
     "liveLink": "https://fitness-tracker-demo.netlify.app",

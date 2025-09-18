@@ -5,7 +5,9 @@ import HowItWorks from "@/Components/home/HowItWorksSection";
 import FAQ from "@/Components/home/FAQSection";
 import { CommunityDiscussions } from "@/Components/home/DiscussionSection";
 import TestimonialCarousel from "@/Components/home/TestimonialCarousel";
-import BlogPage from "@/Components/Blog/BlogPage";
+import ProjectsPage from "./projects/[id]/page";
+import ProjectList from "../Components/home/ProjectsList";
+import BlogPage from "../Components/Blog/BlogPage";
 
 export default function Home() {
   return (
@@ -13,10 +15,11 @@ export default function Home() {
      <HeroSection></HeroSection>
      <HowItWorks></HowItWorks>
      <TechStackSection></TechStackSection>
+     <ProjectList limit={3}></ProjectList>
      <CommunityDiscussions></CommunityDiscussions>
      <TestimonialCarousel></TestimonialCarousel>
-     <FAQ></FAQ>
      <BlogPage></BlogPage>
+     <FAQ></FAQ>
     </div>
   );
 }

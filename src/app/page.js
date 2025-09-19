@@ -1,10 +1,25 @@
 import Image from "next/image";
+import HeroSection from "../Components/home/HeroSection";
+import TechStackSection from "../Components/home/TechStackSection";
+import HowItWorks from "../Components/home/HowItWorksSection";
+import FAQ from "../Components/home/FAQSection";
+import { CommunityDiscussions } from "../Components/home/DiscussionSection";
+import TestimonialCarousel from "../Components/home/TestimonialCarousel";
+import ProjectsPage from "./projects/[id]/page";
+import ProjectList from "../Components/home/ProjectsList";
+import BlogPage from "../Components/Blog/BlogPage";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center text-center p-24">
-      <h1 className="text-4xl">Welcome to DevFirst Steps</h1>
-      <p>One place to find beginner-friendly open-source projects</p>
+    <div>
+     <HeroSection></HeroSection>
+     <HowItWorks></HowItWorks>
+     <TechStackSection></TechStackSection>
+     <ProjectList limit={3}></ProjectList>
+     <CommunityDiscussions></CommunityDiscussions>
+     <TestimonialCarousel></TestimonialCarousel>
+     <BlogPage></BlogPage>
+     <FAQ></FAQ>
     </div>
   );
 }

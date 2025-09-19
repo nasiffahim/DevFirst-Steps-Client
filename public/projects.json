@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6781",
+    "title": "Task Manager",
+    "description": "A simple task management app to create, update, and track daily tasks.",
+    "techStack": ["React", "Node.js", "MongoDB"],
+    "githubLink": "https://github.com/example/task-manager",
+    "liveLink": "https://task-manager-demo.netlify.app",
+    "image": "https://plus.unsplash.com/premium_vector-1682303104623-bcabb4db6f04?q=80&w=1039&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6782",
+    "title": "E-Commerce Store",
+    "description": "Full-featured e-commerce store with product listings, cart, and Stripe payments.",
+    "techStack": ["Next.js", "Express", "MongoDB", "Stripe"],
+    "githubLink": "https://github.com/example/ecommerce-store",
+    "liveLink": "https://ecommerce-demo.vercel.app",
+    "image": "https://plus.unsplash.com/premium_photo-1677995700941-100976883af7?q=80&w=1223&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6783",
+    "title": "Weather App",
+    "description": "Check real-time weather data with OpenWeather API integration.",
+    "techStack": ["React", "API Integration"],
+    "githubLink": "https://github.com/example/weather-app",
+    "liveLink": "https://weather-demo.netlify.app",
+    "image": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6784",
+    "title": "Blog Platform",
+    "description": "Multi-user blogging platform with authentication and rich text editor.",
+    "techStack": ["Next.js", "Express", "MongoDB"],
+    "githubLink": "https://github.com/example/blog-platform",
+    "liveLink": "https://blog-platform-demo.vercel.app",
+    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6785",
+    "title": "Portfolio Website",
+    "description": "Personal portfolio site showcasing projects, skills, and contact info.",
+    "techStack": ["Next.js", "Tailwind CSS"],
+    "githubLink": "https://github.com/example/portfolio-site",
+    "liveLink": "https://portfolio-demo.vercel.app",
+    "image": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6786",
+    "title": "Recipe Finder",
+    "description": "Search recipes by ingredients using Spoonacular API.",
+    "techStack": ["React", "API Integration"],
+    "githubLink": "https://github.com/example/recipe-finder",
+    "liveLink": "https://recipe-finder-demo.netlify.app",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6787",
+    "title": "Chat App",
+    "description": "Real-time chat app with WebSocket and JWT authentication.",
+    "techStack": ["React", "Node.js", "Socket.io", "MongoDB"],
+    "githubLink": "https://github.com/example/chat-app",
+    "liveLink": "https://chat-app-demo.vercel.app",
+    "image": "https://plus.unsplash.com/premium_photo-1721955487786-76802cbf0812?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6788",
+    "title": "Expense Tracker",
+    "description": "Track income and expenses with charts and analytics.",
+    "techStack": ["React", "Node.js", "MongoDB"],
+    "githubLink": "https://github.com/example/expense-tracker",
+    "liveLink": "https://expense-tracker-demo.netlify.app",
+    "image": "https://images.unsplash.com/photo-1580519542036-c47de6196ba5"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6789",
+    "title": "Online Learning Platform",
+    "description": "Platform for students to access courses, track progress, and earn certificates.",
+    "techStack": ["Next.js", "Express", "MongoDB"],
+    "githubLink": "https://github.com/example/learning-platform",
+    "liveLink": "https://learning-platform-demo.vercel.app",
+    "image": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b"
+  },
+  {
+    "_id": "650f1c1a8f1b2c3d4e5f6790",
+    "title": "Fitness Tracker",
+    "description": "Track workouts, calories, and progress with charts earn certificates.",
+    "techStack": ["React", "Node.js", "MongoDB"],
+    "githubLink": "https://github.com/example/fitness-tracker",
+    "liveLink": "https://fitness-tracker-demo.netlify.app",
+    "image": "https://images.unsplash.com/photo-1558611848-73f7eb4001a1"
+  }
+]

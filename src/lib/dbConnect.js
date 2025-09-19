@@ -2,9 +2,6 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 
 const uri = process.env.DB_URI;
 
-export const collectionNamesOb = {
-  usersCollection: "users",
-}
 
 const dbConnect = (collectionName) => {
   // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -18,5 +15,6 @@ const dbConnect = (collectionName) => {
 
   return client.db(process.env.DB_NAME).collection(collectionName)
 };
+export const collectionNamesObj = { list: "list", user: "user" };
 
 export default dbConnect

@@ -1,10 +1,15 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search, Menu, X, Github } from "lucide-react";
+import { ChevronDown, Search, Menu, X, } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+ import { useSession, signOut } from "next-auth/react";
+
+
 
 const Navbar = () => {
+
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showSearch, setShowSearch] = useState(false); // ✅ NEW
@@ -234,8 +239,27 @@ const Navbar = () => {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center bg-gray-100 hover:bg-gray-200 rounded-md px-3 py-2 transition-colors duration-200">
-              <Github className="h-4 w-4 text-gray-600 mr-2" />
-              <span className="text-sm font-medium text-gray-700">69.6k</span>
+              {/* <Github className="h-4 w-4 text-gray-600 mr-2" /> */}
+             
+              {session ? (
+          <>
+            <span className="text-gray-700">Hi, {session.user?.name}</span>
+            <button
+              onClick={() => signOut()}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/login"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+          >
+            Login
+          </Link>
+        )}
+              {/* <span className="text-sm font-medium text-gray-700">69.6k</span> */}
             </div>
 
             {/* ✅ Search Toggle */}

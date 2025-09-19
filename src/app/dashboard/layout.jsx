@@ -68,7 +68,7 @@ export default function Layout({ children }) {
         <div className="px-6 py-4 border-b flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-800">Dashboard</h2>
-            <p className="text-xs text-gray-500">ProjectFinder</p>
+            <p className="text-xs text-gray-500">DevFirst Steps</p>
           </div>
 
           {/* close button (mobile only) */}

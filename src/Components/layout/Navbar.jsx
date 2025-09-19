@@ -1,20 +1,18 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search, Menu, X, Github } from "lucide-react";
+import { ChevronDown, Search, Menu, X, Github, Code } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [showSearch, setShowSearch] = useState(false); // ✅ NEW
+  const [showSearch, setShowSearch] = useState(false);
   const timeoutRef = useRef(null);
   const containerRef = useRef(null);
 
   const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
-
-  if (isDashboard) return null; // Don't render Navbar on dashboard routes
 
   // Cleanup on unmount
   useEffect(() => {
@@ -28,12 +26,14 @@ const Navbar = () => {
     const handleDocClick = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setActiveDropdown(null);
-        setShowSearch(false); // ✅ close search when clicking outside
+        setShowSearch(false);
       }
     };
     document.addEventListener("mousedown", handleDocClick);
     return () => document.removeEventListener("mousedown", handleDocClick);
   }, []);
+
+  if (isDashboard) return null; // Don't render Navbar on dashboard routes
 
   const handleMouseEnter = (index) => {
     if (timeoutRef.current) {
@@ -47,7 +47,7 @@ const Navbar = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 220); // small delay to avoid flicker
+    }, 220);
   };
 
   const navItems = [
@@ -55,177 +55,91 @@ const Navbar = () => {
       name: "Platform",
       hasDropdown: true,
       items: [
-        {
-          name: "Project Explorer",
-          description:
-            "Browse trending open source projects with advanced filtering and sorting capabilities.",
-          icon: "🔍",
-        },
-        {
-          name: "AI Code Review",
-          description:
-            "Get AI-powered feedback on your code contributions and pull requests.",
-          icon: "🤖",
-        },
-        {
-          name: "Issue Tracker",
-          description:
-            "Find beginner-friendly issues across thousands of repositories.",
-          icon: "🐛",
-        },
-        {
-          name: "Analytics Dashboard",
-          description:
-            "Track your contributions and project insights with detailed analytics.",
-          icon: "📊",
-        },
-        {
-          name: "Skill Matcher",
-          description:
-            "Discover projects that match your programming skills and interests.",
-          icon: "⚡",
-        },
-        {
-          name: "Community Hub",
-          description:
-            "Connect with maintainers and contributors in project communities.",
-          icon: "👥",
-        },
+        { name: "Project Explorer", description: "Browse trending open source projects with advanced filtering and sorting capabilities.", icon: "🔍" },
+        { name: "AI Code Review", description: "Get AI-powered feedback on your code contributions and pull requests.", icon: "🤖" },
+        { name: "Issue Tracker", description: "Find beginner-friendly issues across thousands of repositories.", icon: "🐛" },
+        { name: "Analytics Dashboard", description: "Track your contributions and project insights with detailed analytics.", icon: "📊" },
+        { name: "Skill Matcher", description: "Discover projects that match your programming skills and interests.", icon: "⚡" },
+        { name: "Community Hub", description: "Connect with maintainers and contributors in project communities.", icon: "👥" },
       ],
     },
     {
       name: "Solutions",
       hasDropdown: true,
       items: [
-        {
-          name: "For Beginners",
-          description:
-            "Curated projects perfect for first-time open source contributors.",
-          icon: "🌱",
-        },
-        {
-          name: "JavaScript Hub",
-          description:
-            "Discover React, Node.js, Vue, and other JavaScript projects.",
-          icon: "💛",
-        },
-        {
-          name: "Python Projects",
-          description:
-            "Explore Django, Flask, ML, and data science repositories.",
-          icon: "🐍",
-        },
-        {
-          name: "DevOps Tools",
-          description:
-            "Infrastructure, CI/CD, and automation project opportunities.",
-          icon: "🔧",
-        },
-        {
-          name: "Mobile Development",
-          description: "React Native, Flutter, and native mobile app projects.",
-          icon: "📱",
-        },
-        {
-          name: "AI & Machine Learning",
-          description:
-            "Cutting-edge ML, AI, and data science project contributions.",
-          icon: "🧠",
-        },
+        { name: "For Beginners", description: "Curated projects perfect for first-time open source contributors.", icon: "🌱" },
+        { name: "JavaScript Hub", description: "Discover React, Node.js, Vue, and other JavaScript projects.", icon: "💛" },
+        { name: "Python Projects", description: "Explore Django, Flask, ML, and data science repositories.", icon: "🐍" },
+        { name: "DevOps Tools", description: "Infrastructure, CI/CD, and automation project opportunities.", icon: "🔧" },
+        { name: "Mobile Development", description: "React Native, Flutter, and native mobile app projects.", icon: "📱" },
+        { name: "AI & Machine Learning", description: "Cutting-edge ML, AI, and data science project contributions.", icon: "🧠" },
       ],
     },
     {
       name: "Resources",
       hasDropdown: true,
       items: [
-        {
-          name: "Contribution Guide",
-          description:
-            "Step-by-step tutorials for making your first open source contribution.",
-          icon: "📚",
-        },
-        {
-          name: "Best Practices",
-          description:
-            "Learn code quality standards and project management techniques.",
-          icon: "⭐",
-        },
-        {
-          name: "Developer Blog",
-          description:
-            "Latest trends, tips, and success stories in open source development.",
-          icon: "✍️",
-        },
-        {
-          name: "API Documentation",
-          description:
-            "Complete API reference for integrating with our platform.",
-          icon: "📋",
-        },
-        {
-          name: "Community Forum",
-          description:
-            "Connect, ask questions, and share knowledge with other developers.",
-          icon: "💬",
-        },
-        {
-          name: "Newsletter",
-          description:
-            "Weekly curated project recommendations and industry insights.",
-          icon: "📧",
-        },
+        { name: "Contribution Guide", description: "Step-by-step tutorials for making your first open source contribution.", icon: "📚" },
+        { name: "Best Practices", description: "Learn code quality standards and project management techniques.", icon: "⭐" },
+        { name: "Developer Blog", description: "Latest trends, tips, and success stories in open source development.", icon: "✍️" },
+        { name: "API Documentation", description: "Complete API reference for integrating with our platform.", icon: "📋" },
+        { name: "Community Forum", description: "Connect, ask questions, and share knowledge with other developers.", icon: "💬" },
+        { name: "Newsletter", description: "Weekly curated project recommendations and industry insights.", icon: "📧" },
       ],
     },
-    { name: "Pricing", hasDropdown: false },
-    { name: "About", hasDropdown: false },
+    // ✅ New top-level items
+    { name: "All Projects", hasDropdown: false, href: "/projects" },
+    { name: "Dashboard", hasDropdown: false, href: "/dashboard" },
   ];
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div
         ref={containerRef}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 relative"
       >
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-sm" />
+          <Link href="/" className="flex items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Code className="w-6 h-6 text-white" />
               </div>
-              <span className="ml-3 text-xl font-bold text-gray-900">
-                ProjectFinder
-              </span>
+              <h3 className="text-xl font-bold">DevFirst Steps</h3>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="flex items-center space-x-8">
               {navItems.map((item, index) => (
                 <div key={item.name}>
-                  <button
-                    aria-haspopup={item.hasDropdown ? "true" : undefined}
-                    aria-expanded={activeDropdown === index}
-                    onMouseEnter={() =>
-                      item.hasDropdown && handleMouseEnter(index)
-                    }
-                    onMouseLeave={() => item.hasDropdown && handleMouseLeave()}
-                    onClick={() =>
-                      item.hasDropdown &&
-                      setActiveDropdown(activeDropdown === index ? null : index)
-                    }
-                    className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
-                  >
-                    {item.name}
-                    {item.hasDropdown && (
+                  {item.hasDropdown ? (
+                    <button
+                      aria-haspopup="true"
+                      aria-expanded={activeDropdown === index}
+                      onMouseEnter={() => handleMouseEnter(index)}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() =>
+                        setActiveDropdown(activeDropdown === index ? null : index)
+                      }
+                      className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    >
+                      {item.name}
                       <ChevronDown
                         className={`ml-1 h-4 w-4 transition-transform duration-200 ${
                           activeDropdown === index ? "rotate-180" : ""
                         }`}
                       />
-                    )}
-                  </button>
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href || "#"}
+                      className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    >
+                      {item.name}
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
@@ -238,7 +152,7 @@ const Navbar = () => {
               <span className="text-sm font-medium text-gray-700">69.6k</span>
             </div>
 
-            {/* ✅ Search Toggle */}
+            {/* Search */}
             <div className="hidden md:flex items-center">
               <button
                 onClick={() => setShowSearch(!showSearch)}
@@ -295,7 +209,6 @@ const Navbar = () => {
                 }`}
                 style={{ transformOrigin: "center top" }}
               >
-                {/* Grid Layout - 2 columns for 6 items */}
                 <div className="px-8 grid grid-cols-2 gap-6 max-h-[70vh] overflow-auto">
                   {item.items.map((dropdownItem) => (
                     <Link
@@ -319,12 +232,10 @@ const Navbar = () => {
                     </Link>
                   ))}
                 </div>
-
-                {/* Bottom Section */}
                 <div className="border-t border-gray-800 mt-8 pt-6 px-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-lg font-medium text-white mb-1">
+                      <p className="text-lg font-medium text-black mb-1">
                         Ready to start contributing?
                       </p>
                       <p className="text-sm text-gray-400">
@@ -348,45 +259,54 @@ const Navbar = () => {
             <div className="space-y-2 px-3">
               {navItems.map((item, index) => (
                 <div key={item.name}>
-                  <button
-                    onClick={() =>
-                      item.hasDropdown &&
-                      setActiveDropdown(activeDropdown === index ? null : index)
-                    }
-                    className="flex items-center justify-between w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                  >
-                    {item.name}
-                    {item.hasDropdown && (
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${
-                          activeDropdown === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    )}
-                  </button>
-
-                  {item.hasDropdown && activeDropdown === index && (
-                    <div className="pl-6 space-y-3 mt-2">
-                      {item.items.map((dropdownItem) => (
-                        <a
-                          key={dropdownItem.name}
-                          href="#"
-                          className="flex items-start text-gray-600 hover:text-gray-900 py-3 text-sm transition-colors duration-150"
-                        >
-                          <span className="mr-3 text-lg mt-1">
-                            {dropdownItem.icon}
-                          </span>
-                          <div>
-                            <div className="font-medium mb-1">
-                              {dropdownItem.name}
-                            </div>
-                            <div className="text-xs text-gray-400 leading-relaxed">
-                              {dropdownItem.description}
-                            </div>
-                          </div>
-                        </a>
-                      ))}
-                    </div>
+                  {item.hasDropdown ? (
+                    <>
+                      <button
+                        onClick={() =>
+                          setActiveDropdown(
+                            activeDropdown === index ? null : index
+                          )
+                        }
+                        className="flex items-center justify-between w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+                      >
+                        {item.name}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${
+                            activeDropdown === index ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {activeDropdown === index && (
+                        <div className="pl-6 space-y-3 mt-2">
+                          {item.items.map((dropdownItem) => (
+                            <Link
+                              key={dropdownItem.name}
+                              href="#"
+                              className="flex items-start text-gray-600 hover:text-gray-900 py-3 text-sm transition-colors duration-150"
+                            >
+                              <span className="mr-3 text-lg mt-1">
+                                {dropdownItem.icon}
+                              </span>
+                              <div>
+                                <div className="font-medium mb-1">
+                                  {dropdownItem.name}
+                                </div>
+                                <div className="text-xs text-gray-400 leading-relaxed">
+                                  {dropdownItem.description}
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href || "#"}
+                      className="block px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      {item.name}
+                    </Link>
                   )}
                 </div>
               ))}

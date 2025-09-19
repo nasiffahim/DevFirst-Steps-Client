@@ -52,24 +52,6 @@ const HeroSection = () => {
             <span>View on GitHub</span>
           </button>
         </div>
-
-        {/* Stats or features */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in-up delay-700">
-          <div className="group p-6 bg-gradient-to-br from-white to-blue-50 rounded-xl border border-blue-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
-            <div className="text-3xl font-bold text-blue-600 mb-2">1000+</div>
-            <div className="text-gray-700 font-medium">Curated Projects</div>
-          </div>
-          
-          <div className="group p-6 bg-gradient-to-br from-white to-emerald-50 rounded-xl border border-emerald-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
-            <div className="text-3xl font-bold text-emerald-600 mb-2">50+</div>
-            <div className="text-gray-700 font-medium">Technologies</div>
-          </div>
-          
-          <div className="group p-6 bg-gradient-to-br from-white to-purple-50 rounded-xl border border-purple-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
-            <div className="text-3xl font-bold text-purple-600 mb-2">24/7</div>
-            <div className="text-gray-700 font-medium">Community Support</div>
-          </div>
-        </div>
       </div>
 
       <style jsx>{`

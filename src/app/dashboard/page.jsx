@@ -4,7 +4,7 @@ import layout from './layout';
 const page = () => {
     return (
         <div>
-           <layout></layout>
+           {/* <layout></layout> */}
         </div>
     );
 };

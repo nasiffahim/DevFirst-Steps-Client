@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../Components/layout/Navbar";
-import NextAuthProvider from "../provider/NextAuthProvider";
+// import NextAuthProvider from "../provider/NextAuthProvider";
 import Footer from "../Components/layout/Footer";
 
 import  NextAuthSessionProvide from "../Providers/NextAuthProvider.jsx"

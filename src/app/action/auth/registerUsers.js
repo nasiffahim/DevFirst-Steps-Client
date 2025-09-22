@@ -1,26 +1,51 @@
 "use server";
 
-import dbConnect, { collectionNamesOb } from "../../../lib/dbConnect";
-// import dbConnect from "../../../lib/dbConnect"
+import dbConnect, { collectionNamesObj } from "../../../lib/dbConnect";
+import bcrypt from "bcryptjs";
 
 export const registerUsers = async (payload) => {
-  const userCollection = dbConnect(collectionNamesOb.usersCollection);
+  try {
+    const { email, password } = payload;
 
-  const user = await userCollection.findOne({ email: payload.email });
+    if (!email || !password) {
+      return { error: "Email and password are required" };
+    }
 
-  const { email, password, confirmPassword } = payload;
+    const userCollection = await dbConnect(collectionNamesObj.user);
 
-  if (!email || !password) return null;
+    // 1️ Find user by email
+    let userDoc = await userCollection.findOne({ email });
 
-  if (!user) {
-    const hashedPassword = await bcrypt.hash(password, 10)
-    payload.password = hashedPassword;
-    const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10)
-    payload.confirmPassword = hashedConfirmPassword;
-    const result = await userCollection.insertOne(payload);
-    result.insertedId = result.insertedId.toString()
+    // If not found → create new user with role
+    if (!userDoc) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = {
+        email,
+        password: hashedPassword,
+        name: email.split("@")[0], // default name
+        role: "user",              // default role
+        createdAt: new Date(),
+      };
 
-    return result;
+      const result = await userCollection.insertOne(newUser);
+      userDoc = { ...newUser, _id: result.insertedId };
+
+      return {
+        success: true,
+        message: "User created successfully",
+        user: {
+          id: userDoc._id,
+          email: userDoc.email,
+          name: userDoc.name,
+          role: userDoc.role,
+        },
+      };
+    }
+
+    //  If user already exists
+    return { error: "User already exists" };
+  } catch (err) {
+    console.error("Register error:", err);
+    return { error: "An error occurred during registration" };
   }
-  return null;
 };

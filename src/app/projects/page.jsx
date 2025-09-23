@@ -1,184 +1,185 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Github, ExternalLink, Code2, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 
-export default function ProjectsPage() {
+const GithubProjectFinder = () => {
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState([]); // multiple filters
   const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    fetch("projects.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
+  const perPage = 9;
+
+  // Define filter options (topics/languages)
+  const filterOptions = [
+    { id: "javascript", label: "JavaScript", type: "language" },
+    { id: "python", label: "Python", type: "language" },
+    { id: "java", label: "Java", type: "language" },
+    { id: "ml", label: "Machine Learning", type: "topic" },
+    { id: "ai", label: "AI", type: "topic" },
+    { id: "web", label: "Web", type: "topic" },
+    { id: "backend", label: "Backend", type: "topic" },
+    { id: "cloud", label: "Cloud", type: "topic" },
+    { id: "gaming", label: "Gaming", type: "topic" },
+  ];
+
+  const fetchProjects = async () => {
+    if (!query.trim() && filters.length === 0) return;
+
+    setLoading(true);
+    setError("");
+    setProjects([]);
+
+    try {
+      let searchQuery = query ? `${query} in:name,description` : "";
+
+      // Add selected filters
+      filters.forEach((f) => {
+        const option = filterOptions.find((opt) => opt.id === f);
+        if (option) {
+          searchQuery += option.type === "language" ? ` language:${option.id}` : ` topic:${option.id}`;
+        }
       });
-  }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-600 text-lg">Loading projects...</p>
-        </div>
-      </div>
+      const res = await fetch(
+        `https://api.github.com/search/repositories?q=${encodeURIComponent(
+          searchQuery.trim()
+        )}&sort=stars&order=desc&per_page=${perPage}&page=${page}`
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch projects");
+
+      const data = await res.json();
+      setProjects(data.items || []);
+      setTotalCount(data.total_count || 0);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refetch when page or filters change
+  useEffect(() => {
+    if (query || filters.length > 0) fetchProjects();
+  }, [page, filters]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setPage(1); // reset to page 1
+    fetchProjects();
+  };
+
+  const toggleFilter = (id) => {
+    setFilters((prev) =>
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
     );
-  }
+    setPage(1);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <div className="w-10/12 mx-auto py-16">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-200 rounded-full filter blur-3xl"></div>
-        </div>
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        🔍 Open Source Project Finder
+      </h1>
 
-        <div className="relative z-10 container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          {/* Header Section */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center p-3 bg-white shadow-lg rounded-full mb-6 border border-gray-100">
-              <Sparkles className="w-8 h-8 text-blue-600" />
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              My Projects
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Discover my latest work and creative endeavors. Each project
-              represents a journey of innovation and problem-solving.
-            </p>
-            <div className="mt-8 h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
-          </div>
+      {/* Search Form */}
+      <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+        <input
+          type="text"
+          placeholder="Search by keyword (e.g. react, python)"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </form>
 
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
-            {projects.map((project, index) => (
-              <div
-                key={project._id}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 transition-all duration-500 hover:-translate-y-2"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Project Image */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-56 sm:h-64 object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Floating Action Buttons */}
-                  <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    {project.githubLink && (
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-700 hover:text-gray-900 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
-                        aria-label={`View ${project.title} on GitHub`}
-                      >
-                        <Github className="w-4 h-4" />
-                      </a>
-                    )}
-                    {project.liveLink && (
-                      <a
-                        href={project.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-700 hover:text-gray-900 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
-                        aria-label={`View ${project.title} live demo`}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Project Content */}
-                <div className="p-6 sm:p-8">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Code2 className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2">
-                      {project.title}
-                    </h2>
-                  </div>
-
-                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3">
-                    {project.description}
-                  </p>
-
-                  {/* Tech Stack */}
-                  <div className="mb-6">
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">
-                      Technologies
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.techStack.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full text-gray-700 text-xs font-medium transition-colors duration-200"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Links */}
-                  <div className="flex space-x-4">
-                    {project.githubLink && (
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:scale-105 group/link"
-                      >
-                        <Github className="w-4 h-4 group-hover/link:animate-pulse" />
-                        <span>Code</span>
-                      </a>
-                    )}
-                    {project.liveLink && (
-                      <a
-                        href={project.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/30 group/link"
-                      >
-                        <ExternalLink className="w-4 h-4 group-hover/link:animate-pulse" />
-                        <span>Live Demo</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subtle hover glow */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              </div>
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {projects.length === 0 && !isLoading && (
-            <div className="text-center py-20">
-              <div className="bg-white rounded-full p-6 shadow-lg inline-block mb-6">
-                <Code2 className="w-16 h-16 text-gray-400 mx-auto" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-700 mb-4">
-                No Projects Found
-              </h3>
-              <p className="text-gray-500">
-                Check back later for exciting new projects!
-              </p>
-            </div>
-          )}
-        </div>
+      {/* Filter Options */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        {filterOptions.map((opt) => (
+          <label key={opt.id} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={filters.includes(opt.id)}
+              onChange={() => toggleFilter(opt.id)}
+              className="w-4 h-4"
+            />
+            {opt.label}
+          </label>
+        ))}
       </div>
+
+      {/* Loading */}
+      {loading && <p className="text-center text-gray-600">Loading projects...</p>}
+
+      {/* Error */}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      {/* Results */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {projects.map((repo) => (
+          <div
+            key={repo.id}
+            className="p-4 border rounded-lg shadow hover:shadow-md transition"
+          >
+            <h2 className="font-semibold text-lg mb-2">
+              <a
+                href={repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                {repo.name}
+              </a>
+            </h2>
+            <p className="text-sm text-gray-700 mb-2">
+              {repo.description?.slice(0, 100) || "No description available"}
+            </p>
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>⭐ {repo.stargazers_count}</span>
+              <span>🍴 {repo.forks_count}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {!loading && projects.length === 0 && (query || filters.length > 0) && !error && (
+        <p className="text-center text-gray-500 mt-6">No projects found.</p>
+      )}
+
+      {/* Pagination */}
+      {projects.length > 0 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            disabled={page === 1}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {page} of {Math.ceil(totalCount / perPage)}
+          </span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= Math.ceil(totalCount / perPage)}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default GithubProjectFinder;

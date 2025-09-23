@@ -1,25 +1,31 @@
 "use client";
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Check, AlertCircle, Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { auth } from "../../../lib/firebase";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import TermsCheckbox from "../../../Components/register/TermsCheckbox/TermsCheckbox";
-// import { registerUsers } from "../../action/auth/registerUsers";
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
+import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [imageUrl, setImageUrl] = useState(""); //  image state
+  const [imageUrl, setImageUrl] = useState("");
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     watch,
-    // reset,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -27,22 +33,34 @@ const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
-  
-    const payload = {
-  ...data,
-  image: imageUrl,
-  role: "user",
-  work: null
-};
+      // Create user in Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
 
-      // await  registerUsers(payload);
-console.log(payload);
+      // Update profile (name + photo)
+      await updateProfile(userCredential.user, {
+        displayName: data.fullName,
+        photoURL: imageUrl || null,
+      });
 
-      // setStatus("success");
-      // router.push("/");
-      // reset();
-      // setImageUrl(""); // reset image
-    } catch {
+      // Optional payload if saving to your DB
+      const payload = {
+        ...data,
+        image: imageUrl,
+        role: "user",
+        work: null,
+      };
+      console.log("User created ✅:", payload);
+
+      setStatus("success");
+      reset();
+      setImageUrl("");
+      router.push("/"); // redirect to home
+    } catch (error) {
+      console.error("Registration error:", error.message);
       setStatus("error");
     }
   };
@@ -76,21 +94,20 @@ console.log(payload);
           className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 space-y-6"
         >
           {/* Profile Image */}
-          <ImageUpload imageUrl={imageUrl} setImageUrl={setImageUrl} />  {/* ✅ */}
+          <ImageUpload imageUrl={imageUrl} setImageUrl={setImageUrl} />
 
-          {/* Name */}
-      <div className="flex flex-col">
-  <input
-    type="text"
-    placeholder="Full Name"
-    {...register("fullName", { required: "Full name is required" })}
-    className="mt-1 w-full rounded-lg border px-3 py-2"
-  />
-  {errors.fullName && (
-    <p className="text-sm text-red-600 mt-1">{errors.fullName.message}</p>
-  )}
-</div>
-
+          {/* Full Name */}
+          <div className="flex flex-col">
+            <input
+              type="text"
+              placeholder="Full Name"
+              {...register("fullName", { required: "Full name is required" })}
+              className="mt-1 w-full rounded-lg border px-3 py-2"
+            />
+            {errors.fullName && (
+              <p className="text-sm text-red-600 mt-1">{errors.fullName.message}</p>
+            )}
+          </div>
 
           {/* Email */}
           <div className="relative">
@@ -105,9 +122,7 @@ console.log(payload);
             />
             <Mail className="absolute left-3 top-[38px] w-5 h-5 text-gray-400" />
             {errors.email && (
-              <p className="text-sm text-red-600 mt-1">
-                {errors.email.message}
-              </p>
+              <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
             )}
           </div>
 
@@ -182,6 +197,15 @@ console.log(payload);
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </button>
 
+{/* Divider */}
+        <div className="my-2 flex justify-center">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-3 text-gray-400 text-sm">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        {/* Social Login */}
+       <SocialLogin />
           {/* Login Link */}
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}

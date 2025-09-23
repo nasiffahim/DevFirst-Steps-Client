@@ -1,12 +1,19 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search, Menu, X, Code, } from "lucide-react";
+import { ChevronDown, Search, Menu, X, Code } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import useAuth from "../../app/hooks/useAuth";
+import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
- const user=true
+  const auth = useAuth();
+  console.log(auth);
+
+  // Prevent crash before context is ready
+  if (!auth) return null;
+  const { user, googleSign, logout } = auth;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -14,7 +21,7 @@ const Navbar = () => {
   const containerRef = useRef(null);
   const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
-  
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -32,7 +39,7 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleDocClick);
   }, []);
 
-  if (isDashboard) return null; 
+  if (isDashboard) return null;
 
   const handleMouseEnter = (index) => {
     if (timeoutRef.current) {
@@ -54,36 +61,125 @@ const Navbar = () => {
       name: "Platform",
       hasDropdown: true,
       items: [
-        { name: "Project Explorer", description: "Browse trending open source projects with advanced filtering and sorting capabilities.", icon: "🔍" },
-        { name: "AI Code Review", description: "Get AI-powered feedback on your code contributions and pull requests.", icon: "🤖" },
-        { name: "Issue Tracker", description: "Find beginner-friendly issues across thousands of repositories.", icon: "🐛" },
-        { name: "Analytics Dashboard", description: "Track your contributions and project insights with detailed analytics.", icon: "📊" },
-        { name: "Skill Matcher", description: "Discover projects that match your programming skills and interests.", icon: "⚡" },
-        { name: "Community Hub", description: "Connect with maintainers and contributors in project communities.", icon: "👥" },
+        {
+          name: "Project Explorer",
+          description:
+            "Browse trending open source projects with advanced filtering and sorting capabilities.",
+          icon: "🔍",
+        },
+        {
+          name: "AI Code Review",
+          description:
+            "Get AI-powered feedback on your code contributions and pull requests.",
+          icon: "🤖",
+        },
+        {
+          name: "Issue Tracker",
+          description:
+            "Find beginner-friendly issues across thousands of repositories.",
+          icon: "🐛",
+        },
+        {
+          name: "Analytics Dashboard",
+          description:
+            "Track your contributions and project insights with detailed analytics.",
+          icon: "📊",
+        },
+        {
+          name: "Skill Matcher",
+          description:
+            "Discover projects that match your programming skills and interests.",
+          icon: "⚡",
+        },
+        {
+          name: "Community Hub",
+          description:
+            "Connect with maintainers and contributors in project communities.",
+          icon: "👥",
+        },
       ],
     },
     {
       name: "Solutions",
       hasDropdown: true,
       items: [
-        { name: "For Beginners", description: "Curated projects perfect for first-time open source contributors.", icon: "🌱" },
-        { name: "JavaScript Hub", description: "Discover React, Node.js, Vue, and other JavaScript projects.", icon: "💛" },
-        { name: "Python Projects", description: "Explore Django, Flask, ML, and data science repositories.", icon: "🐍" },
-        { name: "DevOps Tools", description: "Infrastructure, CI/CD, and automation project opportunities.", icon: "🔧" },
-        { name: "Mobile Development", description: "React Native, Flutter, and native mobile app projects.", icon: "📱" },
-        { name: "AI & Machine Learning", description: "Cutting-edge ML, AI, and data science project contributions.", icon: "🧠" },
+        {
+          name: "For Beginners",
+          description:
+            "Curated projects perfect for first-time open source contributors.",
+          icon: "🌱",
+        },
+        {
+          name: "JavaScript Hub",
+          description:
+            "Discover React, Node.js, Vue, and other JavaScript projects.",
+          icon: "💛",
+        },
+        {
+          name: "Python Projects",
+          description:
+            "Explore Django, Flask, ML, and data science repositories.",
+          icon: "🐍",
+        },
+        {
+          name: "DevOps Tools",
+          description:
+            "Infrastructure, CI/CD, and automation project opportunities.",
+          icon: "🔧",
+        },
+        {
+          name: "Mobile Development",
+          description: "React Native, Flutter, and native mobile app projects.",
+          icon: "📱",
+        },
+        {
+          name: "AI & Machine Learning",
+          description:
+            "Cutting-edge ML, AI, and data science project contributions.",
+          icon: "🧠",
+        },
       ],
     },
     {
       name: "Resources",
       hasDropdown: true,
       items: [
-        { name: "Contribution Guide", description: "Step-by-step tutorials for making your first open source contribution.", icon: "📚" },
-        { name: "Best Practices", description: "Learn code quality standards and project management techniques.", icon: "⭐" },
-        { name: "Developer Blog", description: "Latest trends, tips, and success stories in open source development.", icon: "✍️" },
-        { name: "API Documentation", description: "Complete API reference for integrating with our platform.", icon: "📋" },
-        { name: "Community Forum", description: "Connect, ask questions, and share knowledge with other developers.", icon: "💬" },
-        { name: "Newsletter", description: "Weekly curated project recommendations and industry insights.", icon: "📧" },
+        {
+          name: "Contribution Guide",
+          description:
+            "Step-by-step tutorials for making your first open source contribution.",
+          icon: "📚",
+        },
+        {
+          name: "Best Practices",
+          description:
+            "Learn code quality standards and project management techniques.",
+          icon: "⭐",
+        },
+        {
+          name: "Developer Blog",
+          description:
+            "Latest trends, tips, and success stories in open source development.",
+          icon: "✍️",
+        },
+        {
+          name: "API Documentation",
+          description:
+            "Complete API reference for integrating with our platform.",
+          icon: "📋",
+        },
+        {
+          name: "Community Forum",
+          description:
+            "Connect, ask questions, and share knowledge with other developers.",
+          icon: "💬",
+        },
+        {
+          name: "Newsletter",
+          description:
+            "Weekly curated project recommendations and industry insights.",
+          icon: "📧",
+        },
       ],
     },
     // ✅ New top-level items
@@ -120,7 +216,9 @@ const Navbar = () => {
                       onMouseEnter={() => handleMouseEnter(index)}
                       onMouseLeave={handleMouseLeave}
                       onClick={() =>
-                        setActiveDropdown(activeDropdown === index ? null : index)
+                        setActiveDropdown(
+                          activeDropdown === index ? null : index
+                        )
                       }
                       className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
                     >
@@ -146,29 +244,29 @@ const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-           
-              {/* <Github className="h-4 w-4 text-gray-600 mr-2" /> */}
-             
-              {user ? (
-          <>
-        
-            <button
-              onClick={() => signOut()}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link
-            href="/register"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          >
-            Register
-          </Link>
-        )}
-              {/* <span className="text-sm font-medium text-gray-700">69.6k</span> */}
-          
+            {/* <Github className="h-4 w-4 text-gray-600 mr-2" /> */}
+
+            {user ? (
+              <>
+                <UserMenu />
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Register
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Login
+                </Link>
+              </>
+            )}
+            {/* <span className="text-sm font-medium text-gray-700">69.6k</span> */}
 
             {/* Search */}
             <div className="hidden md:flex items-center">

@@ -16,7 +16,7 @@ export default function ImageUpload({ setImageUrl, imageUrl }) {
 
     try {
       const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=b6f4ebb16324d10e4e8d83b4edcf4a01`,
+        `https://api.imgbb.com/1/upload?key=5a47aa909312567fa72e3c3f9a5f6c6d`,
         {
           method: "POST",
           body: formData,

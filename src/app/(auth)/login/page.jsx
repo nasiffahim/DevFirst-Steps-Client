@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -97,7 +96,7 @@ const LoginPage = () => {
     
 <button
 
-       onClick={() => signIn("google", { callbackUrl: "/" })}
+      
 className="flex items-center  rounded-lg shadow-md px-4 py-2 text-sm font-medium hover: focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
   <svg
     className="h-6 w-6 mr-2"
@@ -117,7 +116,7 @@ className="flex items-center  rounded-lg shadow-md px-4 py-2 text-sm font-medium
          
        <button
        
-         onClick={() => signIn("github", { callbackUrl: "/" })}
+    
     
        className="flex items-center justify-center space-x-2 px-4 py-2 rounded-md bg-gray-800 text-white hover: focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
  <svg

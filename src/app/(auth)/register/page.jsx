@@ -5,19 +5,21 @@ import { Check, AlertCircle, Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TermsCheckbox from "../../../Components/register/TermsCheckbox/TermsCheckbox";
-import { registerUsers } from "../../action/auth/registerUsers";
+// import { registerUsers } from "../../action/auth/registerUsers";
+import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [imageUrl, setImageUrl] = useState(""); //  image state
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     watch,
-    reset,
+    // reset,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -25,10 +27,21 @@ const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      await registerUsers(data);
-      setStatus("success");
-      router.push("/login");
-      reset();
+  
+    const payload = {
+  ...data,
+  image: imageUrl,
+  role: "user",
+  work: null
+};
+
+      // await  registerUsers(payload);
+console.log(payload);
+
+      // setStatus("success");
+      // router.push("/");
+      // reset();
+      // setImageUrl(""); // reset image
     } catch {
       setStatus("error");
     }
@@ -62,24 +75,41 @@ const RegisterPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 space-y-6"
         >
-          {/* Email */}
-        <div className="relative">
-  <label className="block text-sm font-medium text-gray-700">
-    Email
-  </label>
+          {/* Profile Image */}
+          <ImageUpload imageUrl={imageUrl} setImageUrl={setImageUrl} />  {/* ✅ */}
+
+          {/* Name */}
+      <div className="flex flex-col">
   <input
-    type="email"
-    placeholder="john@example.com"
-    {...register("email", { required: "Email is required" })}
-    className="mt-1 w-full rounded-lg border px-10 py-2" // add padding-left for icon
+    type="text"
+    placeholder="Full Name"
+    {...register("fullName", { required: "Full name is required" })}
+    className="mt-1 w-full rounded-lg border px-3 py-2"
   />
-  <Mail className="absolute left-3 top-[38px] w-5 h-5 text-gray-400" />
-  {errors.email && (
-    <p className="text-sm text-red-600 mt-1">
-      {errors.email.message}
-    </p>
+  {errors.fullName && (
+    <p className="text-sm text-red-600 mt-1">{errors.fullName.message}</p>
   )}
 </div>
+
+
+          {/* Email */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="john@example.com"
+              {...register("email", { required: "Email is required" })}
+              className="mt-1 w-full rounded-lg border px-10 py-2"
+            />
+            <Mail className="absolute left-3 top-[38px] w-5 h-5 text-gray-400" />
+            {errors.email && (
+              <p className="text-sm text-red-600 mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
           {/* Password */}
           <div className="relative">
@@ -88,9 +118,16 @@ const RegisterPage = () => {
             </label>
             <input
               type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
               {...register("password", {
                 required: "Password is required",
-                minLength: { value: 6, message: "At least 8 characters" },
+                minLength: { value: 8, message: "At least 8 characters" },
+                validate: (val) =>
+                  (/[A-Z]/.test(val) &&
+                    /[a-z]/.test(val) &&
+                    /\d/.test(val) &&
+                    /[^A-Za-z0-9]/.test(val)) ||
+                  "Must include uppercase, lowercase, number & symbol",
               })}
               className="mt-1 w-full rounded-lg border px-3 py-2 pr-10"
             />
@@ -140,23 +177,19 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transfor text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50"
           >
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </button>
 
-
-
-             {/* Login Link */}
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <Link href="/login" className="text-indigo-600 hover:underline">
-            Login
-          </Link>
-        </p>
+          {/* Login Link */}
+          <p className="text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link href="/login" className="text-indigo-600 hover:underline">
+              Login
+            </Link>
+          </p>
         </form>
-
-     
       </div>
     </div>
   );

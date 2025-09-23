@@ -17,8 +17,10 @@ export default function Layout({ children }) {
   const navItems = [
     { name: "Overview", href: "/dashboard" },
     { name: "Profile", href: "/dashboard/profile" },
+    { name: "Add Projects", href: "/dashboard/add-projects" },
     { name: "Projects", href: "/dashboard/projects" },
     { name: "Settings", href: "/dashboard/settings" },
+    
   ];
 
   // lock body scroll when sidebar (mobile) is open
@@ -89,7 +91,11 @@ export default function Layout({ children }) {
                 key={item.href}
                 href={item.href}
                 className={`block px-4 py-2 rounded-lg text-sm transition-colors duration-150
-                  ${active ? "bg-gray-800 text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                  ${
+                    active
+                      ? "bg-gray-800 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
                 aria-current={active ? "page" : undefined}
               >
                 {item.name}

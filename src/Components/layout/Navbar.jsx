@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search, Menu, X, Code, } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+
 
 const Navbar = () => {
-  const { data: session } = useSession();
+ const user=true
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -149,7 +149,7 @@ const Navbar = () => {
            
               {/* <Github className="h-4 w-4 text-gray-600 mr-2" /> */}
              
-              {session ? (
+              {user ? (
           <>
         
             <button

@@ -364,7 +364,7 @@ const GithubProjectFinder = () => {
               className="p-5 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm group transform hover:scale-105"
             >
               <div className="flex items-start justify-between mb-3">
-                <h2 className="font-bold text-lg text-gray-900 leading-tight flex-1 pr-2">
+                <h2 className="font-bold text-lg text-gray-900 leading-tight flex-1 pr-2 truncate">
                   <a
                     href={repo.html_url}
                     target="_blank"

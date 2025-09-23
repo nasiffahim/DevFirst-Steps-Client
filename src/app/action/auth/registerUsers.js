@@ -1,51 +1,67 @@
-"use server";
-
 import dbConnect, { collectionNamesObj } from "../../../lib/dbConnect";
-import bcrypt from "bcryptjs";
 
-export const registerUsers = async (payload) => {
+export async function registerUser(payload) {
   try {
-    const { email, password } = payload;
+    const {
+      uid,
+      email,
+      fullName,      
+      image,
+      role = "user",
+      work = null,
+    } = payload;
 
-    if (!email || !password) {
-      return { error: "Email and password are required" };
+    if (!uid || !email || !fullName) {
+      return { error: "UID, email, and fullName are required" };
     }
 
     const userCollection = await dbConnect(collectionNamesObj.user);
 
-    // 1️ Find user by email
-    let userDoc = await userCollection.findOne({ email });
+    // Check if user already exists
+    const existingUser = await userCollection.findOne({ email });
 
-    // If not found → create new user with role
-    if (!userDoc) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = {
-        email,
-        password: hashedPassword,
-        name: email.split("@")[0], // default name
-        role: "user",              // default role
-        createdAt: new Date(),
-      };
-
-      const result = await userCollection.insertOne(newUser);
-      userDoc = { ...newUser, _id: result.insertedId };
-
+    if (existingUser) {
       return {
-        success: true,
-        message: "User created successfully",
+        error: "User already registered",
         user: {
-          id: userDoc._id,
-          email: userDoc.email,
-          name: userDoc.name,
-          role: userDoc.role,
-        },
+          id: existingUser._id.toString(),
+          email: existingUser.email,
+          username: existingUser.username,
+          image: existingUser.image,
+          role: existingUser.role,
+          work: existingUser.work,
+        }
       };
     }
 
-    //  If user already exists
-    return { error: "User already exists" };
-  } catch (err) {
-    console.error("Register error:", err);
+    // Use fullName as username here
+    const newUser = {
+      uid,
+      email,
+      username: fullName,  // <--- assign fullName to username
+      image: image || null,
+      role,
+      work,
+      createdAt: new Date(),
+    };
+
+    const result = await userCollection.insertOne(newUser);
+
+    return {
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: result.insertedId.toString(),
+        email,
+        uid,
+        username: fullName,
+        image,
+        role,
+        work,
+      },
+    };
+  } catch (error) {
+    console.error("Register error:", error);
     return { error: "An error occurred during registration" };
   }
-};
+}

@@ -1,62 +1,75 @@
 import dbConnect, { collectionNamesObj } from "../../../lib/dbConnect";
-import bcrypt from "bcryptjs";
 
-export async function loginUser({ email, password }) {
+export async function loginUser(payload) {
   try {
-    if (!email || !password) {
-      return { error: "Email and password are required" };
+    const {
+      email,
+      displayName,
+      photoURL,
+      role = "user",
+      work = null,
+    } = payload;
+
+    if (!email || !uid) {
+      return { error: "Email  are required" };
     }
-    
+
     const userCollection = await dbConnect(collectionNamesObj.user);
 
-    //  Find user by email
+    // 1. Try to find existing user
     let userDoc = await userCollection.findOne({ email });
 
-    //  If not found → create new user with role "user"
-    if (!userDoc) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = {
-        email,
-        password: hashedPassword,
-        name: email.split("@")[0], // default name
-        role: "user",              // 
-        createdAt: new Date(),
-      };
-
-      const result = await userCollection.insertOne(newUser);
-      userDoc = { ...newUser, _id: result.insertedId };
-
+    if (userDoc) {
+      //  Found → return user
       return {
         success: true,
-        message: "User created successfully",
+        message: "User already exists",
         user: {
-          id: userDoc._id,
+          id: userDoc._id.toString(),
           email: userDoc.email,
+          username: userDoc.username,
           name: userDoc.name,
-          role: userDoc.role, // 
-        },
+          image: userDoc.image,
+          role: userDoc.role,
+          work: userDoc.work,
+          
+        }
       };
     }
 
-    //  If user exists → check password
-    const isMatch = await bcrypt.compare(password, userDoc.password);
-    if (!isMatch) {
-      return { error: "Invalid password" };
-    }
+    // Not found → create new user
+    const username =
+      displayName?.replace(/\s+/g, "").toLowerCase() || email.split("@")[0];
 
-    // 4 Login success
+    const newUser = {
+      uid,
+      email,
+      name: displayName || "",
+      username,
+      image: photoURL || null,
+      role,
+      work,
+      createdAt: new Date()
+    };
+
+    const result = await userCollection.insertOne(newUser);
+    userDoc = { ...newUser, _id: result.insertedId };
+
     return {
       success: true,
-      message: "Login successful",
+      message: "User profile created successfully",
       user: {
-        id: userDoc._id,
+        id: userDoc._id.toString(),
         email: userDoc.email,
+        username: userDoc.username,
         name: userDoc.name,
-        role: userDoc.role || "user", // 
-      },
+        image: userDoc.image,
+        role: userDoc.role,
+        work: userDoc.work,
+      }
     };
-  } catch (err) {
-    console.error("Login error:", err);
-    return { error: "An error occurred during login" };
+  } catch (error) {
+    console.error("findOrCreateUser error:", error);
+    return { error: "An error occurred while processing user data" };
   }
 }

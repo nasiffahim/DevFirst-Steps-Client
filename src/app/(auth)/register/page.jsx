@@ -13,6 +13,7 @@ import {
 import TermsCheckbox from "../../../Components/register/TermsCheckbox/TermsCheckbox";
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState(null);
@@ -31,39 +32,51 @@ const RegisterPage = () => {
 
   const password = watch("password");
 
-  const onSubmit = async (data) => {
-    try {
-      // Create user in Firebase
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+ const onSubmit = async (data) => {
+  try {
+    // 1. Create user in Firebase
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
+    );
 
-      // Update profile (name + photo)
-      await updateProfile(userCredential.user, {
-        displayName: data.fullName,
-        photoURL: imageUrl || null,
-      });
+    // 2. Update Firebase profile
+    await updateProfile(userCredential.user, {
+      displayName: data.fullName,
+      photoURL: imageUrl || null,
+    });
 
-      // Optional payload if saving to your DB
-      const payload = {
-        ...data,
-        image: imageUrl,
-        role: "user",
-        work: null,
-      };
-      console.log("User created ✅:", payload);
+    // 3. Prepare payload for backend
+   const payload = {
+  uid: userCredential.user.uid,
+  email: data.email,
+  fullName: data.fullName,
+  image: imageUrl,
+  role: "user",
+  work: null,
+};
 
+
+const rep = await axios.post("http://localhost:5000/user_create", payload);
+
+    // 5. Handle backend response
+    if (rep.data.success) {
       setStatus("success");
-      reset();
-      setImageUrl("");
-      router.push("/"); // redirect to home
-    } catch (error) {
-      console.error("Registration error:", error.message);
+      router.push("/"); // Redirect to home
+    } else {
+      console.error("Backend error:", rep.data.error);
       setStatus("error");
     }
-  };
+
+  } catch (error) {
+    console.error("Registration error:", error.message);
+    setStatus("error");
+  }
+};
+
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">

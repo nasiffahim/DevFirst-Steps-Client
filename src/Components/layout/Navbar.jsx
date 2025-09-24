@@ -8,7 +8,6 @@ import UserMenu from "../UserMenu/UserMenu";
 
 const Navbar = () => {
   const auth = useAuth();
-  console.log(auth);
 
   // Prevent crash before context is ready
   if (!auth) return null;

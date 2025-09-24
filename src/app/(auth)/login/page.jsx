@@ -7,26 +7,47 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import useAuth from "../../../app/hooks/useAuth";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
+import axios from "axios";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { userSign, googleSign, githubSign } = useAuth(); // from AuthProvider
+  const { userSign,} = useAuth(); // from AuthProvider
   const {
     register,
     handleSubmit,
+
     formState: { errors, isSubmitting },
   } = useForm();
   const router = useRouter();
 
   const onSubmit = async (data) => {
     try {
-      await userSign(data.email, data.password);
+      const userCredential = await userSign(data.email, data.password);
+  const user = userCredential.user;
+
+  // Prepare payload with user info
+  const payload = {
+    uid: user.uid,           
+    email: user.email,       
+    fullName: data.fullName,  
+    image: data.image || null, 
+    role: "user",
+    work: null,
+  };
+
+  // Send user info to backend login endpoint
+  const rep = await axios.post("http://localhost:5000/login", payload);
+
+  // Optionally log response
       router.push("/");
     } catch (error) {
       console.error("Login error:", error.message);
       alert("Invalid email or password");
     }
   };
+
+
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 px-4">
@@ -103,14 +124,23 @@ const LoginPage = () => {
             }`}
           >
             {isSubmitting ? "Logging in..." : "Login"}
-          </button>
+          </button>  
+        
         </form>
+
+<Link href="/ResetPassword" >
+ 
+  <span className="text-center cursor-pointer text-blue-600 hover:underline">   Click here to reset password  </span>
+</Link>
 
         {/* Divider */}
         <div className="my-2 flex justify-center">
+          
           <hr className="flex-grow border-gray-300" />
           <span className="px-3 text-gray-400 text-sm">OR</span>
           <hr className="flex-grow border-gray-300" />
+
+ 
         </div>
 
         {/* Social Login */}

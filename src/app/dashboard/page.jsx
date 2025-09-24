@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-
+import AdminOverview from "../dashboard/Component/adminOverview"
 const Page = () => {
   const { user, loading } = useAuth();
   const email = user?.email;
@@ -109,6 +109,9 @@ const Page = () => {
             ))}
           </div>
         </section>
+      )}
+      {role === "admin" && (
+        <AdminOverview />
       )}
     </div>
   );

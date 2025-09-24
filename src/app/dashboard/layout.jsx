@@ -4,32 +4,64 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
+import useAuth from "../hooks/useAuth";
 
 export default function Layout({ children }) {
   const pathname = usePathname() ?? "";
-  // consider both "/dashboard" and "/dashboard/" as root
   const isRootDashboard =
     pathname === "/dashboard" || pathname === "/dashboard/";
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
 
+  // store role from API
+  const [role, setRole] = useState(null);
+  const { user, loading } = useAuth();
+  const email = user?.email; // get email from auth context
+
+  // fetch user role on mount
+
+  useEffect(() => {
+    if (!email) return; // stop if email not ready
+    async function fetchRole() {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/user-role?email=${email}`
+        );
+        const data = await res.json();
+        setRole(data.role);
+      } catch (err) {
+        console.error("Failed to fetch role", err);
+      }
+    }
+    fetchRole();
+  }, [email]);
+
+  // dynamic nav items based on role
   const navItems = [
     { name: "Overview", href: "/dashboard" },
     { name: "Profile", href: "/dashboard/profile" },
     { name: "Add Projects", href: "/dashboard/add-projects" },
-    { name: "Projects", href: "/dashboard/projects" },
-    { name: "Settings", href: "/dashboard/settings" },
+    ...(role === "admin"
+      ? [
+          { name: "Projects", href: "/dashboard/projects" },
+          { name: "Settings", href: "/dashboard/settings" },
+        ]
+      : role === "user"
+      ? [
+          { name: "Projects", href: "/dashboard/projects" },
+          { name: "Settings", href: "/dashboard/settings" },
+        ]
+      : []), // default empty until role loads
   ];
 
-  // lock body scroll when sidebar (mobile) is open
+  // lock body scroll when sidebar is open
   useEffect(() => {
     if (sidebarOpen) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => (document.body.style.overflow = prev);
     }
-    return;
   }, [sidebarOpen]);
 
   // close sidebar on route change
@@ -45,6 +77,9 @@ export default function Layout({ children }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -57,7 +92,7 @@ export default function Layout({ children }) {
         />
       )}
 
-      {/* Sidebar (drawer on mobile, fixed on md+) */}
+      {/* Sidebar */}
       <aside
         ref={sidebarRef}
         role="dialog"
@@ -71,8 +106,6 @@ export default function Layout({ children }) {
             <h2 className="text-xl font-bold text-gray-800">Dashboard</h2>
             <p className="text-xs text-gray-500">DevFirst Steps</p>
           </div>
-
-          {/* close button (mobile only) */}
           <button
             className="md:hidden text-gray-700 p-2 rounded hover:bg-gray-100"
             onClick={() => setSidebarOpen(false)}
@@ -104,19 +137,20 @@ export default function Layout({ children }) {
         </nav>
 
         <div className="px-6 py-4 border-t">
-          <button className="w-full bg-gray-800 text-white py-2 rounded-lg text-sm hover:bg-gray-700 transition">
-            Logout
-          </button>
+          <Link
+            href="/"
+            className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition"
+          >
+            Back to Home
+          </Link>
         </div>
       </aside>
 
-      {/* Main content area */}
+      {/* Main content */}
       <div className="flex-1 min-h-screen">
-        {/* Show welcome header ONLY on Overview page */}
         {isRootDashboard && (
           <header className="bg-white shadow p-6 ">
             <div className="flex items-center gap-3">
-              {/* Mobile hamburger */}
               <button
                 className="md:hidden text-gray-700 p-2 rounded hover:bg-gray-100"
                 onClick={() => setSidebarOpen(true)}
@@ -124,17 +158,20 @@ export default function Layout({ children }) {
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">
                 👋 Welcome Back!
               </h1>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
+               <p className="text-sm text-gray-500 mt-1">
               Here’s an overview of your activity.
             </p>
+              </div>
+              
+            </div>
+           
           </header>
         )}
 
-        {/* Actual page content */}
         <main className="p-6">{children}</main>
       </div>
     </div>

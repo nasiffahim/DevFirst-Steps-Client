@@ -1,10 +1,9 @@
 import React from 'react';
-import layout from './layout';
 
 const page = () => {
     return (
         <div>
-         hi
+            hi
         </div>
     );
 };

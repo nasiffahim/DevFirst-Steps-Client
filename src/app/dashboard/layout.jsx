@@ -20,7 +20,6 @@ export default function Layout({ children }) {
     { name: "Add Projects", href: "/dashboard/add-projects" },
     { name: "Projects", href: "/dashboard/projects" },
     { name: "Settings", href: "/dashboard/settings" },
-    
   ];
 
   // lock body scroll when sidebar (mobile) is open
@@ -112,15 +111,12 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Main content area */}
-      <div className="flex-1 md:ml-4 min-h-screen">
-        {/* Header logic:
-            - If not dashboard root => show full header (desktop + mobile)
-            - If dashboard root => show a compact mobile topbar (only on mobile) so users can open sidebar
-        */}
-        {!isRootDashboard ? (
-          <header className="bg-white shadow p-4 flex items-center justify-between sticky top-0 z-30">
-            {/* Mobile hamburger */}
+      <div className="flex-1 min-h-screen">
+        {/* Show welcome header ONLY on Overview page */}
+        {isRootDashboard && (
+          <header className="bg-white shadow p-6 ">
             <div className="flex items-center gap-3">
+              {/* Mobile hamburger */}
               <button
                 className="md:hidden text-gray-700 p-2 rounded hover:bg-gray-100"
                 onClick={() => setSidebarOpen(true)}
@@ -128,39 +124,14 @@ export default function Layout({ children }) {
               >
                 <Menu className="w-6 h-6" />
               </button>
-
-              <h1 className="text-lg font-semibold text-gray-800">
-                Welcome Back 👋
+              <h1 className="text-2xl font-bold text-gray-800">
+                👋 Welcome Back!
               </h1>
             </div>
-
-            <div className="flex-1 max-w-2xl mx-6 hidden sm:flex items-center">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gray-300" />
-            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              Here’s an overview of your activity.
+            </p>
           </header>
-        ) : (
-          /* compact mobile topbar visible only on small screens so mobile users can open drawer */
-          <div className="md:hidden bg-white border-b p-3 sticky top-0 z-30 flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="text-gray-700 p-2 rounded hover:bg-gray-100"
-              aria-label="Open menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            <div className="text-sm font-medium">Dashboard</div>
-
-            <div className="w-8 h-8 rounded bg-gray-200" />
-          </div>
         )}
 
         {/* Actual page content */}

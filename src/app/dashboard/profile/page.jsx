@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function ProfilePage() {
@@ -48,12 +49,14 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="bg-white border border-black text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+            <button className="bg-white border cursor-pointer border-black text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
               Setting
             </button>
-            <button className="bg-white text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
-              Edit Profile
-            </button>
+            <Link href="/dashboard/edit-profile">
+              <button className="bg-white cursor-pointer text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                Edit Profile
+              </button>
+            </Link>
           </div>
         </div>
       </header>

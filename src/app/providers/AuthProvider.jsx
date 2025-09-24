@@ -1,23 +1,26 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { auth } from "../../lib/firebase"; 
-
+ 
 import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
- sendPasswordResetEmail,
-
-  onAuthStateChanged,
-  signOut,
-  updateProfile
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signInWithPopup, 
+  sendPasswordResetEmail, 
+  onAuthStateChanged, 
+  signOut, 
+  updateProfile, 
+  GoogleAuthProvider, 
+  GithubAuthProvider 
 } from "firebase/auth";
-import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+
 
 import { AuthContext } from "../providers/AuthContext";
 import axios from "axios";
+
 const googleProvider = new GoogleAuthProvider();
-const githubProvider = new GithubAuthProvider(); 
+
+const githubProvider = new GithubAuthProvider();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,16 +36,27 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
+const githubSign = async () => {
+  setLoading(true); // Start loading
+
+  try {
+    const result = await signInWithPopup(auth, githubProvider); // Trigger GitHub login
+    return result;
+  } catch (error) {
+    console.error("GitHub sign-in failed:", error.message); // Log the error
+    throw error; // Re-throw the error
+  } finally {
+    setLoading(false); // Ensure loading state is reset regardless of success or failure
+  }
+};
+
 
   // google sign in
   const googleSign = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
-const githubSign = () => {
-  setLoading(true);
-  return signInWithPopup(auth, githubProvider);
-};
+
   // logout
   const logout = () => {
     setLoading(true);
@@ -62,9 +76,10 @@ const githubSign = () => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        axios
-          .post(
-            "http://localhost:3000/jwt",
+        console.log(currentUser?.email);
+        
+        axios.post(
+            "http://localhost:5000/jwt",
             { email: currentUser?.email },
             { withCredentials: true }
           )
@@ -80,7 +95,7 @@ const githubSign = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  },[]);
 
   const userInfo = {
     user,

@@ -6,6 +6,8 @@ import projectAnim from "../../../public/Animation/No project.json";
 import blogAnim from "../../../public/Animation/no blogs.json";
 import Lottie from "lottie-react";
 import { Button } from "../../Components/ui/button";
+import Image from "next/image";
+
 import {
   BookOpen,
   FolderKanban,
@@ -15,15 +17,61 @@ import {
   FileBox,
   Clock,
   AlertTriangle,
+  Star,
+  Users as UsersIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+// ✅ Reusable Blog Card
+const BlogCard = ({ blog }) => (
+  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
+    <img
+      src={blog.thumbnail}
+      alt={blog.title}
+      className="w-full h-40 object-cover"
+    />
+    <div className="p-4">
+      <h3 className="text-base font-semibold text-gray-800">{blog.title}</h3>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{blog.excerpt}</p>
+      <div className="text-xs text-gray-400 mt-2">
+        By {blog.author} • {blog.date}
+      </div>
+    </div>
+  </div>
+);
+
+// ✅ Reusable Project Card
+const ProjectCard = ({ project }) => (
+  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
+    <img
+      src={project.thumbnail}
+      alt={project.name}
+      className="w-full h-40 object-cover"
+    />
+    <div className="p-4">
+      <h3 className="text-base font-semibold text-gray-800">{project.name}</h3>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+        {project.description}
+      </p>
+      <div className="flex justify-between text-xs text-gray-400 mt-3">
+        <span className="flex items-center gap-1">
+          <Star className="w-4 h-4 text-yellow-500" /> {project.stars}
+        </span>
+        <span className="flex items-center gap-1">
+          <UsersIcon className="w-4 h-4 text-indigo-500" />{" "}
+          {project.contributors}
+        </span>
+      </div>
+    </div>
+  </div>
+);
 
 const Page = () => {
   const { user, loading } = useAuth();
   const email = user?.email;
   const [role, setRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
-  const router = useRouter(); // ✅ init router
+  const router = useRouter();
 
   // fetch user role
   useEffect(() => {
@@ -58,7 +106,7 @@ const Page = () => {
     );
   }
 
-  // stats (with icons)
+  // ✅ Stats with icons
   const userStats = [
     { label: "My Blog", value: 12, icon: BookOpen },
     { label: "My Project", value: 88, icon: FolderKanban },
@@ -73,9 +121,62 @@ const Page = () => {
     { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
-  // Sample placeholders
-  const blogs = [];
-  const projects = [];
+// Sample static data with thumbnails
+const blogs = [
+  {
+    id: 1,
+    title: "Getting Started with Open Source",
+    excerpt: "Learn how to make your first contribution to open-source projects...",
+    author: "Jane Doe",
+    date: "2025-09-20",
+    thumbnail: "https://unsplash.com/photos/man-using-laptop-VzJjPuk53sk",
+  },
+  {
+    id: 2,
+    title: "Top 5 GitHub Repositories for Beginners",
+    excerpt: "A curated list of beginner-friendly repositories to help you start...",
+    author: "John Smith",
+    date: "2025-09-18",
+    thumbnail: "https://source.unsplash.com/400x250/?github,programming",
+  },
+  {
+    id: 3,
+    title: "Why Open Source Matters",
+    excerpt: "Exploring the impact of open source on tech innovation and community...",
+    author: "Emily Johnson",
+    date: "2025-09-15",
+    thumbnail: "https://source.unsplash.com/400x250/?community,developers",
+  },
+];
+
+const projects = [
+  {
+    id: 1,
+    name: "Next.js Starter Kit",
+    description: "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
+    stars: 120,
+    contributors: 15,
+    thumbnail: "https://source.unsplash.com/400x250/?nextjs,tailwind",
+  },
+  {
+    id: 2,
+    name: "Open Source Finder",
+    description: "A platform that connects developers with open source projects.",
+    stars: 240,
+    contributors: 32,
+    thumbnail: "https://source.unsplash.com/400x250/?opensource,collaboration",
+  },
+  {
+    id: 3,
+    name: "React UI Components",
+    description: "Reusable, accessible, and customizable React components for modern apps.",
+    stars: 90,
+    contributors: 8,
+    thumbnail: "https://source.unsplash.com/400x250/?react,ui",
+  },
+];
+
+
 
   return (
     <div className="space-y-10 p-6">
@@ -100,64 +201,51 @@ const Page = () => {
         })}
       </div>
 
-      {/* Latest Blog (only for user) */}
+      {/* Blogs Section */}
       {role === "user" && (
         <section>
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Latest Blog
+            Latest Blogs
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
                 <Lottie animationData={blogAnim} loop className="h-52" />
                 <p className="text-center mt-3">No blogs found.</p>
-                <Button className="block cursor-pointer mt-2 bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition">
+                <Button
+                  onClick={() => router.push("/dashboard/add-blogs")}
+                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                >
                   Write a Blog
                 </Button>
               </div>
             ) : (
-              blogs.map((b) => (
-                <div
-                  key={b}
-                  className="bg-gray-50 h-32 rounded-lg flex items-center justify-center shadow-sm border border-gray-200"
-                >
-                  Blog {b}
-                </div>
-              ))
+              blogs.map((b) => <BlogCard key={b.id} blog={b} />)
             )}
           </div>
         </section>
       )}
 
-      {/* Latest Projects */}
+      {/* Projects Section */}
       {role === "user" && (
         <section>
-          <div className="text-lg font-semibold text-gray-800 mb-3">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">
-              Latest Projects
-            </h2>
-          </div>
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Latest Projects
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
                 <Lottie animationData={projectAnim} loop className="h-52" />
                 <p className="text-center mt-3">No project found.</p>
-                <Button onClick={() => router.push("/dashboard/add-projects")}  className="block mt-2 cursor-pointer bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition">
+                <Button
+                  onClick={() => router.push("/dashboard/add-projects")}
+                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                >
                   Add Project
                 </Button>
               </div>
             ) : (
-              projects.map((p) => (
-                <div
-                  key={p}
-                  className="bg-gray-50 h-32 rounded-lg flex items-center justify-center shadow-sm border border-gray-200"
-                >
-                  Project {p}
-                </div>
-              ))
+              projects.map((p) => <ProjectCard key={p.id} project={p} />)
             )}
           </div>
         </section>

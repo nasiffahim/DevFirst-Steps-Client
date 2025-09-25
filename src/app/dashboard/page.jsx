@@ -132,6 +132,11 @@ const Page = () => {
       {/* Latest Projects */}
       {role === "user" && (
         <section>
+          <div className="text-lg font-semibold text-gray-800 mb-3">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">
+              Latest Projects
+            </h2>
+          </div>
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Latest Projects
           </h2>

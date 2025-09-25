@@ -1,7 +1,7 @@
-// components/AddProjectForm.jsx
+
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
 
 export default function AddProjectForm() {
@@ -52,13 +52,13 @@ export default function AddProjectForm() {
     console.log(project, "Form Data Submitted:");
     try {
     
-      await fetch("http://localhost:3000/add-projects", {
+     await fetch("http://localhost:5000/add-projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(project),
       });
       Swal.fire({
-        position: "top-end",
+
         icon: "success",
         title: "Project added successfully",
         showConfirmButton: false,
@@ -203,7 +203,7 @@ export default function AddProjectForm() {
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            className=" bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center space-x-2"
+            className=" bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center space-x-2 cursor-pointer"
           >
             Save Project
           </button>
@@ -213,8 +213,7 @@ export default function AddProjectForm() {
               setName("");
               setLanguage("");
               setDifficulty("Easy");
-              setTags([]);
-              setTagInput("");
+              setTags('');
               setDescription("");
               setRepoUrl("");
               setContributors("");
@@ -223,7 +222,7 @@ export default function AddProjectForm() {
               setError("");
               setSuccess("");
             }}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center space-x-2"
+            className="px-4 py-2 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center space-x-2 rounded-md border cursor-pointer"
           >
             Reset
           </button>

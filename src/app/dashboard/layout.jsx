@@ -19,6 +19,7 @@ export default function Layout({ children }) {
     { name: "Profile", href: "/dashboard/profile" },
     { name: "Add Projects", href: "/dashboard/add-projects" },
     { name: "Projects", href: "/dashboard/projects" },
+    { name: "Add Blogs", href: "/dashboard/add-blogs" },
     { name: "Settings", href: "/dashboard/settings" },
     
   ];

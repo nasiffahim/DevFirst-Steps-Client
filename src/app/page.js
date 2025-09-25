@@ -15,7 +15,7 @@ export default function Home() {
      <HeroSection></HeroSection>
      <HowItWorks></HowItWorks>
      <TechStackSection></TechStackSection>
-     <ProjectList limit={3}></ProjectList>
+     <ProjectList limit={6}></ProjectList>
      <CommunityDiscussions></CommunityDiscussions>
      <TestimonialCarousel></TestimonialCarousel>
      <BlogPage></BlogPage>

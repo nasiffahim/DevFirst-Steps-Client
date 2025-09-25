@@ -1,8 +1,10 @@
 "use client";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const GithubProjectFinder = () => {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
@@ -11,6 +13,7 @@ const GithubProjectFinder = () => {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [isDefaultView, setIsDefaultView] = useState(true);
 
   const perPage = 9;
 
@@ -116,12 +119,47 @@ const GithubProjectFinder = () => {
     ],
   };
 
+  // Load popular projects by default when component mounts
+  const fetchDefaultProjects = async (currentPage = page) => {
+    setLoading(true);
+    setError("");
+    setIsDefaultView(true);
+
+    try {
+      const params = new URLSearchParams({
+        query: "",
+        lang: "",
+        topics: "",
+        stars: 1000,
+        forks: 100,
+        sort: "stars",
+        order: "desc",
+        page: currentPage,
+        perPage: perPage,
+      });
+
+      const { data } = await axios.get("http://localhost:5000/all_projects", {
+        params,
+      });
+      setProjects(data.items || []);
+      setTotalCount(data.total_count || 0);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchProjects = async () => {
-    if (!query.trim() && filters.length === 0) return;
+    if (!query.trim() && filters.length === 0) {
+      fetchDefaultProjects();
+      return;
+    }
 
     setLoading(true);
     setError("");
     setProjects([]);
+    setIsDefaultView(false);
 
     try {
       const allFilters = Object.values(filterCategories).flat();
@@ -147,7 +185,9 @@ const GithubProjectFinder = () => {
         perPage,
       });
 
-      const { data } = await axios.get("http://localhost:5000/all_projects", {params});
+      const { data } = await axios.get("http://localhost:5000/all_projects", {
+        params,
+      });
       setProjects(data.items || []);
       setTotalCount(data.total_count || 0);
     } catch (err) {
@@ -157,9 +197,18 @@ const GithubProjectFinder = () => {
     }
   };
 
-  // Refetch when page or filters change
+  // Load default projects on component mount
   useEffect(() => {
-    if (query || filters.length > 0) fetchProjects();
+    fetchDefaultProjects(1);
+  }, []);
+
+  // Handle page changes for both default and filtered views
+  useEffect(() => {
+    if (query || filters.length > 0) {
+      fetchProjects();
+    } else {
+      fetchDefaultProjects(page);
+    }
   }, [page, filters]);
 
   const handleSearch = (e) => {
@@ -177,14 +226,20 @@ const GithubProjectFinder = () => {
 
   const clearFilters = () => {
     setFilters([]);
+    setQuery("");
     setPage(1);
+    fetchDefaultProjects(1);
   };
 
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
-    // Clear filters when switching categories to avoid confusion
     setFilters([]);
     setPage(1);
+  };
+
+  // Navigate to project details page
+  const handleViewDetails = (projectId) => {
+    router.push(`/projects/${projectId}`);
   };
 
   const currentFilters = filterCategories[activeCategory] || [];
@@ -198,7 +253,8 @@ const GithubProjectFinder = () => {
             Open Source Project Explorer
           </h1>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Discover amazing open source projects and explore the latest technologies
+            Discover amazing open source projects and explore the latest
+            technologies
           </p>
         </div>
 
@@ -206,8 +262,18 @@ const GithubProjectFinder = () => {
         <div className="flex gap-3 mb-8">
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-4 w-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <input
@@ -215,7 +281,7 @@ const GithubProjectFinder = () => {
               placeholder="Explore projects by language or topic..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch(e)}
               className="w-full pl-10 pr-4 py-3 text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-lg transition-all duration-200 hover:shadow-xl"
             />
           </div>
@@ -240,9 +306,9 @@ const GithubProjectFinder = () => {
                 networking: "🔗",
                 database: "💾",
                 cloud: "☁️",
-                gaming: "🎮"
+                gaming: "🎮",
               };
-              
+
               return (
                 <button
                   key={category}
@@ -265,7 +331,9 @@ const GithubProjectFinder = () => {
           {/* Enhanced Active Filters Display */}
           {filters.length > 0 && (
             <div className="flex flex-wrap gap-2 items-center justify-center mb-6 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
-              <span className="text-sm font-semibold text-gray-600">Active filters:</span>
+              <span className="text-sm font-semibold text-gray-600">
+                Active filters:
+              </span>
               {filters.map((filterId) => {
                 const allFilters = Object.values(filterCategories).flat();
                 const filter = allFilters.find((f) => f.id === filterId);
@@ -279,8 +347,18 @@ const GithubProjectFinder = () => {
                       onClick={() => toggleFilter(filterId)}
                       className="ml-1 text-white/80 hover:text-white transition-colors"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </span>
@@ -299,7 +377,12 @@ const GithubProjectFinder = () => {
         {/* Enhanced Filter Options */}
         <div className="mb-8">
           <h3 className="text-lg font-bold mb-6 text-gray-800 text-center">
-            {activeCategory === "all" ? "Popular Technologies" : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Technologies`}
+            {activeCategory === "all"
+              ? "Popular Technologies"
+              : `${
+                  activeCategory.charAt(0).toUpperCase() +
+                  activeCategory.slice(1)
+                } Technologies`}
           </h3>
           <div className="flex flex-wrap justify-center gap-3 max-w-5xl mx-auto">
             {currentFilters.map((opt) => (
@@ -322,15 +405,6 @@ const GithubProjectFinder = () => {
                   }`}
                 />
                 <span className="select-none">{opt.label}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  filters.includes(opt.id)
-                    ? "bg-white/20 text-white/90"
-                    : opt.type === "language" 
-                      ? "bg-blue-100 text-blue-700" 
-                      : "bg-purple-100 text-purple-700"
-                }`}>
-                  {opt.type}
-                </span>
               </label>
             ))}
           </div>
@@ -340,7 +414,11 @@ const GithubProjectFinder = () => {
         {loading && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-500 mb-3"></div>
-            <p className="text-gray-600">Finding amazing repositories...</p>
+            <p className="text-gray-600">
+              {isDefaultView
+                ? "Loading trending projects..."
+                : "Finding amazing repositories..."}
+            </p>
           </div>
         )}
 
@@ -348,21 +426,116 @@ const GithubProjectFinder = () => {
         {error && (
           <div className="text-center py-6">
             <div className="inline-flex items-center gap-3 text-gray-600 bg-red-50 px-4 py-3 rounded-lg border-2 border-red-200">
-              <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span className="font-medium">{error}</span>
             </div>
           </div>
         )}
 
-        {/* Enhanced Results Grid */}
+        {/* Popular Projects Label */}
+        {isDefaultView && projects.length > 0 && !loading && (
+          <div className="text-center mb-8">
+            <div className="inline-block px-6 py-3 rounded-2xl shadow-lg mb-4">
+              <div className="flex items-center gap-2 justify-center">
+                <span className="text-2xl">🔥</span>
+                <h2 className="text-xl font-bold">Hot & Popular Projects</h2>
+                <span className="text-2xl">🔥</span>
+              </div>
+            </div>
+            <p className="text-gray-600 font-medium">
+              Discover trending open source projects with thousands of stars
+            </p>
+            <div className="flex justify-center gap-6 mt-3 text-sm text-gray-500">
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-yellow-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-medium">1000+ Stars</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                  />
+                </svg>
+                <span className="font-medium">100+ Forks</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span className="font-medium">Actively Maintained</span>
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Search Results Label */}
+        {!isDefaultView && projects.length > 0 && !loading && (
+          <div className="text-center mb-6">
+            <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl shadow-md">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                Search Results
+              </h2>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Results Grid with View Details Button */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {projects.map((repo) => (
             <div
               key={repo.id}
-              className="p-5 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm group transform hover:scale-105"
+              className="p-5 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm group transform hover:scale-105 flex flex-col"
             >
+              {/* Top Section */}
               <div className="flex items-start justify-between mb-3">
                 <h2 className="font-bold text-lg text-gray-900 leading-tight flex-1 pr-2 truncate">
                   <a
@@ -380,42 +553,70 @@ const GithubProjectFinder = () => {
                   </span>
                 )}
               </div>
-              
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+
+              {/* Make description flexible */}
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1">
                 {repo.description || "No description available"}
               </p>
-              
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1 font-medium">
-                    <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    {repo.stargazers_count.toLocaleString()}
-                  </span>
-                  <span className="flex items-center gap-1 font-medium">
-                    <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                    </svg>
-                    {repo.forks_count.toLocaleString()}
-                  </span>
+
+              {/* Bottom Section */}
+              <div>
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1 font-medium">
+                      ⭐ {repo.stargazers_count.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1 font-medium">
+                      🍴 {repo.forks_count.toLocaleString()}
+                    </span>
+                  </div>
+                  {repo.updated_at && (
+                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                      {new Date(repo.updated_at).toLocaleDateString()}
+                    </span>
+                  )}
                 </div>
-                {repo.updated_at && (
-                  <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                    {new Date(repo.updated_at).toLocaleDateString()}
-                  </span>
-                )}
+
+                <button
+                  onClick={() => handleViewDetails(repo.id)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-gray-700 hover:text-white rounded-lg transition-all duration-300 text-sm font-medium border border-gray-200 hover:border-transparent"
+                >
+                  <span>View Details</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           ))}
         </div>
 
         {/* Enhanced Empty State */}
-        {!loading && projects.length === 0 && (query || filters.length > 0) && !error && (
+        {!loading && projects.length === 0 && !isDefaultView && !error && (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-gray-700 mb-2">No projects found</h3>
-            <p className="text-gray-500">Try adjusting your search terms or filters</p>
+            <h3 className="text-xl font-bold text-gray-700 mb-2">
+              No projects found
+            </h3>
+            <p className="text-gray-500 mb-4">
+              Try adjusting your search terms or filters
+            </p>
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-medium"
+            >
+              Show Popular Projects
+            </button>
           </div>
         )}
 
@@ -447,7 +648,8 @@ const GithubProjectFinder = () => {
           <div className="text-center mt-6">
             <div className="inline-block bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-gray-200 shadow-md">
               <span className="text-gray-700 font-semibold">
-                Found {totalCount.toLocaleString()} repositories
+                {isDefaultView ? "🔥 Trending: " : "Found "}
+                {totalCount.toLocaleString()} repositories
               </span>
             </div>
           </div>

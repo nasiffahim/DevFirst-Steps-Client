@@ -93,11 +93,11 @@ const Page = () => {
       {/* Latest Projects (for both, but different meaning maybe) */}
       {role === "user" && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">
+          <div className="text-lg font-semibold text-gray-800 mb-3">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">
               Latest Projects
             </h2>
-          </h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {projects.map((p) => (
               <div

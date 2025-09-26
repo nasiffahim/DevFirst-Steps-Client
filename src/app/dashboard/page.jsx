@@ -1,12 +1,77 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import AdminOverview from "../dashboard/Component/adminOverview"
+import AdminOverview from "../dashboard/Component/adminOverview";
+import projectAnim from "../../../public/Animation/No project.json";
+import blogAnim from "../../../public/Animation/no blogs.json";
+import Lottie from "lottie-react";
+import { Button } from "../../Components/ui/button";
+import Image from "next/image";
+
+import {
+  BookOpen,
+  FolderKanban,
+  Bookmark,
+  Sparkles,
+  Users,
+  FileBox,
+  Clock,
+  AlertTriangle,
+  Star,
+  Users as UsersIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+
+// ✅ Reusable Blog Card
+const BlogCard = ({ blog }) => (
+  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
+    <img
+      src={blog.thumbnail}
+      alt={blog.title}
+      className="w-full h-40 object-cover"
+    />
+    <div className="p-4">
+      <h3 className="text-base font-semibold text-gray-800">{blog.title}</h3>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{blog.excerpt}</p>
+      <div className="text-xs text-gray-400 mt-2">
+        By {blog.author} • {blog.date}
+      </div>
+    </div>
+  </div>
+);
+
+// ✅ Reusable Project Card
+const ProjectCard = ({ project }) => (
+  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
+    <img
+      src={project.thumbnail}
+      alt={project.name}
+      className="w-full h-40 object-cover"
+    />
+    <div className="p-4">
+      <h3 className="text-base font-semibold text-gray-800">{project.name}</h3>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+        {project.description}
+      </p>
+      <div className="flex justify-between text-xs text-gray-400 mt-3">
+        <span className="flex items-center gap-1">
+          <Star className="w-4 h-4 text-yellow-500" /> {project.stars}
+        </span>
+        <span className="flex items-center gap-1">
+          <UsersIcon className="w-4 h-4 text-indigo-500" />{" "}
+          {project.contributors}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
 const Page = () => {
   const { user, loading } = useAuth();
   const email = user?.email;
   const [role, setRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
+  const router = useRouter();
 
   // fetch user role
   useEffect(() => {
@@ -28,91 +93,166 @@ const Page = () => {
   }, [email]);
 
   if (loading || roleLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">Loading...</div>
+    );
   }
 
   if (!user) {
-    return <div>Please log in to access the dashboard.</div>;
+    return (
+      <div className="text-center mt-10 text-gray-600">
+        Please log in to access the dashboard.
+      </div>
+    );
   }
 
-  // stats (can be role-specific)
+  // ✅ Stats with icons
   const userStats = [
-    { label: "My Blog", value: 12 },
-    { label: "My Project", value: 88 },
-    { label: "Bookmark Project", value: 7 },
-    { label: "Project Match", value: 5 },
+    { label: "My Blog", value: 12, icon: BookOpen },
+    { label: "My Project", value: 88, icon: FolderKanban },
+    { label: "Bookmark Project", value: 7, icon: Bookmark },
+    { label: "Project Match", value: 5, icon: Sparkles },
   ];
 
   const adminStats = [
-    { label: "Total Users", value: 120 },
-    { label: "Total Projects", value: 450 },
-    { label: "Pending Approvals", value: 14 },
-    { label: "Reports", value: 3 },
+    { label: "Total Users", value: 120, icon: Users },
+    { label: "Total Projects", value: 450, icon: FileBox },
+    { label: "Pending Approvals", value: 14, icon: Clock },
+    { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
-  // Sample placeholders
-  const blogs = [1, 2, 3];
-  const projects = [1, 2];
+// Sample static data with thumbnails
+const blogs = [
+  {
+    id: 1,
+    title: "Getting Started with Open Source",
+    excerpt: "Learn how to make your first contribution to open-source projects...",
+    author: "Jane Doe",
+    date: "2025-09-20",
+    thumbnail: "https://unsplash.com/photos/man-using-laptop-VzJjPuk53sk",
+  },
+  {
+    id: 2,
+    title: "Top 5 GitHub Repositories for Beginners",
+    excerpt: "A curated list of beginner-friendly repositories to help you start...",
+    author: "John Smith",
+    date: "2025-09-18",
+    thumbnail: "https://source.unsplash.com/400x250/?github,programming",
+  },
+  {
+    id: 3,
+    title: "Why Open Source Matters",
+    excerpt: "Exploring the impact of open source on tech innovation and community...",
+    author: "Emily Johnson",
+    date: "2025-09-15",
+    thumbnail: "https://source.unsplash.com/400x250/?community,developers",
+  },
+];
+
+const projects = [
+  {
+    id: 1,
+    name: "Next.js Starter Kit",
+    description: "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
+    stars: 120,
+    contributors: 15,
+    thumbnail: "https://source.unsplash.com/400x250/?nextjs,tailwind",
+  },
+  {
+    id: 2,
+    name: "Open Source Finder",
+    description: "A platform that connects developers with open source projects.",
+    stars: 240,
+    contributors: 32,
+    thumbnail: "https://source.unsplash.com/400x250/?opensource,collaboration",
+  },
+  {
+    id: 3,
+    name: "React UI Components",
+    description: "Reusable, accessible, and customizable React components for modern apps.",
+    stars: 90,
+    contributors: 8,
+    thumbnail: "https://source.unsplash.com/400x250/?react,ui",
+  },
+];
+
+
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 p-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {(role === "admin" ? adminStats : userStats).map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-gray-100 rounded-lg p-4 flex flex-col items-center justify-center shadow-sm"
-          >
-            <span className="text-2xl font-bold text-gray-800">
-              {item.value}
-            </span>
-            <span className="text-sm text-gray-600">{item.label}</span>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {(role === "admin" ? adminStats : userStats).map((item, idx) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={idx}
+              className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
+            >
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+                <Icon className="w-6 h-6" />
+              </div>
+              <span className="text-3xl font-bold text-gray-800">
+                {item.value}
+              </span>
+              <span className="text-sm text-gray-600 mt-1">{item.label}</span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Latest Blog (only for user) */}
+      {/* Blogs Section */}
       {role === "user" && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">
-            Latest Blog
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Latest Blogs
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {blogs.map((b) => (
-              <div
-                key={b}
-                className="bg-gray-200 h-32 rounded-lg flex items-center justify-center text-gray-500"
-              >
-                Blog {b}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogs.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <Lottie animationData={blogAnim} loop className="h-52" />
+                <p className="text-center mt-3">No blogs found.</p>
+                <Button
+                  onClick={() => router.push("/dashboard/add-blogs")}
+                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                >
+                  Write a Blog
+                </Button>
               </div>
-            ))}
+            ) : (
+              blogs.map((b) => <BlogCard key={b.id} blog={b} />)
+            )}
           </div>
         </section>
       )}
 
-      {/* Latest Projects (for both, but different meaning maybe) */}
+      {/* Projects Section */}
       {role === "user" && (
         <section>
-          <div className="text-lg font-semibold text-gray-800 mb-3">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">
-              Latest Projects
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {projects.map((p) => (
-              <div
-                key={p}
-                className="bg-gray-200 h-32 rounded-lg flex items-center justify-center text-gray-500"
-              >
-                Project {p}
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Latest Projects
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
+                <Lottie animationData={projectAnim} loop className="h-52" />
+                <p className="text-center mt-3">No project found.</p>
+                <Button
+                  onClick={() => router.push("/dashboard/add-projects")}
+                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                >
+                  Add Project
+                </Button>
               </div>
-            ))}
+            ) : (
+              projects.map((p) => <ProjectCard key={p.id} project={p} />)
+            )}
           </div>
         </section>
       )}
-      {role === "admin" && (
-        <AdminOverview />
-      )}
+
+      {/* Admin Overview */}
+      {role === "admin" && <AdminOverview />}
     </div>
   );
 };

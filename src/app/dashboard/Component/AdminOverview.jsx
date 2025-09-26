@@ -1,5 +1,8 @@
 "use client";
 
+
+import api from "../../../utils/api";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   BarChart,
@@ -23,9 +26,8 @@ const AdminOverview = () => {
   useEffect(() => {
     async function fetchOverview() {
       try {
-        const res = await fetch("http://localhost:5000/admin-overview");
-        const json = await res.json();
-        setData(json);
+        const res = await api.get("/admin-overview");
+        setData(res.data);
       } catch (err) {
         console.error("Failed to fetch admin overview", err);
       } finally {
@@ -85,7 +87,10 @@ const AdminOverview = () => {
                 label
               >
                 {data.projectsByCategory.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -112,7 +117,9 @@ const AdminOverview = () => {
                 <tr key={proj._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2">{proj.name}</td>
                   <td className="px-4 py-2">{proj.createdBy}</td>
-                  <td className="px-4 py-2">{new Date(proj.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">
+                    {new Date(proj.createdAt).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,8 +1,21 @@
-"use client"
-import { AlertCircle, ArrowDown, ArrowUp, CheckCircle, Clock, Eye, Hash, MessageCircle, MessageSquare, Star, TrendingUp, User, Users } from "lucide-react";
+"use client";
+import {
+  AlertCircle,
+  ArrowDown,
+  ArrowUp,
+  CheckCircle,
+  Clock,
+  Eye,
+  Hash,
+  MessageCircle,
+  MessageSquare,
+  Star,
+  TrendingUp,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
 
 export const CommunityDiscussions = () => {
   const [hoveredDiscussion, setHoveredDiscussion] = useState(null);
@@ -11,79 +24,104 @@ export const CommunityDiscussions = () => {
     {
       id: 1,
       author: {
-        name: 'Sarah Chen',
-        avatar: '👩‍💻',
-        role: 'Senior Developer',
-        reputation: 2847
+        name: "Sarah Chen",
+        avatar: "👩‍💻",
+        role: "Senior Developer",
+        reputation: 2847,
       },
-      title: 'Best practices for implementing JWT authentication in Next.js?',
-      preview: 'I\'ve been working on a new project and wondering what\'s the current best approach for handling JWT tokens in Next.js 14. Should I use server components or...',
-      category: 'Authentication',
+      title: "Best practices for implementing JWT authentication in Next.js?",
+      preview:
+        "I've been working on a new project and wondering what's the current best approach for handling JWT tokens in Next.js 14. Should I use server components or...",
+      category: "Authentication",
       votes: { up: 42, down: 3 },
       replies: 23,
       views: 1247,
-      timestamp: '2 hours ago',
-      status: 'active',
-      tags: ['Next.js', 'JWT', 'Authentication'],
+      timestamp: "2 hours ago",
+      status: "active",
+      tags: ["Next.js", "JWT", "Authentication"],
       isHot: true,
-      lastActivity: 'Alex replied 5 minutes ago'
+      lastActivity: "Alex replied 5 minutes ago",
     },
     {
       id: 2,
       author: {
-        name: 'Mike Rodriguez',
-        avatar: '👨‍🔬',
-        role: 'Full Stack Engineer',
-        reputation: 1893
+        name: "Mike Rodriguez",
+        avatar: "👨‍🔬",
+        role: "Full Stack Engineer",
+        reputation: 1893,
       },
-      title: 'Database optimization strategies that improved our API response by 60%',
-      preview: 'After months of performance issues, we finally cracked it! Here\'s a detailed breakdown of the optimization techniques we used including indexing strategies...',
-      category: 'Performance',
+      title:
+        "Database optimization strategies that improved our API response by 60%",
+      preview:
+        "After months of performance issues, we finally cracked it! Here's a detailed breakdown of the optimization techniques we used including indexing strategies...",
+      category: "Performance",
       votes: { up: 89, down: 2 },
       replies: 31,
       views: 3421,
-      timestamp: '5 hours ago',
-      status: 'solved',
-      tags: ['Database', 'Optimization', 'Performance'],
+      timestamp: "5 hours ago",
+      status: "solved",
+      tags: ["Database", "Optimization", "Performance"],
       isHot: true,
-      lastActivity: 'Emma reacted 12 minutes ago'
+      lastActivity: "Emma reacted 12 minutes ago",
     },
     {
       id: 3,
       author: {
-        name: 'Emily Johnson',
-        avatar: '👩‍🎨',
-        role: 'UI/UX Designer',
-        reputation: 1654
+        name: "Emily Johnson",
+        avatar: "👩‍🎨",
+        role: "UI/UX Designer",
+        reputation: 1654,
       },
-      title: 'Accessibility-first design system: Complete guide with React components',
-      preview: 'Creating inclusive digital experiences shouldn\'t be an afterthought. This comprehensive guide covers everything from color contrast to screen reader...',
-      category: 'Design System',
+      title:
+        "Accessibility-first design system: Complete guide with React components",
+      preview:
+        "Creating inclusive digital experiences shouldn't be an afterthought. This comprehensive guide covers everything from color contrast to screen reader...",
+      category: "Design System",
       votes: { up: 67, down: 1 },
       replies: 18,
       views: 2156,
-      timestamp: '1 day ago',
-      status: 'featured',
-      tags: ['Accessibility', 'Design System', 'React'],
+      timestamp: "1 day ago",
+      status: "featured",
+      tags: ["Accessibility", "Design System", "React"],
       isHot: false,
-      lastActivity: 'Discussion trending'
-    }
+      lastActivity: "Discussion trending",
+    },
   ];
 
   const communityStats = [
-    { icon: MessageSquare, label: 'Active Discussions', value: '1,247', color: 'text-blue-600' },
-    { icon: Users, label: 'Community Members', value: '12,430', color: 'text-green-600' },
-    { icon: TrendingUp, label: 'Questions Answered', value: '8,965', color: 'text-purple-600' },
-    { icon: CheckCircle, label: 'Solutions Found', value: '94%', color: 'text-orange-600' }
+    {
+      icon: MessageSquare,
+      label: "Active Discussions",
+      value: "1,247",
+      color: "text-blue-600",
+    },
+    {
+      icon: Users,
+      label: "Community Members",
+      value: "12,430",
+      color: "text-green-600",
+    },
+    {
+      icon: TrendingUp,
+      label: "Questions Answered",
+      value: "8,965",
+      color: "text-purple-600",
+    },
+    {
+      icon: CheckCircle,
+      label: "Solutions Found",
+      value: "94%",
+      color: "text-orange-600",
+    },
   ];
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'solved':
+      case "solved":
         return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'active':
+      case "active":
         return <AlertCircle className="w-4 h-4 text-blue-600" />;
-      case 'featured':
+      case "featured":
         return <Star className="w-4 h-4 text-yellow-500" />;
       default:
         return <MessageCircle className="w-4 h-4 text-gray-500" />;
@@ -92,11 +130,11 @@ export const CommunityDiscussions = () => {
 
   const getStatusLabel = (status) => {
     const labels = {
-      'solved': 'Solved',
-      'active': 'Active',
-      'featured': 'Featured'
+      solved: "Solved",
+      active: "Active",
+      featured: "Featured",
     };
-    return labels[status] || 'Open';
+    return labels[status] || "Open";
   };
 
   return (
@@ -112,41 +150,41 @@ export const CommunityDiscussions = () => {
             Join Our Thriving Developer Community
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get answers, share knowledge, and connect with thousands of developers solving real-world problems
+            Get answers, share knowledge, and connect with thousands of
+            developers solving real-world problems
           </p>
         </div>
 
         {/* Community Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {communityStats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-white/20">
-              <div className={`inline-flex p-3 rounded-xl bg-gray-50 ${stat.color} mb-4`}>
+            <div
+              key={index}
+              className="bg-white rounded-2xl p-6 shadow-sm border border-white/20"
+            >
+              <div
+                className={`inline-flex p-3 rounded-xl bg-gray-50 ${stat.color} mb-4`}
+              >
                 <stat.icon className="w-6 h-6" />
               </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">
+                {stat.value}
+              </div>
               <div className="text-sm text-gray-600">{stat.label}</div>
             </div>
           ))}
         </div>
 
-         {/* join Community */}
-        <button className="text-right py-4">
-           
-        <Link
-      href="CommunityCreate"
-      className="  px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition "
-    > Join Discussion </Link> 
-   </button> 
-   
-
-    {/* end */}
+        {/* end */}
         {/* Featured Discussions */}
         <div className="space-y-6 mb-12">
           {discussions.map((discussion, index) => (
-            <div 
+            <div
               key={discussion.id}
               className={`bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden ${
-                hoveredDiscussion === discussion.id ? 'border-blue-200 shadow-lg' : ''
+                hoveredDiscussion === discussion.id
+                  ? "border-blue-200 shadow-lg"
+                  : ""
               }`}
               onMouseEnter={() => setHoveredDiscussion(discussion.id)}
               onMouseLeave={() => setHoveredDiscussion(null)}
@@ -159,7 +197,7 @@ export const CommunityDiscussions = () => {
                       {discussion.author.avatar}
                     </div>
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 cursor-pointer">
@@ -171,23 +209,29 @@ export const CommunityDiscussions = () => {
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                       <div className="flex items-center gap-1">
                         <User className="w-4 h-4" />
-                        <span className="font-medium">{discussion.author.name}</span>
+                        <span className="font-medium">
+                          {discussion.author.name}
+                        </span>
                         <span className="text-gray-400">•</span>
                         <span>{discussion.author.role}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-yellow-500" />
-                        <span>{discussion.author.reputation.toLocaleString()}</span>
+                        <span>
+                          {discussion.author.reputation.toLocaleString()}
+                        </span>
                       </div>
                     </div>
-                    
-                    <p className="text-gray-600 leading-relaxed mb-4">{discussion.preview}</p>
+
+                    <p className="text-gray-600 leading-relaxed mb-4">
+                      {discussion.preview}
+                    </p>
                   </div>
-                  
+
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex items-center gap-1">
                       {getStatusIcon(discussion.status)}
@@ -205,7 +249,10 @@ export const CommunityDiscussions = () => {
                     {discussion.category}
                   </div>
                   {discussion.tags.map((tag, tagIndex) => (
-                    <span key={tagIndex} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                    <span
+                      key={tagIndex}
+                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -227,25 +274,27 @@ export const CommunityDiscussions = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-1">
                       <MessageCircle className="w-4 h-4" />
                       <span>{discussion.replies} replies</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-1">
                       <Eye className="w-4 h-4" />
                       <span>{discussion.views.toLocaleString()} views</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       <span>{discussion.timestamp}</span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500">{discussion.lastActivity}</span>
+                    <span className="text-xs text-gray-500">
+                      {discussion.lastActivity}
+                    </span>
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
                       Join Discussion
                     </button>
@@ -263,7 +312,8 @@ export const CommunityDiscussions = () => {
               Ready to Join the Conversation?
             </h3>
             <p className="text-gray-600 mb-6">
-              Connect with developers, share your expertise, and get help with your projects
+              Connect with developers, share your expertise, and get help with
+              your projects
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">

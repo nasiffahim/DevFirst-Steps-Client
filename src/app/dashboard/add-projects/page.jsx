@@ -1,8 +1,9 @@
-
 "use client";
 
 import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
+import api from "../../../utils/api";
 
 export default function AddProjectForm() {
   const [name, setName] = useState("");
@@ -50,15 +51,11 @@ export default function AddProjectForm() {
     };
 
     console.log(project, "Form Data Submitted:");
-    try {
-    
-     await fetch("http://localhost:5000/add-projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(project),
-      });
-      Swal.fire({
 
+    try {
+      await api.post("/add-projects", project);
+
+      Swal.fire({
         icon: "success",
         title: "Project added successfully",
         showConfirmButton: false,
@@ -69,12 +66,12 @@ export default function AddProjectForm() {
       setName("");
       setLanguage("");
       setDifficulty("Easy");
-
       setTags("");
       setDescription("");
       setRepoUrl("");
       setContributors("");
       setThumbPreview(null);
+
       if (fileRef.current) fileRef.current.value = null;
     } catch (err) {
       console.error(err);
@@ -213,7 +210,7 @@ export default function AddProjectForm() {
               setName("");
               setLanguage("");
               setDifficulty("Easy");
-              setTags('');
+              setTags("");
               setDescription("");
               setRepoUrl("");
               setContributors("");

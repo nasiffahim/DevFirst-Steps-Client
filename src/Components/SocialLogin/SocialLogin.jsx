@@ -6,6 +6,7 @@ import useAuth from "../../app/hooks/useAuth"; //  Correct import
 import {  useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
+import api from "../../utils/api";
 
 
 
@@ -37,7 +38,7 @@ const handleGoogleLogin = async () => {
     };
 
     // Send user data to your backend
-    await axios.post("http://localhost:5000/login", payload);
+    await api.post("/login", payload);
 
     Swal.fire({
       icon: "success",
@@ -105,7 +106,7 @@ const handleGithubLogin = async () => {
     };
 
     // Send user data to your backend
-    const rep = await axios.post("http://localhost:5000/login", payload);
+    const rep = await api.post("/login", payload);
     if (rep.data) {
        Swal.fire({
       icon: "success",

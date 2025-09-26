@@ -15,6 +15,7 @@ import {
   AlertCircle,
   RefreshCw
 } from 'lucide-react';
+import api from '../../../utils/api';
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -26,7 +27,7 @@ const MyProjects = () => {
       setLoading(true);
       setError(null);
       // Replace with your actual API endpoint
-      const response = await axios.get('http://localhost:5000/my-projects');
+      const response = await api.get('/my-projects');
       setProjects(response.data);
     } catch (err) {
       setError('Failed to fetch projects. Please try again.');

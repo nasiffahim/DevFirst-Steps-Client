@@ -9,6 +9,7 @@ import useAuth from "../../../app/hooks/useAuth";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 import axios from "axios";
 import Swal from 'sweetalert2';
+import api from "../../../utils/api";
 
 const LoginPage = () => {
    const [status, setStatus] = useState(null);
@@ -42,7 +43,7 @@ const LoginPage = () => {
     };
 
     // 3. Send user info to backend
-    const rep = await axios.post("http://localhost:5000/login", payload);
+    const rep = await api.post("/login", payload);
 
     // 4. Handle backend response
     if (rep.data.success) {

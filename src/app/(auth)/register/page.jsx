@@ -14,6 +14,7 @@ import TermsCheckbox from "../../../Components/register/TermsCheckbox/TermsCheck
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 import axios from "axios";
+import api from "../../../utils/api";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState(null);
@@ -61,7 +62,7 @@ const onSubmit = async (data) => {
     };
 
     // 4. Send payload to backend
-    const rep = await axios.post("http://localhost:5000/user_create",payload);
+    const rep = await api.post("/user_create",payload);
 
     // 5. Handle backend response
     if (rep.data.success) {
@@ -237,7 +238,7 @@ const onSubmit = async (data) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform text-white py-3 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50"
           >
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </button>

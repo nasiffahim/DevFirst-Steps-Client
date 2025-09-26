@@ -1,10 +1,10 @@
 "use client";
-
+import Swal from 'sweetalert2';
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Check, AlertCircle, Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { auth } from "../../../lib/firebase";
 import {
   createUserWithEmailAndPassword,
@@ -21,7 +21,8 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const router = useRouter();
-
+    const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/';
   const {
     register,
     handleSubmit,
@@ -32,7 +33,9 @@ const RegisterPage = () => {
 
   const password = watch("password");
 
- const onSubmit = async (data) => {
+
+
+const onSubmit = async (data) => {
   try {
     // 1. Create user in Firebase
     const userCredential = await createUserWithEmailAndPassword(
@@ -48,32 +51,61 @@ const RegisterPage = () => {
     });
 
     // 3. Prepare payload for backend
-   const payload = {
-  uid: userCredential.user.uid,
-  email: data.email,
-  fullName: data.fullName,
-  image: imageUrl,
-  role: "user",
-  work: null,
-};
+    const payload = {
+      uid: userCredential.user.uid,
+      email: data.email,
+      fullName: data.fullName,
+      image: imageUrl,
+      role: "user",
+      work: null,
+    };
 
-
-const rep = await axios.post("http://localhost:5000/user_create", payload);
+    // 4. Send payload to backend
+    const rep = await axios.post("http://localhost:5000/user_create",payload);
 
     // 5. Handle backend response
     if (rep.data.success) {
+      console.log(rep.data);
+
       setStatus("success");
-      router.push("/"); // Redirect to home
+
+      // ✅ SweetAlert2 success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful',
+        text: 'Your account has been created!',
+        confirmButtonColor: '#3085d6',
+      }).then(() => {
+        router.replace(redirectPath); // Redirect after confirmation
+      });
+
     } else {
       console.error("Backend error:", rep.data.error);
       setStatus("error");
+
+      // ❌ SweetAlert2 error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: rep.data.error || 'Something went wrong on the server.',
+        confirmButtonColor: '#d33',
+      });
     }
 
   } catch (error) {
     console.error("Registration error:", error.message);
     setStatus("error");
+
+    // ❌ SweetAlert2 error message
+    Swal.fire({
+      icon: 'error',
+      title: 'Registration Failed',
+      text: error.message,
+      confirmButtonColor: '#d33',
+    });
   }
 };
+
 
 
 

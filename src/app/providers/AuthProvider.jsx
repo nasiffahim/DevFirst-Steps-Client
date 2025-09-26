@@ -76,7 +76,6 @@ const githubSign = async () => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        console.log(currentUser?.email);
         
         axios.post(
             "http://localhost:5000/jwt",

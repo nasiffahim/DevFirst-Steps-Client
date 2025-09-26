@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
+import api from "../../../utils/api";
 
 export default function AddBlogForm() {
   const [title, setTitle] = useState("");
@@ -40,12 +42,12 @@ export default function AddBlogForm() {
       thumbnail: thumbPreview || null,
       createdAt: new Date().toISOString(),
     };
+
     console.log(blog, "form data submitted");
+
     try {
-      await fetch("http://localhost:5000/add-blogs", {
-        method: "POST",
+      await api.post("/add-blogs", blog, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(blog),
       });
 
       Swal.fire({

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import api from "../../../utils/api";
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -17,7 +18,7 @@ const ProjectDetails = () => {
         setError("");
         
         // Fetch from your backend API that gets individual project details
-        const response = await axios.get(`http://localhost:5000/project/${id}`);
+        const response = await api.get(`/project/${id}`);
         setProject(response.data);
       } catch (err) {
         console.error("Error fetching project details:", err);

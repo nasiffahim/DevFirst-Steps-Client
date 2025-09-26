@@ -16,6 +16,7 @@ import {
   FileText
 } from 'lucide-react';
 import axios from 'axios';
+import api from '../../../utils/api';
 
 const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -28,7 +29,7 @@ const MyBlogs = () => {
       setLoading(true);
       setError(null);
       // Replace with your actual API endpoint
-      const response = await axios.get('http://localhost:5000/all-blogs');
+      const response = await api.get('/all-blogs');
       setBlogs(response.data);
     } catch (err) {
       setError('Failed to fetch blogs. Please try again.');

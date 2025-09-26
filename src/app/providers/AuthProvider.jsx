@@ -17,6 +17,7 @@ import {
 
 import { AuthContext } from "../providers/AuthContext";
 import axios from "axios";
+import api from "../../utils/api";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -77,8 +78,8 @@ const githubSign = async () => {
 
       if (currentUser?.email) {
         
-        axios.post(
-            "http://localhost:5000/jwt",
+        api.post(
+            "/jwt",
             { email: currentUser?.email },
             { withCredentials: true }
           )

@@ -14,6 +14,7 @@ import TermsCheckbox from "../../../Components/register/TermsCheckbox/TermsCheck
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 import axios from "axios";
+import api from "../../../utils/api";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState(null);
@@ -61,7 +62,7 @@ const onSubmit = async (data) => {
     };
 
     // 4. Send payload to backend
-    const rep = await axios.post("http://localhost:5000/user_create",payload);
+    const rep = await api.post("/user_create",payload);
 
     // 5. Handle backend response
     if (rep.data.success) {

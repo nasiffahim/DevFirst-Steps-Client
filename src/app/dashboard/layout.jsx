@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import useAuth from "../hooks/useAuth";
+import axios from "axios";
+import api from "../../utils/api";
 
 export default function Layout({ children }) {
   const pathname = usePathname() ?? "";
@@ -22,17 +24,18 @@ export default function Layout({ children }) {
   // fetch user role on mount
   useEffect(() => {
     if (!email) return; // stop if email not ready
-    async function fetchRole() {
+
+    const fetchRole = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/user-role?email=${email}`
-        );
-        const data = await res.json();
-        setRole(data.role);
+        const res = await api.get(`/user-role`, {
+          params: { email }, // axios handles query params
+        });
+        setRole(res.data.role);
       } catch (err) {
         console.error("Failed to fetch role", err);
       }
-    }
+    };
+
     fetchRole();
   }, [email]);
 
@@ -44,14 +47,15 @@ export default function Layout({ children }) {
     { name: "My Projects", href: "/dashboard/my-projects" },
     { name: "Add Blogs", href: "/dashboard/add-blogs" },
     { name: "My Blogs", href: "/dashboard/my-blogs" },
+    { name: "Start a Discussion", href: "/dashboard/discussion" },
     ...(role === "admin"
       ? [
-          { name: "Projects", href: "/dashboard/projects" },
+          // { name: "Projects", href: "/dashboard/projects" },
           { name: "Settings", href: "/dashboard/settings" },
         ]
       : role === "user"
       ? [
-          { name: "Projects", href: "/dashboard/projects" },
+          // { name: "Projects", href: "/dashboard/projects" },
           { name: "Settings", href: "/dashboard/settings" },
         ]
       : []), // default empty until role loads
@@ -79,7 +83,7 @@ export default function Layout({ children }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -164,15 +168,13 @@ export default function Layout({ children }) {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
-                👋 Welcome Back!
-              </h1>
-               <p className="text-sm text-gray-500 mt-1">
-              Here's an overview of your activity.
-            </p>
+                  👋 Welcome Back!
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  Here's an overview of your activity.
+                </p>
               </div>
-              
             </div>
-           
           </header>
         )}
 

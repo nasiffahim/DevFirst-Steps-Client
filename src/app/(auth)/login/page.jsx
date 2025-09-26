@@ -1,52 +1,88 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import useAuth from "../../../app/hooks/useAuth";
 import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const LoginPage = () => {
+   const [status, setStatus] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+   const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/';
   const { userSign,} = useAuth(); // from AuthProvider
   const {
     register,
     handleSubmit,
 
-    formState: { errors, isSubmitting },
+    formState: { errors,  },
   } = useForm();
-  const router = useRouter();
+
 
   const onSubmit = async (data) => {
-    try {
-      const userCredential = await userSign(data.email, data.password);
-  const user = userCredential.user;
+  try {
+    // 1. Firebase authentication (or your auth logic)
+    const userCredential = await userSign(data.email, data.password);
+    const user = userCredential.user;
 
-  // Prepare payload with user info
-  const payload = {
-    uid: user.uid,           
-    email: user.email,       
-    fullName: data.fullName,  
-    image: data.image || null, 
-    role: "user",
-    work: null,
-  };
+    // 2. Prepare payload to send to backend
+    const payload = {
+      uid: user.uid,
+      email: user.email,
+      fullName: data.fullName,
+      image: data.image || null,
+      role: "user",
+      work: null,
+    };
 
-  // Send user info to backend login endpoint
-  const rep = await axios.post("http://localhost:5000/login", payload);
+    // 3. Send user info to backend
+    const rep = await axios.post("http://localhost:5000/login", payload);
 
-  // Optionally log response
-      router.push("/");
-    } catch (error) {
-      console.error("Login error:", error.message);
-      alert("Invalid email or password");
+    // 4. Handle backend response
+    if (rep.data.success) {
+      setStatus("success");
+
+      // Optional: show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Login successful',
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+      // Redirect after short delay
+      setTimeout(() => {
+        router.replace(redirectPath);
+      }, 1500);
+
+    } else {
+      console.error("Backend error:", rep.data.error);
+      setStatus("error");
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Login failed',
+        text: rep.data.error || 'Unexpected error occurred',
+      });
     }
-  };
 
+  } catch (error) {
+    console.error("Login error:", error.message);
+    setStatus("error");
 
+    Swal.fire({
+      icon: 'error',
+      title: 'Login error',
+      text: 'Invalid email or password',
+    });
+  }
+};
 
 
   return (
@@ -114,18 +150,30 @@ const LoginPage = () => {
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${
-              isSubmitting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform"
-            }`}
-          >
-            {isSubmitting ? "Logging in..." : "Login"}
-          </button>  
-        
+        <button
+    type="submit"
+    disabled={status === "loading"}
+    className={`w-full py-3 px-4 rounded-lg font-medium text-white ${
+      status === "loading"
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform"
+    }`}
+  >
+    {status === "loading" ? "Logging in..." : "Login"}
+  </button>
+  {/* Status messages */}
+  {status === "loading" && (
+    <p className="text-center text-blue-600 mt-2 text-sm">
+      Logging you in...
+    </p>
+  )}
+  {status === "error" && (
+    <p className="text-center text-red-500 mt-2 text-sm">
+      Login failed. Try again.
+    </p>
+  )}
+
+
         </form>
 
 <Link href="/ResetPassword" >
@@ -140,7 +188,6 @@ const LoginPage = () => {
           <span className="px-3 text-gray-400 text-sm">OR</span>
           <hr className="flex-grow border-gray-300" />
 
- 
         </div>
 
         {/* Social Login */}

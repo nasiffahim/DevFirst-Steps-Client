@@ -238,7 +238,7 @@ const onSubmit = async (data) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] transition-transform text-white py-3 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50"
           >
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </button>

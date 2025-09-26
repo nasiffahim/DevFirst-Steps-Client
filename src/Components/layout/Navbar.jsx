@@ -336,7 +336,7 @@ const Navbar = () => {
                           <span className="text-2xl">{dropdownItem.icon}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-black group-hover:text-blue-400 transition-colors duration-200 mb-2 text-gray-950">
+                          <h3 className="text-lg font-semibold text-black group-hover:text-blue-400 transition-colors duration-200 mb-2">
                             {dropdownItem.name}
                           </h3>
                           <p className="text-sm text-gray-500 group-hover:text-gray-950 transition-colors duration-200 leading-relaxed">

@@ -20,7 +20,7 @@ const HeroSection = () => {
         </div>
 
         {/* Main heading with animation */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 bg-clip-text text-transparent animate-fade-in-up">
+        <h1 className="text-5xl md:text-7xl font-bold pb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 bg-clip-text text-transparent animate-fade-in-up">
           DevFirst Steps
         </h1>
 

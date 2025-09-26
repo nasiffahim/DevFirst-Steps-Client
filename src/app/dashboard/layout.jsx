@@ -42,7 +42,9 @@ export default function Layout({ children }) {
     { name: "Overview", href: "/dashboard" },
     { name: "Profile", href: "/dashboard/profile" },
     { name: "Add Projects", href: "/dashboard/add-projects" },
+    { name: "My Projects", href: "/dashboard/my-projects" },
     { name: "Add Blogs", href: "/dashboard/add-blogs" },
+    { name: "My Blogs", href: "/dashboard/my-blogs" },
     ...(role === "admin"
       ? [
           { name: "Projects", href: "/dashboard/projects" },

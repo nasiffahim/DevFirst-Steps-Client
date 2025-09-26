@@ -181,9 +181,9 @@ const Navbar = () => {
         },
       ],
     },
-    // ✅ New top-level items
     { name: "All Projects", hasDropdown: false, href: "/projects" },
-    { name: "Dashboard", hasDropdown: false, href: "/dashboard" },
+    { name: "Blogs", hasDropdown: false, href: "/blogs" },
+    ...(user ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }] : []),
   ];
 
   return (

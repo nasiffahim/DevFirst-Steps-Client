@@ -1,10 +1,12 @@
 "use client"
 import { AlertCircle, ArrowDown, ArrowUp, CheckCircle, Clock, Eye, Hash, MessageCircle, MessageSquare, Star, TrendingUp, User, Users } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+
 
 export const CommunityDiscussions = () => {
   const [hoveredDiscussion, setHoveredDiscussion] = useState(null);
-  
+
   const discussions = [
     {
       id: 1,
@@ -127,6 +129,17 @@ export const CommunityDiscussions = () => {
           ))}
         </div>
 
+         {/* join Community */}
+        <button className="text-right py-4">
+           
+        <Link
+      href="CommunityCreate"
+      className="  px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition "
+    > Join Discussion </Link> 
+   </button> 
+   
+
+    {/* end */}
         {/* Featured Discussions */}
         <div className="space-y-6 mb-12">
           {discussions.map((discussion, index) => (

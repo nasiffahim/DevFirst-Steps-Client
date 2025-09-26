@@ -20,7 +20,6 @@ export default function Layout({ children }) {
   const email = user?.email; // get email from auth context
 
   // fetch user role on mount
-
   useEffect(() => {
     if (!email) return; // stop if email not ready
     async function fetchRole() {
@@ -80,6 +79,7 @@ export default function Layout({ children }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -118,7 +118,7 @@ export default function Layout({ children }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-auto pb-20">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -138,16 +138,17 @@ export default function Layout({ children }) {
             );
           })}
         </nav>
-
-        <div className="px-6 py-4 border-t">
-          <Link
-            href="/"
-            className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition"
-          >
-            Back to Home
-          </Link>
-        </div>
       </aside>
+
+      {/* Fixed Back to Home Button */}
+      <div className="fixed bottom-6 left-6 w-52 z-60">
+        <Link
+          href="/"
+          className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition shadow-lg"
+        >
+          Back to Home
+        </Link>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">
@@ -166,7 +167,7 @@ export default function Layout({ children }) {
                 👋 Welcome Back!
               </h1>
                <p className="text-sm text-gray-500 mt-1">
-              Here’s an overview of your activity.
+              Here's an overview of your activity.
             </p>
               </div>
               

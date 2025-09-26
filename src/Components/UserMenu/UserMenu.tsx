@@ -4,12 +4,12 @@ import useAuth from "../../app/hooks/useAuth";
 
 const UserMenu = () => {
   const auth = useAuth();
-  if (!auth) return null;
-
-  const { user, logout } = auth;
   const [isOpen, setIsOpen] = useState(false);
-  const timeoutRef = useRef(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // ✅ Hooks are always called, no conditional returns yet
+  if (!auth) return null;
+  const { user, logout } = auth;
   if (!user) return null;
 
   const handleMouseEnter = () => {
@@ -20,7 +20,7 @@ const UserMenu = () => {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 200); // 👈 small delay before hiding
+    }, 200);
   };
 
   return (

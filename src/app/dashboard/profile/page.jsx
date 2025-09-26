@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { use, useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 export default function ProfilePage() {
   const [tab, setTab] = useState("blogs"); // default tab
+  const { user, loading } = useAuth();
 
   const projects = [
     { title: "Python Explorer", link: "#" },
@@ -32,6 +35,21 @@ export default function ProfilePage() {
       info: "Let’s talk about new projects in the community!",
     },
   ];
+   if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>No user logged in.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,21 +57,25 @@ export default function ProfilePage() {
       <header className="bg-gray-800 text-white py-6 px-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full bg-gray-600"></div>
+            <div className="w-16 h-16 rounded-full bg-gray-600">
+              <img src={user.photoURL} alt="Profile Picture"  className="rounded-full w-full h-full" />
+            </div>
             <div>
-              <h1 className="text-xl font-semibold">JohnDoe</h1>
+              <h1 className="text-xl font-semibold">{user.displayName}</h1>
               <p className="text-sm text-gray-300">
-                Open source enthusiast and software engineer
+              {user.email}
               </p>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="bg-white border border-black text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+            <button className="bg-white border cursor-pointer border-black text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
               Setting
             </button>
-            <button className="bg-white text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
-              Edit Profile
-            </button>
+            <Link href="/dashboard/edit-profile">
+              <button className="bg-white cursor-pointer text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                Edit Profile
+              </button>
+            </Link>
           </div>
         </div>
       </header>

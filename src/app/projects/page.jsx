@@ -1,184 +1,663 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Github, ExternalLink, Code2, Sparkles } from "lucide-react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import api from "../../utils/api"
 
-export default function ProjectsPage() {
+const GithubProjectFinder = () => {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("all");
   const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isDefaultView, setIsDefaultView] = useState(true);
 
-  useEffect(() => {
-    fetch("projects.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
+  const perPage = 9;
+
+  // Enhanced filter options organized by categories
+  const filterCategories = {
+    all: [
+      { id: "javascript", label: "JavaScript", type: "language" },
+      { id: "python", label: "Python", type: "language" },
+      { id: "java", label: "Java", type: "language" },
+      { id: "react", label: "React", type: "topic" },
+      { id: "vue", label: "Vue.js", type: "topic" },
+      { id: "angular", label: "Angular", type: "topic" },
+      { id: "nodejs", label: "Node.js", type: "topic" },
+      { id: "machine-learning", label: "Machine Learning", type: "topic" },
+      { id: "artificial-intelligence", label: "AI", type: "topic" },
+      { id: "docker", label: "Docker", type: "topic" },
+      { id: "kubernetes", label: "Kubernetes", type: "topic" },
+    ],
+    web: [
+      { id: "react", label: "React", type: "topic" },
+      { id: "nextjs", label: "Next.js", type: "topic" },
+      { id: "vue", label: "Vue.js", type: "topic" },
+      { id: "angular", label: "Angular", type: "topic" },
+      { id: "svelte", label: "Svelte", type: "topic" },
+      { id: "nodejs", label: "Node.js", type: "topic" },
+      { id: "express", label: "Express.js", type: "topic" },
+      { id: "typescript", label: "TypeScript", type: "language" },
+      { id: "javascript", label: "JavaScript", type: "language" },
+      { id: "html", label: "HTML", type: "language" },
+      { id: "css", label: "CSS", type: "language" },
+    ],
+    android: [
+      { id: "kotlin", label: "Kotlin", type: "language" },
+      { id: "java", label: "Java", type: "language" },
+      { id: "flutter", label: "Flutter", type: "topic" },
+      { id: "react-native", label: "React Native", type: "topic" },
+      { id: "xamarin", label: "Xamarin", type: "topic" },
+      { id: "android", label: "Android", type: "topic" },
+      { id: "mobile", label: "Mobile", type: "topic" },
+    ],
+    ios: [
+      { id: "swift", label: "Swift", type: "language" },
+      { id: "swiftui", label: "SwiftUI", type: "topic" },
+      { id: "uikit", label: "UIKit", type: "topic" },
+      { id: "objective-c", label: "Objective-C", type: "language" },
+      { id: "ios", label: "iOS", type: "topic" },
+      { id: "mobile", label: "Mobile", type: "topic" },
+      { id: "xcode", label: "Xcode", type: "topic" },
+    ],
+    ai: [
+      { id: "tensorflow", label: "TensorFlow", type: "topic" },
+      { id: "pytorch", label: "PyTorch", type: "topic" },
+      { id: "scikit-learn", label: "Scikit-learn", type: "topic" },
+      { id: "keras", label: "Keras", type: "topic" },
+      { id: "opencv", label: "OpenCV", type: "topic" },
+      { id: "pandas", label: "Pandas", type: "topic" },
+      { id: "numpy", label: "NumPy", type: "topic" },
+      { id: "jupyter", label: "Jupyter", type: "topic" },
+      { id: "machine-learning", label: "Machine Learning", type: "topic" },
+      { id: "artificial-intelligence", label: "AI", type: "topic" },
+      { id: "deep-learning", label: "Deep Learning", type: "topic" },
+      { id: "python", label: "Python", type: "language" },
+    ],
+    networking: [
+      { id: "socketio", label: "Socket.io", type: "topic" },
+      { id: "graphql", label: "GraphQL", type: "topic" },
+      { id: "rest-api", label: "REST API", type: "topic" },
+      { id: "grpc", label: "gRPC", type: "topic" },
+      { id: "webrtc", label: "WebRTC", type: "topic" },
+      { id: "nginx", label: "Nginx", type: "topic" },
+      { id: "api", label: "API", type: "topic" },
+      { id: "websocket", label: "WebSocket", type: "topic" },
+    ],
+    database: [
+      { id: "postgresql", label: "PostgreSQL", type: "topic" },
+      { id: "mysql", label: "MySQL", type: "topic" },
+      { id: "mongodb", label: "MongoDB", type: "topic" },
+      { id: "redis", label: "Redis", type: "topic" },
+      { id: "sqlite", label: "SQLite", type: "topic" },
+      { id: "firebase", label: "Firebase", type: "topic" },
+      { id: "database", label: "Database", type: "topic" },
+      { id: "sql", label: "SQL", type: "language" },
+    ],
+    cloud: [
+      { id: "aws", label: "AWS", type: "topic" },
+      { id: "google-cloud", label: "Google Cloud", type: "topic" },
+      { id: "azure", label: "Azure", type: "topic" },
+      { id: "docker", label: "Docker", type: "topic" },
+      { id: "kubernetes", label: "Kubernetes", type: "topic" },
+      { id: "terraform", label: "Terraform", type: "topic" },
+      { id: "cloud", label: "Cloud", type: "topic" },
+      { id: "devops", label: "DevOps", type: "topic" },
+    ],
+    gaming: [
+      { id: "unity", label: "Unity", type: "topic" },
+      { id: "unreal-engine", label: "Unreal Engine", type: "topic" },
+      { id: "godot", label: "Godot", type: "topic" },
+      { id: "csharp", label: "C#", type: "language" },
+      { id: "cpp", label: "C++", type: "language" },
+      { id: "blender", label: "Blender", type: "topic" },
+      { id: "game-development", label: "Game Development", type: "topic" },
+      { id: "3d", label: "3D", type: "topic" },
+    ],
+  };
+
+  // Load popular projects by default when component mounts
+  const fetchDefaultProjects = async (currentPage = page) => {
+    setLoading(true);
+    setError("");
+    setIsDefaultView(true);
+
+    try {
+      const params = new URLSearchParams({
+        query: "",
+        lang: "",
+        topics: "",
+        stars: 10000,
+        forks: 100,
+        sort: "stars",
+        order: "desc",
+        page: currentPage,
+        perPage: perPage,
       });
+
+      const { data } = await api.get("/all_projects", {
+        params,
+      });
+      setProjects(data.items || []);
+      setTotalCount(data.total_count || 0);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProjects = async () => {
+    if (!query.trim() && filters.length === 0) {
+      fetchDefaultProjects();
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setProjects([]);
+    setIsDefaultView(false);
+
+    try {
+      const allFilters = Object.values(filterCategories).flat();
+      const languages = filters
+        .map((f) => allFilters.find((opt) => opt.id === f))
+        .filter((opt) => opt?.type === "language")
+        .map((opt) => opt.id);
+
+      const topics = filters
+        .map((f) => allFilters.find((opt) => opt.id === f))
+        .filter((opt) => opt?.type === "topic")
+        .map((opt) => opt.id);
+
+      const params = new URLSearchParams({
+        query,
+        lang: languages[0] || "",
+        topics: topics.join(","),
+        stars: 100,
+        forks: 10,
+        sort: "stars",
+        order: "desc",
+        page,
+        perPage,
+      });
+
+      const { data } = await api.get("/all_projects", {
+        params,
+      });
+      setProjects(data.items || []);
+      setTotalCount(data.total_count || 0);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load default projects on component mount
+  useEffect(() => {
+    fetchDefaultProjects(1);
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-600 text-lg">Loading projects...</p>
-        </div>
-      </div>
+  // Handle page changes for both default and filtered views
+  useEffect(() => {
+    if (query || filters.length > 0) {
+      fetchProjects();
+    } else {
+      fetchDefaultProjects(page);
+    }
+  }, [page, filters]);
+
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
+    setPage(1);
+    fetchProjects();
+  };
+
+  const toggleFilter = (id) => {
+    setFilters((prev) =>
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
     );
-  }
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setFilters([]);
+    setQuery("");
+    setPage(1);
+    fetchDefaultProjects(1);
+  };
+
+  const handleCategoryChange = (category) => {
+    setActiveCategory(category);
+    setFilters([]);
+    setPage(1);
+  };
+
+  // Navigate to project details page
+  const handleViewDetails = (projectId) => {
+    router.push(`/projects/${projectId}`);
+  };
+
+  const currentFilters = filterCategories[activeCategory] || [];
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <div className="w-10/12 mx-auto py-16">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-200 rounded-full filter blur-3xl"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header with enhanced styling */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold pb-3 mt-4 mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent inline-block h-auto">
+            Open Source Project Explorer
+          </h1>
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
+            Discover amazing open source projects and explore the latest
+            technologies
+          </p>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          {/* Header Section */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center p-3 bg-white shadow-lg rounded-full mb-6 border border-gray-100">
-              <Sparkles className="w-8 h-8 text-blue-600" />
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              My Projects
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Discover my latest work and creative endeavors. Each project
-              represents a journey of innovation and problem-solving.
-            </p>
-            <div className="mt-8 h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
-          </div>
-
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
-            {projects.map((project, index) => (
-              <div
-                key={project._id}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-100 hover:border-gray-200 transition-all duration-500 hover:-translate-y-2"
-                style={{ animationDelay: `${index * 100}ms` }}
+        {/* Enhanced Search Form */}
+        <div className="flex gap-3 mb-8">
+          <div className="relative flex-grow">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                className="h-4 w-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {/* Project Image */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-56 sm:h-64 object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Explore projects by language or topic..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch(e)}
+              className="w-full pl-10 pr-4 py-3 text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-lg transition-all duration-200 hover:shadow-xl"
+            />
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-6 py-2 text-base font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            Search
+          </button>
+        </div>
 
-                  {/* Floating Action Buttons */}
-                  <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    {project.githubLink && (
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-700 hover:text-gray-900 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
-                        aria-label={`View ${project.title} on GitHub`}
-                      >
-                        <Github className="w-4 h-4" />
-                      </a>
-                    )}
-                    {project.liveLink && (
-                      <a
-                        href={project.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-700 hover:text-gray-900 hover:bg-white shadow-lg transition-all duration-200 hover:scale-110"
-                        aria-label={`View ${project.title} live demo`}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                </div>
+        {/* Enhanced Category Tabs */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-2 mb-6 justify-center">
+            {Object.keys(filterCategories).map((category) => {
+              const categoryIcons = {
+                all: "⚡",
+                web: "🌐",
+                android: "📱",
+                ios: "📱",
+                ai: "🤖",
+                networking: "🔗",
+                database: "💾",
+                cloud: "☁️",
+                gaming: "🎮",
+              };
 
-                {/* Project Content */}
-                <div className="p-6 sm:p-8">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Code2 className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2">
-                      {project.title}
-                    </h2>
-                  </div>
-
-                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3">
-                    {project.description}
-                  </p>
-
-                  {/* Tech Stack */}
-                  <div className="mb-6">
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-3">
-                      Technologies
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.techStack.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-full text-gray-700 text-xs font-medium transition-colors duration-200"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Links */}
-                  <div className="flex space-x-4">
-                    {project.githubLink && (
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 rounded-xl text-gray-700 font-medium transition-all duration-300 hover:scale-105 group/link"
-                      >
-                        <Github className="w-4 h-4 group-hover/link:animate-pulse" />
-                        <span>Code</span>
-                      </a>
-                    )}
-                    {project.liveLink && (
-                      <a
-                        href={project.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/30 group/link"
-                      >
-                        <ExternalLink className="w-4 h-4 group-hover/link:animate-pulse" />
-                        <span>Live Demo</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subtle hover glow */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              </div>
-            ))}
+              return (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryChange(category)}
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full border-2 transition-all duration-300 transform hover:scale-105 ${
+                    activeCategory === category
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-none shadow-md"
+                      : "bg-white/70 backdrop-blur-sm text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-white/90 shadow-sm hover:shadow-md"
+                  }`}
+                >
+                  <span className="text-sm">{categoryIcons[category]}</span>
+                  <span className="capitalize font-semibold text-sm">
+                    {category === "ai" ? "AI/ML" : category.replace("-", " ")}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Empty State */}
-          {projects.length === 0 && !isLoading && (
-            <div className="text-center py-20">
-              <div className="bg-white rounded-full p-6 shadow-lg inline-block mb-6">
-                <Code2 className="w-16 h-16 text-gray-400 mx-auto" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-700 mb-4">
-                No Projects Found
-              </h3>
-              <p className="text-gray-500">
-                Check back later for exciting new projects!
-              </p>
+          {/* Enhanced Active Filters Display */}
+          {filters.length > 0 && (
+            <div className="flex flex-wrap gap-2 items-center justify-center mb-6 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-gray-200">
+              <span className="text-sm font-semibold text-gray-600">
+                Active filters:
+              </span>
+              {filters.map((filterId) => {
+                const allFilters = Object.values(filterCategories).flat();
+                const filter = allFilters.find((f) => f.id === filterId);
+                return (
+                  <span
+                    key={filterId}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-sm font-medium shadow-md"
+                  >
+                    {filter?.label}
+                    <button
+                      onClick={() => toggleFilter(filterId)}
+                      className="ml-1 text-white/80 hover:text-white transition-colors"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </span>
+                );
+              })}
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-500 hover:text-gray-700 underline font-medium transition-colors"
+              >
+                Clear all
+              </button>
             </div>
           )}
         </div>
+
+        {/* Enhanced Filter Options */}
+        <div className="mb-8">
+          <h3 className="text-lg font-bold mb-6 text-gray-800 text-center">
+            {activeCategory === "all"
+              ? "Popular Technologies"
+              : `${
+                  activeCategory.charAt(0).toUpperCase() +
+                  activeCategory.slice(1)
+                } Technologies`}
+          </h3>
+          <div className="flex flex-wrap justify-center gap-3 max-w-5xl mx-auto">
+            {currentFilters.map((opt) => (
+              <label
+                key={opt.id}
+                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border-none cursor-pointer transition-all duration-300 text-sm font-semibold transform hover:scale-105 shadow-sm hover:shadow-md ${
+                  filters.includes(opt.id)
+                    ? "border-transparent bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+                    : "border-gray-300 bg-white/70 backdrop-blur-sm text-gray-700 hover:border-blue-400 hover:bg-white/90"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={filters.includes(opt.id)}
+                  onChange={() => toggleFilter(opt.id)}
+                  className={`w-3 h-3 rounded focus:ring-2 focus:ring-offset-1 ${
+                    filters.includes(opt.id)
+                      ? "text-white border-none focus:ring-white"
+                      : "text-blue-600 border-gray-400 focus:ring-blue-500"
+                  }`}
+                />
+                <span className="select-none">{opt.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Enhanced Loading */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-500 mb-3"></div>
+            <p className="text-gray-600">
+              {isDefaultView
+                ? "Loading trending projects..."
+                : "Finding amazing repositories..."}
+            </p>
+          </div>
+        )}
+
+        {/* Enhanced Error */}
+        {error && (
+          <div className="text-center py-6">
+            <div className="inline-flex items-center gap-3 text-gray-600 bg-red-50 px-4 py-3 rounded-lg border-2 border-red-200">
+              <svg
+                className="w-5 h-5 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="font-medium">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Popular Projects Label */}
+        {isDefaultView && projects.length > 0 && !loading && (
+          <div className="text-center mb-8">
+            <div className="inline-block px-6 py-3 rounded-2xl shadow-lg mb-4">
+              <div className="flex items-center gap-2 justify-center">
+                <span className="text-2xl">🔥</span>
+                <h2 className="text-xl font-bold">Hot & Popular Projects</h2>
+                <span className="text-2xl">🔥</span>
+              </div>
+            </div>
+            <p className="text-gray-600 font-medium">
+              Discover trending open source projects with thousands of stars
+            </p>
+            <div className="flex justify-center gap-6 mt-3 text-sm text-gray-500">
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-yellow-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-medium">10000+ Stars</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                  />
+                </svg>
+                <span className="font-medium">100+ Forks</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <svg
+                  className="w-4 h-4 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span className="font-medium">Actively Maintained</span>
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Search Results Label */}
+        {!isDefaultView && projects.length > 0 && !loading && (
+          <div className="text-center mb-6">
+            <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl shadow-md">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                Search Results
+              </h2>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Results Grid with View Details Button */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {projects.map((repo) => (
+            <div
+              key={repo.id}
+              className="p-5 border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm group transform hover:scale-105 flex flex-col"
+            >
+              {/* Top Section */}
+              <div className="flex items-start justify-between mb-3">
+                <h2 className="font-bold text-lg text-gray-900 leading-tight flex-1 pr-2 truncate">
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-900 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:bg-clip-text hover:text-transparent group-hover:underline transition-all duration-200"
+                  >
+                    {repo.name}
+                  </a>
+                </h2>
+                {repo.language && (
+                  <span className="px-2 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 text-xs font-semibold rounded-full border border-blue-200">
+                    {repo.language}
+                  </span>
+                )}
+              </div>
+
+              {/* Make description flexible */}
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1">
+                {repo.description || "No description available"}
+              </p>
+
+              {/* Bottom Section */}
+              <div>
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1 font-medium">
+                      ⭐ {repo.stargazers_count.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1 font-medium">
+                      🍴 {repo.forks_count.toLocaleString()}
+                    </span>
+                  </div>
+                  {repo.updated_at && (
+                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                      {new Date(repo.updated_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handleViewDetails(repo.id)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-gray-700 hover:text-white rounded-lg transition-all duration-300 text-sm font-medium border border-gray-200 hover:border-transparent"
+                >
+                  <span>View Details</span>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Enhanced Empty State */}
+        {!loading && projects.length === 0 && !isDefaultView && !error && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-700 mb-2">
+              No projects found
+            </h3>
+            <p className="text-gray-500 mb-4">
+              Try adjusting your search terms or filters
+            </p>
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-medium"
+            >
+              Show Popular Projects
+            </button>
+          </div>
+        )}
+
+        {/* Enhanced Pagination */}
+        {projects.length > 0 && (
+          <div className="flex justify-center items-center gap-6 mt-12">
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-white/70 backdrop-blur-sm text-gray-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/90 transition-all duration-200 font-semibold shadow-md hover:shadow-lg border-2 border-gray-200"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg">
+              Page {page} of {Math.ceil(totalCount / perPage)}
+            </span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= Math.ceil(totalCount / perPage)}
+              className="px-4 py-2 bg-white/70 backdrop-blur-sm text-gray-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/90 transition-all duration-200 font-semibold shadow-md hover:shadow-lg border-2 border-gray-200"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {/* Enhanced Results Summary */}
+        {totalCount > 0 && (
+          <div className="text-center mt-6">
+            <div className="inline-block bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-gray-200 shadow-md">
+              <span className="text-gray-700 font-semibold">
+                {isDefaultView ? "🔥 Trending: " : "Found "}
+                {totalCount.toLocaleString()} repositories
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default GithubProjectFinder;

@@ -1,7 +1,12 @@
+"use client";
+
 import React from 'react';
 import { Github, Twitter, Linkedin, Mail, Heart, Code, Users, Star, ExternalLink } from 'lucide-react';
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/dashboard");
   const techStacks = [
     { name: 'Web Development', count: '150+' },
     { name: 'Mobile Apps', count: '80+' },
@@ -24,7 +29,7 @@ const Footer = () => {
     'Tutorials',
     'Blog'
   ];
-
+if (isDashboard) return null;
   return (
     <footer className="bg-gray-900 text-white">
       {/* Main Footer Content */}

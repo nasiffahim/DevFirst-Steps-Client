@@ -72,6 +72,7 @@ const Page = () => {
   const [role, setRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const router = useRouter();
+  console.log(role)
 
   // fetch user role
   useEffect(() => {
@@ -121,60 +122,63 @@ const Page = () => {
     { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
-// Sample static data with thumbnails
-const blogs = [
-  {
-    id: 1,
-    title: "Getting Started with Open Source",
-    excerpt: "Learn how to make your first contribution to open-source projects...",
-    author: "Jane Doe",
-    date: "2025-09-20",
-    thumbnail: "https://unsplash.com/photos/man-using-laptop-VzJjPuk53sk",
-  },
-  {
-    id: 2,
-    title: "Top 5 GitHub Repositories for Beginners",
-    excerpt: "A curated list of beginner-friendly repositories to help you start...",
-    author: "John Smith",
-    date: "2025-09-18",
-    thumbnail: "https://source.unsplash.com/400x250/?github,programming",
-  },
-  {
-    id: 3,
-    title: "Why Open Source Matters",
-    excerpt: "Exploring the impact of open source on tech innovation and community...",
-    author: "Emily Johnson",
-    date: "2025-09-15",
-    thumbnail: "https://source.unsplash.com/400x250/?community,developers",
-  },
-];
+  const blogs = [];
+  const projects = [];
 
-const projects = [
-  {
-    id: 1,
-    name: "Next.js Starter Kit",
-    description: "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
-    stars: 120,
-    contributors: 15,
-    thumbnail: "https://source.unsplash.com/400x250/?nextjs,tailwind",
-  },
-  {
-    id: 2,
-    name: "Open Source Finder",
-    description: "A platform that connects developers with open source projects.",
-    stars: 240,
-    contributors: 32,
-    thumbnail: "https://source.unsplash.com/400x250/?opensource,collaboration",
-  },
-  {
-    id: 3,
-    name: "React UI Components",
-    description: "Reusable, accessible, and customizable React components for modern apps.",
-    stars: 90,
-    contributors: 8,
-    thumbnail: "https://source.unsplash.com/400x250/?react,ui",
-  },
-];
+// Sample static data with thumbnails
+// const blogs = [
+//   {
+//     id: 1,
+//     title: "Getting Started with Open Source",
+//     excerpt: "Learn how to make your first contribution to open-source projects...",
+//     author: "Jane Doe",
+//     date: "2025-09-20",
+//     thumbnail: "https://unsplash.com/photos/man-using-laptop-VzJjPuk53sk",
+//   },
+//   {
+//     id: 2,
+//     title: "Top 5 GitHub Repositories for Beginners",
+//     excerpt: "A curated list of beginner-friendly repositories to help you start...",
+//     author: "John Smith",
+//     date: "2025-09-18",
+//     thumbnail: "https://source.unsplash.com/400x250/?github,programming",
+//   },
+//   {
+//     id: 3,
+//     title: "Why Open Source Matters",
+//     excerpt: "Exploring the impact of open source on tech innovation and community...",
+//     author: "Emily Johnson",
+//     date: "2025-09-15",
+//     thumbnail: "https://source.unsplash.com/400x250/?community,developers",
+//   },
+// ];
+
+// const projects = [
+//   {
+//     id: 1,
+//     name: "Next.js Starter Kit",
+//     description: "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
+//     stars: 120,
+//     contributors: 15,
+//     thumbnail: "https://source.unsplash.com/400x250/?nextjs,tailwind",
+//   },
+//   {
+//     id: 2,
+//     name: "Open Source Finder",
+//     description: "A platform that connects developers with open source projects.",
+//     stars: 240,
+//     contributors: 32,
+//     thumbnail: "https://source.unsplash.com/400x250/?opensource,collaboration",
+//   },
+//   {
+//     id: 3,
+//     name: "React UI Components",
+//     description: "Reusable, accessible, and customizable React components for modern apps.",
+//     stars: 90,
+//     contributors: 8,
+//     thumbnail: "https://source.unsplash.com/400x250/?react,ui",
+//   },
+// ];
 
 
 

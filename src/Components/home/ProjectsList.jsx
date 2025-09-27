@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "../../utils/api";
 
 export default function ProjectList({ limit }) {
   const [projects, setProjects] = useState([]);
@@ -26,7 +27,7 @@ export default function ProjectList({ limit }) {
       setError(null);
       
       try {
-        const response = await axios.get("http://localhost:5000/all_projects");
+        const response = await api.get("/all_projects");
         const responseData = response.data;
         
         // Extract the items array from the API response

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import useAuth from "../hooks/useAuth";
+import axios from "axios";
+import api from "../../utils/api";
 
 export default function Layout({ children }) {
   const pathname = usePathname() ?? "";
@@ -20,20 +22,20 @@ export default function Layout({ children }) {
   const email = user?.email; // get email from auth context
 
   // fetch user role on mount
-
   useEffect(() => {
     if (!email) return; // stop if email not ready
-    async function fetchRole() {
+
+    const fetchRole = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/user-role?email=${email}`
-        );
-        const data = await res.json();
-        setRole(data.role);
+        const res = await api.get(`/user-role`, {
+          params: { email }, // axios handles query params
+        });
+        setRole(res.data.role);
       } catch (err) {
         console.error("Failed to fetch role", err);
       }
-    }
+    };
+
     fetchRole();
   }, [email]);
 
@@ -42,15 +44,18 @@ export default function Layout({ children }) {
     { name: "Overview", href: "/dashboard" },
     { name: "Profile", href: "/dashboard/profile" },
     { name: "Add Projects", href: "/dashboard/add-projects" },
+    { name: "My Projects", href: "/dashboard/my-projects" },
     { name: "Add Blogs", href: "/dashboard/add-blogs" },
+    { name: "My Blogs", href: "/dashboard/my-blogs" },
+    { name: "Start a Discussion", href: "/dashboard/discussion" },
     ...(role === "admin"
       ? [
-          { name: "Projects", href: "/dashboard/projects" },
+          // { name: "Projects", href: "/dashboard/projects" },
           { name: "Settings", href: "/dashboard/settings" },
         ]
       : role === "user"
       ? [
-          { name: "Projects", href: "/dashboard/projects" },
+          // { name: "Projects", href: "/dashboard/projects" },
           { name: "Settings", href: "/dashboard/settings" },
         ]
       : []), // default empty until role loads
@@ -78,6 +83,7 @@ export default function Layout({ children }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -116,7 +122,7 @@ export default function Layout({ children }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-auto pb-20">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -136,16 +142,17 @@ export default function Layout({ children }) {
             );
           })}
         </nav>
-
-        <div className="px-6 py-4 border-t">
-          <Link
-            href="/"
-            className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition"
-          >
-            Back to Home
-          </Link>
-        </div>
       </aside>
+
+      {/* Fixed Back to Home Button */}
+      <div className="fixed bottom-6 left-6 w-52 z-60">
+        <Link
+          href="/"
+          className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition shadow-lg"
+        >
+          Back to Home
+        </Link>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">
@@ -161,15 +168,13 @@ export default function Layout({ children }) {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
-                👋 Welcome Back!
-              </h1>
-               <p className="text-sm text-gray-500 mt-1">
-              Here’s an overview of your activity.
-            </p>
+                  👋 Welcome Back!
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  Here's an overview of your activity.
+                </p>
               </div>
-              
             </div>
-           
           </header>
         )}
 

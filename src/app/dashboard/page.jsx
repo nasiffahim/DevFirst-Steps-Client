@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import AdminOverview from "../dashboard/Component/adminOverview";
-import projectAnim from "../../../public/Animation/No project.json";
-import blogAnim from "../../../public/Animation/no blogs.json";
+import AdminOverview from "../dashboard/Component/AdminOverview";
+import projectAnim from "../../../public/Animation/No-project.json";
+import blogAnim from "../../../public/Animation/no-blogs.json";
 import Lottie from "lottie-react";
 import { Button } from "../../Components/ui/button";
 import Image from "next/image";
@@ -21,6 +21,8 @@ import {
   Users as UsersIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import api from "../../utils/api";
 
 // ✅ Reusable Blog Card
 const BlogCard = ({ blog }) => (
@@ -77,25 +79,28 @@ const Page = () => {
   // fetch user role
   useEffect(() => {
     if (!email) return;
-    async function fetchRole() {
+
+    const fetchRole = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/user-role?email=${email}`
-        );
-        const data = await res.json();
-        setRole(data.role);
+        const res = await api.get("/user-role", {
+          params: { email },
+        });
+        setRole(res.data.role);
       } catch (err) {
         console.error("Failed to fetch role", err);
       } finally {
         setRoleLoading(false);
       }
-    }
+    };
+
     fetchRole();
   }, [email]);
 
   if (loading || roleLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">Loading...</div>
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
     );
   }
 
@@ -122,8 +127,8 @@ const Page = () => {
     { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
-  const blogs = [];
-  const projects = [];
+  // const blogs = [];
+  // const projects = [];
 
 // Sample static data with thumbnails
 // const blogs = [
@@ -180,7 +185,72 @@ const Page = () => {
 //   },
 // ];
 
+  // Sample static data with thumbnails
+  const blogs = [
+    {
+      id: 1,
+      title: "Getting Started with Open Source",
+      excerpt:
+        "Learn how to make your first contribution to open-source projects...",
+      author: "Jane Doe",
+      date: "2025-09-20",
+      thumbnail:
+        "https://images.unsplash.com/photo-1575089976121-8ed7b2a54265?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      id: 2,
+      title: "Top 5 GitHub Repositories for Beginners",
+      excerpt:
+        "A curated list of beginner-friendly repositories to help you start...",
+      author: "John Smith",
+      date: "2025-09-18",
+      thumbnail:
+        "https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHByb2dyYW1taW5nfGVufDB8fDB8fHww",
+    },
+    {
+      id: 3,
+      title: "Why Open Source Matters",
+      excerpt:
+        "Exploring the impact of open source on tech innovation and community...",
+      author: "Emily Johnson",
+      date: "2025-09-15",
+      thumbnail:
+        "https://images.unsplash.com/photo-1637073849667-91120a924221?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZGV2ZWxvcGVyc3xlbnwwfHwwfHx8MA%3D%3D",
+    },
+  ];
 
+  const projects = [
+    {
+      id: 1,
+      name: "Next.js Starter Kit",
+      description:
+        "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
+      stars: 120,
+      contributors: 15,
+      thumbnail:
+        "https://images.unsplash.com/photo-1643116774075-acc00caa9a7b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmV4dGpzfGVufDB8fDB8fHww",
+    },
+    {
+      id: 2,
+      name: "Open Source Finder",
+      description:
+        "A platform that connects developers with open source projects.",
+      stars: 240,
+      contributors: 32,
+      thumbnail:
+        "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    },
+    {
+      id: 3,
+      name: "React UI Components",
+      description:
+        "Reusable, accessible, and customizable React components for modern apps.",
+      stars: 90,
+      contributors: 8,
+      thumbnail:
+        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVhY3R8ZW58MHx8MHx8fDA%3D",
+    },
+  ];
 
   return (
     <div className="space-y-10 p-6">

@@ -3,16 +3,26 @@
 import React from "react";
 import { Chrome, Github } from "lucide-react";
 import useAuth from "../../app/hooks/useAuth"; //  Correct import
-import { useRouter } from "next/navigation";
+import {  useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import Swal from "sweetalert2";
+import api from "../../utils/api";
+
 
 
 const SocialLogin = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+   const redirect = searchParams.get("redirect") || "/";
+   
+   
 
-  const router = useRouter();
+
   const { googleSign, githubSign } = useAuth(); //  comes from AuthProvider
 
   // Google Login
+
+
 const handleGoogleLogin = async () => {
   try {
     const result = await googleSign(); // Firebase popup login
@@ -27,50 +37,89 @@ const handleGoogleLogin = async () => {
       work: null,
     };
 
-    //  Send user data to your backend
-    await axios.post("http://localhost:5000/login", payload);
+    // Send user data to your backend
+    await api.post("/login", payload);
 
-    router.push("/");
+    Swal.fire({
+      icon: "success",
+      title: "Login Successful 🎉",
+      text: `Welcome back, ${user.displayName || "User"}!`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    router.replace(redirect);
   } catch (error) {
-  
     if (axios.isAxiosError?.(error)) {
-      console.error("❌ Axios error:", error.response?.data || error.message);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed ❌",
+        text: error.response?.data?.message || error.message,
+      });
     } else if (error.code === "auth/popup-closed-by-user") {
-      console.warn("⚠️ User closed the popup before completing sign-in.");
+      Swal.fire({
+        icon: "warning",
+        title: "Popup Closed ⚠️",
+        text: "You closed the sign-in popup before completing login.",
+      });
     } else if (error.code === "auth/cancelled-popup-request") {
-      console.warn("⚠️ Popup request was cancelled.");
+      Swal.fire({
+        icon: "warning",
+        title: "Login Cancelled ⚠️",
+        text: "Another sign-in request was already in progress.",
+      });
     } else {
-      console.error("❌ Unexpected error during Google login:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Unexpected Error ❌",
+        text: error.message || "Something went wrong during Google login.",
+      });
     }
   }
 };
-
-
-
   // GitHub Login
-
 
 const handleGithubLogin = async () => {
   try {
+    Swal.fire({
+      title: "Signing in...",
+      text: "Please wait while we log you in with GitHub.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     // Sign in using GitHub
     const result = await githubSign();
-    const { user } = result;
+    const user = result.user;
+    const providerData = user.providerData;
+    const provider = providerData[0];
 
-    // Payload to send to backend
     const payload = {
-      uid: user.uid,
-      email: user.email,
-      fullName: user.displayName,
-      image: user.photoURL,
+      uid: provider?.uid,
+      email: provider?.email,
+      fullName: provider?.displayName,
+      image: provider?.photoURL,
       role: "user",
       work: null,
     };
 
     // Send user data to your backend
-    await axios.post("http://localhost:5000/login", payload);
+    const rep = await api.post("/login", payload);
+    if (rep.data) {
+       Swal.fire({
+      icon: "success",
+      title: "Login Successful 🎉",
+      text: `Welcome, ${provider?.displayName || "User"}!`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+    }
+   
 
     // Redirect to homepage
-    router.push("/");
+    router.replace(redirect);
 
   } catch (error) {
     if (error.code === "auth/account-exists-with-different-credential") {
@@ -81,13 +130,26 @@ const handleGithubLogin = async () => {
         const methods = await fetchSignInMethodsForEmail(auth, email);
 
         if (methods.includes("google.com")) {
-          console.log("⚠️ Email registered with Google. Please sign in with Google.");
-          await handleGoogleSignIn(pendingCred); // Handle Google sign-in
+          Swal.fire({
+            icon: "warning",
+            title: "Email Already Registered ⚠️",
+            text: "This email is linked to Google. Please sign in with Google instead.",
+          });
+          await handleGoogleSignIm(pendingCred); // Handle Google sign-in
         } else {
-          console.log("⚠️ Account exists with a different provider:", methods);
+          Swal.fire({
+            icon: "warning",
+            title: "Account Conflict ⚠️",
+            text: `This account is linked to a different provider: ${methods.join(", ")}`,
+          });
         }
       }
     } else {
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed ❌",
+        text: error.message || "Something went wrong during GitHub login.",
+      });
       console.error("❌ GitHub login error:", error.message);
     }
   }

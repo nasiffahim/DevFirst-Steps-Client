@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import AdminOverview from "../dashboard/Component/adminOverview";
+import AdminOverview from "../dashboard/Component/AdminOverview";
 import projectAnim from "../../../public/Animation/No-project.json";
 import blogAnim from "../../../public/Animation/no-blogs.json";
 import Lottie from "lottie-react";

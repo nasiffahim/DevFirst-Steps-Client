@@ -31,12 +31,12 @@ const blogs = [
 
 const BlogPage = () => {
   return (
-    <div className="bg-gray-50 min-h-[80vh] py-16">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-[80vh] py-16 transition-colors duration-300">
       {/* Section Header */}
       <div className="max-w-7xl mx-auto px-6 mb-12">
         <div className="text-center">
           {/* Header Badge */}
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-full text-sm font-medium text-blue-700 mb-6">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700 rounded-full text-sm font-medium text-blue-700 dark:text-blue-300 mb-6 transition-colors duration-300">
             <svg
               className="w-4 h-4 mr-2"
               fill="none"
@@ -54,12 +54,12 @@ const BlogPage = () => {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
             DevFirst Steps Blog
           </h1>
 
           {/* Description */}
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed transition-colors duration-300">
             Stay updated with the latest tips, tutorials, and insights about
             open source development. Learn from experienced developers and
             discover new ways to contribute to the community.
@@ -68,20 +68,20 @@ const BlogPage = () => {
           {/* Blog Stats */}
           <div className="flex justify-center items-center mt-8 space-x-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors duration-300">
                 {blogs.length}
               </div>
-              <div className="text-sm text-gray-500">Articles</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Articles</div>
             </div>
-            <div className="w-px h-8 bg-gray-300"></div>
+            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600 transition-colors duration-300"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">3</div>
-              <div className="text-sm text-gray-500">Authors</div>
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors duration-300">3</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Authors</div>
             </div>
-            <div className="w-px h-8 bg-gray-300"></div>
+            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600 transition-colors duration-300"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">Weekly</div>
-              <div className="text-sm text-gray-500">Updates</div>
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 transition-colors duration-300">Weekly</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">Updates</div>
             </div>
           </div>
         </div>

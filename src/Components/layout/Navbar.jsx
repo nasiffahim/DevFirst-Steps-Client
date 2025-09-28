@@ -1,17 +1,21 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search, Menu, X, Code } from "lucide-react";
+import { ChevronDown, Search, Menu, X, Code, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useAuth from "../../app/hooks/useAuth";
 import UserMenu from "../UserMenu/UserMenu";
+import { useTheme } from "next-themes";
 
 const Navbar = () => {
   const auth = useAuth();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   // Prevent crash before context is ready
   if (!auth) return null;
   const { user, googleSign, logout } = auth;
+  console.log("user : ", user)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -37,6 +41,31 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleDocClick);
     return () => document.removeEventListener("mousedown", handleDocClick);
   }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Show a loading state until mounted to prevent hydration issues
+  if (!mounted) {
+    return (
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
+          <div className="flex justify-between items-center h-16">
+            <Link href="/" className="flex items-center">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Code className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">DevFirst Steps</h3>
+              </div>
+            </Link>
+            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   if (isDashboard) return null;
 
@@ -187,7 +216,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-200">
       <div
         ref={containerRef}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 relative"
@@ -199,7 +228,7 @@ const Navbar = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Code className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold">DevFirst Steps</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">DevFirst Steps</h3>
             </div>
           </Link>
 
@@ -219,7 +248,7 @@ const Navbar = () => {
                           activeDropdown === index ? null : index
                         )
                       }
-                      className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                      className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 text-sm font-medium transition-colors duration-200"
                     >
                       {item.name}
                       <ChevronDown
@@ -231,7 +260,7 @@ const Navbar = () => {
                   ) : (
                     <Link
                       href={item.href || "#"}
-                      className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                      className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 text-sm font-medium transition-colors duration-200"
                     >
                       {item.name}
                     </Link>
@@ -243,8 +272,6 @@ const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* <Github className="h-4 w-4 text-gray-600 mr-2" /> */}
-
             {user ? (
               <>
                 <UserMenu />
@@ -253,43 +280,37 @@ const Navbar = () => {
               <>
                 <Link
                   href="/register"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
                 >
                   Register
                 </Link>
                 <Link
                   href="/login"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
                 >
                   Login
                 </Link>
               </>
             )}
-            {/* <span className="text-sm font-medium text-gray-700">69.6k</span> */}
 
-            {/* Search */}
-            <div className="hidden md:flex items-center">
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="text-gray-400 hover:text-gray-600 p-2"
-              >
-                <Search className="h-5 w-5" />
-              </button>
-              {showSearch && (
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  className="ml-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64 transition-all duration-200"
-                  autoFocus
-                />
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
               )}
-            </div>
+            </button>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-400 hover:text-gray-600 p-2"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 transition-colors duration-200"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? (
@@ -317,7 +338,7 @@ const Navbar = () => {
               onMouseLeave={handleMouseLeave}
             >
               <div
-                className={`mx-auto w-full max-w-6xl bg-white border border-gray-300 rounded-lg shadow-2xl py-8 transform transition-all duration-300 ease-out ${
+                className={`mx-auto w-full max-w-6xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl py-8 transform transition-all duration-300 ease-out ${
                   activeDropdown === index
                     ? "opacity-100 translate-y-0 scale-100"
                     : "opacity-0 -translate-y-2 scale-95"
@@ -329,17 +350,17 @@ const Navbar = () => {
                     <Link
                       key={dropdownItem.name}
                       href="#"
-                      className="group p-4 rounded-lg hover:bg-gray-100 transition-all duration-200 border border-transparent"
+                      className="group p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-transparent"
                     >
                       <div className="flex items-start">
-                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-200 rounded-lg transition-colors duration-200 mr-4 hover:text-black">
+                        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg transition-colors duration-200 mr-4">
                           <span className="text-2xl">{dropdownItem.icon}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-black group-hover:text-blue-400 transition-colors duration-200 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200 mb-2">
                             {dropdownItem.name}
                           </h3>
-                          <p className="text-sm text-gray-500 group-hover:text-gray-950 transition-colors duration-200 leading-relaxed">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200 leading-relaxed">
                             {dropdownItem.description}
                           </p>
                         </div>
@@ -347,13 +368,13 @@ const Navbar = () => {
                     </Link>
                   ))}
                 </div>
-                <div className="border-t border-gray-800 mt-8 pt-6 px-8">
+                <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-6 px-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-lg font-medium text-black mb-1">
+                      <p className="text-lg font-medium text-gray-900 dark:text-white mb-1">
                         Ready to start contributing?
                       </p>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Join thousands of developers building the future of open
                         source
                       </p>
@@ -370,7 +391,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 bg-white dark:bg-gray-900">
             <div className="space-y-2 px-3">
               {navItems.map((item, index) => (
                 <div key={item.name}>
@@ -382,7 +403,7 @@ const Navbar = () => {
                             activeDropdown === index ? null : index
                           )
                         }
-                        className="flex items-center justify-between w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+                        className="flex items-center justify-between w-full text-left text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 text-sm font-medium transition-colors duration-200"
                       >
                         {item.name}
                         <ChevronDown
@@ -397,16 +418,16 @@ const Navbar = () => {
                             <Link
                               key={dropdownItem.name}
                               href="#"
-                              className="flex items-start text-gray-600 hover:text-gray-900 py-3 text-sm transition-colors duration-150"
+                              className="flex items-start text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-3 text-sm transition-colors duration-200"
                             >
                               <span className="mr-3 text-lg mt-1">
                                 {dropdownItem.icon}
                               </span>
                               <div>
-                                <div className="font-medium mb-1">
+                                <div className="font-medium mb-1 text-gray-900 dark:text-white">
                                   {dropdownItem.name}
                                 </div>
-                                <div className="text-xs text-gray-400 leading-relaxed">
+                                <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                                   {dropdownItem.description}
                                 </div>
                               </div>
@@ -418,7 +439,7 @@ const Navbar = () => {
                   ) : (
                     <Link
                       href={item.href || "#"}
-                      className="block px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                      className="block px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
                     >
                       {item.name}
                     </Link>

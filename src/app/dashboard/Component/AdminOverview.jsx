@@ -29,7 +29,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28FFF"];
 const AdminOverview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log(data)
+  console.log(data);
 
   useEffect(() => {
     async function fetchOverview() {
@@ -152,21 +152,50 @@ const AdminOverview = () => {
 
       {/* Recent Projects */}
       <section className="mt-10">
-        <h2 className="text-lg font-semibold mb-3">Recent Projects</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2  gap-6 mb-4">
+
+          {/* ----- recent projects --------- */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Recent Projects</h2>
+            <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="border-b">
+                    <th className="px-4 py-2">Project Name</th>
+                    <th className="px-4 py-2">language</th>
+                    <th className="px-4 py-2">Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recentProjects.map((proj) => (
+                    <tr key={proj._id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{proj.name}</td>
+                      <td className="px-4 py-2">{proj.language}</td>
+                      <td className="px-4 py-2">
+                        {new Date(proj.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Recent blogs</h2>
         <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
           <table className="min-w-full text-left">
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-2">Project Name</th>
-                <th className="px-4 py-2">Created By</th>
+                <th className="px-4 py-2">Author</th>
                 <th className="px-4 py-2">Created At</th>
               </tr>
             </thead>
             <tbody>
-              {data.recentProjects.map((proj) => (
+              {data.recentBlogs?.map((proj) => (
                 <tr key={proj._id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{proj.name}</td>
-                  <td className="px-4 py-2">{proj.createdBy}</td>
+                  <td className="px-4 py-2">{proj.title}</td>
+                  <td className="px-4 py-2">{proj.author}</td>
                   <td className="px-4 py-2">
                     {new Date(proj.createdAt).toLocaleDateString()}
                   </td>
@@ -174,6 +203,8 @@ const AdminOverview = () => {
               ))}
             </tbody>
           </table>
+        </div>
+          </div>
         </div>
       </section>
     </div>

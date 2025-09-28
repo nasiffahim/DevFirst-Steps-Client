@@ -1,6 +1,5 @@
 "use client";
 
-
 import api from "../../../utils/api";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -17,11 +16,20 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import {
+  Users,
+  FolderGit2,
+  AlertTriangle,
+  Clock,
+  GitBranch,
+} from "lucide-react"; // 👈 use Lucide icons
+
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28FFF"];
 
 const AdminOverview = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  console.log(data)
 
   useEffect(() => {
     async function fetchOverview() {
@@ -34,43 +42,85 @@ const AdminOverview = () => {
         setLoading(false);
       }
     }
-
     fetchOverview();
   }, []);
 
   if (loading) return <div>Loading...</div>;
   if (!data) return <div>No data available</div>;
 
+  // 👇 Stats configuration
+  const adminStats = [
+    {
+      label: "Total Users",
+      value: data.totalUsers,
+      icon: Users,
+    },
+    {
+      label: "Total Projects",
+      value: data.totalProjects,
+      icon: FolderGit2,
+    },
+    {
+      label: "Pending Approval",
+      value: data.pendingApproval,
+      icon: Clock,
+    },
+    {
+      label: "Reported Projects",
+      value: data.reportedProjects,
+      icon: AlertTriangle,
+    },
+    {
+      label: "DB Projects",
+      value: data.dbProjects,
+      icon: GitBranch,
+    },
+    {
+      label: "GitHub Projects",
+      value: data.githubProjects,
+      icon: GitBranch,
+    },
+  ];
+
   return (
-    <div className="space-y-8 p-6">
-      {/* Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-gray-100 p-4 rounded-lg shadow text-center">
-          <h2 className="text-xl font-bold">{data.totalUsers}</h2>
-          <p className="text-gray-500">Total Users</p>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-lg shadow text-center">
-          <h2 className="text-xl font-bold">{data.totalProjects}</h2>
-          <p className="text-gray-500">Total Projects</p>
-        </div>
+    <div className="">
+      {/* ✅ Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {adminStats.map((item, idx) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={idx}
+              className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
+            >
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+                <Icon className="w-6 h-6" />
+              </div>
+              <span className="text-3xl font-bold text-gray-800">
+                {item.value}
+              </span>
+              <span className="text-sm text-gray-600 mt-1">{item.label}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Projects per User (Bar Chart) */}
-      <section>
-        <h2 className="text-lg font-semibold mb-3">Projects Per User</h2>
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold mb-3">Projects by Category</h2>
         <div className="bg-white p-4 rounded-lg shadow">
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.projectsPerUser}>
-              <XAxis dataKey="_id" />
+            <BarChart data={data.projectsByTech}>
+              <XAxis dataKey="tech" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="projectCount" fill="#0088FE" />
+              <Bar dataKey="count" fill="#0088FE" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </section>
 
-      {/* Projects by Category (Pie Chart) */}
+      {/* Projects by Category (Pie Chart)
       <section>
         <h2 className="text-lg font-semibold mb-3">Projects by Category</h2>
         <div className="bg-white p-4 rounded-lg shadow">
@@ -98,10 +148,10 @@ const AdminOverview = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </section>
+      </section> */}
 
       {/* Recent Projects */}
-      <section>
+      <section className="mt-10">
         <h2 className="text-lg font-semibold mb-3">Recent Projects</h2>
         <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
           <table className="min-w-full text-left">

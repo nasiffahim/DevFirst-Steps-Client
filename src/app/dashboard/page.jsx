@@ -127,63 +127,7 @@ const Page = () => {
     { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
-  // const blogs = [];
-  // const projects = [];
-
-// Sample static data with thumbnails
-// const blogs = [
-//   {
-//     id: 1,
-//     title: "Getting Started with Open Source",
-//     excerpt: "Learn how to make your first contribution to open-source projects...",
-//     author: "Jane Doe",
-//     date: "2025-09-20",
-//     thumbnail: "https://unsplash.com/photos/man-using-laptop-VzJjPuk53sk",
-//   },
-//   {
-//     id: 2,
-//     title: "Top 5 GitHub Repositories for Beginners",
-//     excerpt: "A curated list of beginner-friendly repositories to help you start...",
-//     author: "John Smith",
-//     date: "2025-09-18",
-//     thumbnail: "https://source.unsplash.com/400x250/?github,programming",
-//   },
-//   {
-//     id: 3,
-//     title: "Why Open Source Matters",
-//     excerpt: "Exploring the impact of open source on tech innovation and community...",
-//     author: "Emily Johnson",
-//     date: "2025-09-15",
-//     thumbnail: "https://source.unsplash.com/400x250/?community,developers",
-//   },
-// ];
-
-// const projects = [
-//   {
-//     id: 1,
-//     name: "Next.js Starter Kit",
-//     description: "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
-//     stars: 120,
-//     contributors: 15,
-//     thumbnail: "https://source.unsplash.com/400x250/?nextjs,tailwind",
-//   },
-//   {
-//     id: 2,
-//     name: "Open Source Finder",
-//     description: "A platform that connects developers with open source projects.",
-//     stars: 240,
-//     contributors: 32,
-//     thumbnail: "https://source.unsplash.com/400x250/?opensource,collaboration",
-//   },
-//   {
-//     id: 3,
-//     name: "React UI Components",
-//     description: "Reusable, accessible, and customizable React components for modern apps.",
-//     stars: 90,
-//     contributors: 8,
-//     thumbnail: "https://source.unsplash.com/400x250/?react,ui",
-//   },
-// ];
+  
 
   // Sample static data with thumbnails
   const blogs = [
@@ -255,25 +199,28 @@ const Page = () => {
   return (
     <div className="space-y-10 p-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {(role === "admin" ? adminStats : userStats).map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
-            >
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
-                <Icon className="w-6 h-6" />
-              </div>
-              <span className="text-3xl font-bold text-gray-800">
-                {item.value}
-              </span>
-              <span className="text-sm text-gray-600 mt-1">{item.label}</span>
-            </div>
-          );
-        })}
-      </div>
+    {role === "user" && (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {userStats.map((item, idx) => {
+      const Icon = item.icon;
+      return (
+        <div
+          key={idx}
+          className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
+        >
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+            <Icon className="w-6 h-6" />
+          </div>
+          <span className="text-3xl font-bold text-gray-800">
+            {item.value}
+          </span>
+          <span className="text-sm text-gray-600 mt-1">{item.label}</span>
+        </div>
+      );
+    })}
+  </div>
+)}
+      
 
       {/* Blogs Section */}
       {role === "user" && (

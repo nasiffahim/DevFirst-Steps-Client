@@ -8,7 +8,7 @@ const BlogCard = ({ blog }) => {
   };
 
   return (
-    <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 h-full flex flex-col">
+    <article className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-gray-900/50 transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 h-full flex flex-col">
       {/* Blog Image */}
       <div className="relative overflow-hidden">
         <img
@@ -20,7 +20,7 @@ const BlogCard = ({ blog }) => {
 
         {/* Blog Category Badge */}
         <div className="absolute top-4 left-4">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-600 text-white shadow-lg">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-600 dark:bg-blue-500 text-white shadow-lg transition-colors duration-300">
             <svg
               className="w-3 h-3 mr-1"
               fill="none"
@@ -43,21 +43,21 @@ const BlogCard = ({ blog }) => {
       <div className="p-6 flex-1 flex flex-col">
         <div className="flex-1">
           {/* Blog Title */}
-          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
             {blog.title}
           </h3>
 
           {/* Author and Date Info */}
-          <div className="flex items-center text-sm text-gray-500 mb-4">
+          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4 transition-colors duration-300">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 rounded-full flex items-center justify-center mr-3 transition-colors duration-300">
                 <span className="text-white font-medium text-xs">
                   {blog.author.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div>
-                <p className="font-medium text-gray-700">{blog.author}</p>
-                <div className="flex items-center text-xs text-gray-500">
+                <p className="font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">{blog.author}</p>
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
                   <svg
                     className="w-3 h-3 mr-1"
                     fill="none"
@@ -78,14 +78,14 @@ const BlogCard = ({ blog }) => {
           </div>
 
           {/* Blog Excerpt */}
-          <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3">
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 line-clamp-3 transition-colors duration-300">
             {blog.content.slice(0, 120)}...
           </p>
         </div>
 
         {/* Read More Button */}
         <Link href={`/blog/${blog._id}`}>
-          <button className="group/btn inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-sm hover:shadow-md mt-auto">
+          <button className="group/btn inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-sm hover:shadow-md dark:shadow-gray-900/20 dark:hover:shadow-lg mt-auto focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800">
             <span>Read Article</span>
             <svg
               className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300"

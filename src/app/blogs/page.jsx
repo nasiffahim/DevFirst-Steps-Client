@@ -69,11 +69,11 @@ const MyBlogs = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
-            <Loader2 className="w-12 h-12 text-purple-600 animate-spin mx-auto mb-4" />
-            <p className="text-gray-600 text-lg">Loading all the amazing blogs...</p>
+            <Loader2 className="w-12 h-12 text-purple-600 dark:text-purple-400 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Loading all the amazing blogs...</p>
           </div>
         </div>
       </div>
@@ -82,14 +82,14 @@ const MyBlogs = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600 text-lg mb-4">{error}</p>
+            <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mx-auto mb-4" />
+            <p className="text-red-600 dark:text-red-400 text-lg mb-4">{error}</p>
             <button
               onClick={fetchBlogs}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"
+              className="inline-flex items-center px-4 py-2 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors duration-200"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
@@ -101,34 +101,34 @@ const MyBlogs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 rounded-full mb-4">
             <PenTool className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">All Blog</h1>
-          <p className="text-gray-600 text-lg">Sharing thoughts, insights, and experiences</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">All Blog</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">Sharing thoughts, insights, and experiences</p>
           <div className="flex items-center justify-center mt-4">
-            <FileText className="w-5 h-5 text-purple-500 mr-2" />
-            <span className="text-gray-700 font-medium">{blogs.length} Articles Published</span>
+            <FileText className="w-5 h-5 text-purple-500 dark:text-purple-400 mr-2" />
+            <span className="text-gray-700 dark:text-gray-300 font-medium">{blogs.length} Articles Published</span>
           </div>
         </div>
 
         {/* Blogs List */}
         {blogs.length === 0 ? (
           <div className="text-center py-20">
-            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No blogs yet</h3>
-            <p className="text-gray-500">Start writing your first blog post!</p>
+            <BookOpen className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">No blogs yet</h3>
+            <p className="text-gray-500 dark:text-gray-400">Start writing your first blog post!</p>
           </div>
         ) : (
           <div className="space-y-8">
             {blogs.map((blog) => (
               <article
                 key={blog._id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-900/20 hover:shadow-2xl dark:hover:shadow-gray-900/30 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
               >
                 <div className="md:flex">
                   {/* Thumbnail */}
@@ -145,7 +145,7 @@ const MyBlogs = () => {
                       />
                     ) : null}
                     <div 
-                      className={`w-full h-64 md:h-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center ${blog.thumbnail ? 'hidden' : 'flex'}`}
+                      className={`w-full h-64 md:h-full bg-gradient-to-br from-purple-400 to-pink-400 dark:from-purple-500 dark:to-pink-500 flex items-center justify-center ${blog.thumbnail ? 'hidden' : 'flex'}`}
                     >
                       <BookOpen className="w-16 h-16 text-white opacity-50" />
                     </div>
@@ -154,12 +154,12 @@ const MyBlogs = () => {
                   {/* Content */}
                   <div className="md:w-2/3 lg:w-3/4 p-6 md:p-8">
                     {/* Title */}
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3 leading-tight hover:text-purple-600 transition-colors cursor-pointer">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-3 leading-tight hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer">
                       {blog.title}
                     </h2>
 
                     {/* Meta Information */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-1" />
                         <span className="font-medium">{blog.author}</span>
@@ -177,12 +177,12 @@ const MyBlogs = () => {
                     {/* Tags */}
                     {blog.tags && (
                       <div className="flex items-center mb-4">
-                        <Tag className="w-4 h-4 text-gray-400 mr-2" />
+                        <Tag className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-2" />
                         <div className="flex flex-wrap gap-2">
                           {blog.tags.split(' ').filter(tag => tag.trim()).map((tag, index) => (
                             <span
                               key={index}
-                              className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full hover:bg-purple-200 transition-colors cursor-pointer"
+                              className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors cursor-pointer"
                             >
                               #{tag.trim()}
                             </span>
@@ -192,7 +192,7 @@ const MyBlogs = () => {
                     )}
 
                     {/* Content Preview */}
-                    <div className="text-gray-600 leading-relaxed mb-6">
+                    <div className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                       <p className="text-base">
                         {expandedBlog === blog._id 
                           ? blog.content 
@@ -202,7 +202,7 @@ const MyBlogs = () => {
                       {blog.content.length > 200 && (
                         <button
                           onClick={() => toggleExpanded(blog._id)}
-                          className="text-purple-600 hover:text-purple-800 font-medium mt-2 inline-flex items-center"
+                          className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-medium mt-2 inline-flex items-center"
                         >
                           {expandedBlog === blog._id ? 'Read Less' : 'Read More'}
                           <Eye className="w-4 h-4 ml-1" />
@@ -211,18 +211,18 @@ const MyBlogs = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                       <div className="flex items-center space-x-4">
-                        <button className="flex items-center text-gray-500 hover:text-red-500 transition-colors">
+                        <button className="flex items-center text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
                           <Heart className="w-5 h-5 mr-1" />
                           <span className="text-sm">Like</span>
                         </button>
-                        <button className="flex items-center text-gray-500 hover:text-blue-500 transition-colors">
+                        <button className="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
                           <Share2 className="w-5 h-5 mr-1" />
                           <span className="text-sm">Share</span>
                         </button>
                       </div>
-                      <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105">
+                      <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 dark:hover:from-purple-600 dark:hover:to-pink-600 transition-all duration-200 transform hover:scale-105">
                         Read Full Article
                       </button>
                     </div>

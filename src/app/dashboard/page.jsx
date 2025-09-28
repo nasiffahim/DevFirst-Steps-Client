@@ -74,7 +74,6 @@ const Page = () => {
   const [role, setRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const router = useRouter();
-  console.log(role)
 
   // fetch user role
   useEffect(() => {

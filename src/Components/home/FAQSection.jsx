@@ -40,17 +40,17 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-2xl mb-6">
-            <HelpCircle className="w-8 h-8 text-blue-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-6 transition-colors duration-300">
+            <HelpCircle className="w-8 h-8 text-blue-600 dark:text-blue-400 transition-colors duration-300" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
             Frequently Asked Questions
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-300 transition-colors duration-300">
             Quick answers to common questions about our platform
           </p>
         </div>
@@ -62,21 +62,21 @@ const FAQ = () => {
             return (
               <div
                 key={index}
-                className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+                className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md dark:hover:shadow-xl dark:hover:shadow-gray-900/20 transition-all duration-200"
               >
                 <button
                   onClick={() => toggleItem(index)}
-                  className="w-full px-6 py-5 text-left hover:bg-gray-100 transition-colors duration-200 focus:outline-none"
+                  className="w-full px-6 py-5 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800"
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white pr-4 transition-colors duration-300">
                       {item.question}
                     </h3>
                     <div className="flex-shrink-0">
                       {isOpen ? (
-                        <ChevronUp className="w-5 h-5 text-gray-500" />
+                        <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 transition-colors duration-300" />
                       ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-500" />
+                        <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400 transition-colors duration-300" />
                       )}
                     </div>
                   </div>
@@ -86,7 +86,7 @@ const FAQ = () => {
                   isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
                 }`}>
                   <div className="px-6 pb-5">
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed transition-colors duration-300">
                       {item.answer}
                     </p>
                   </div>
@@ -97,14 +97,14 @@ const FAQ = () => {
         </div>
 
         {/* Contact Section */}
-        <div className="mt-12 text-center bg-blue-50 rounded-2xl p-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">
+        <div className="mt-12 text-center bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-8 border border-transparent dark:border-blue-800/30 transition-all duration-300">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 transition-colors duration-300">
             Need more help?
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6 transition-colors duration-300">
             Can't find what you're looking for? Join our community discussions or reach out for support.
           </p>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+          <button className="bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-blue-50 dark:focus:ring-offset-blue-900/20">
             Contact Support
           </button>
         </div>

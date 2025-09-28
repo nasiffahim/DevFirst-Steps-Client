@@ -88,14 +88,14 @@ const TestimonialCarousel = () => {
   }
 
   return (
-    <div className="bg-white py-16 px-4">
+    <div className="bg-white dark:bg-gray-900 py-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Experience the Difference
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
             See how developers are finding their perfect projects and accelerating their learning journey
           </p>
         </div>
@@ -109,16 +109,16 @@ const TestimonialCarousel = () => {
           {/* Navigation Buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-12 h-12 bg-white hover:bg-gray-50 rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg border border-gray-200"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-12 h-12 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-12 h-12 bg-white hover:bg-gray-50 rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg border border-gray-200"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-12 h-12 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
+            <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
 
           {/* Testimonials */}
@@ -126,7 +126,7 @@ const TestimonialCarousel = () => {
             {visibleTestimonials.map((testimonial, index) => (
               <div
                 key={`${testimonial.id}-${currentIndex}`}
-                className="bg-gray-50 rounded-2xl p-8 border border-gray-200 transition-all duration-300 hover:border-gray-300 hover:shadow-xl hover:bg-white"
+                className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-xl dark:hover:shadow-gray-900/25 hover:bg-white dark:hover:bg-gray-750"
               >
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
@@ -134,8 +134,8 @@ const TestimonialCarousel = () => {
                     {testimonial.initials}
                   </div>
                   <div>
-                    <h4 className="text-gray-900 font-semibold text-lg">{testimonial.name}</h4>
-                    <p className="text-gray-600 text-sm">{testimonial.role}</p>
+                    <h4 className="text-gray-900 dark:text-white font-semibold text-lg">{testimonial.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">{testimonial.role}</p>
                   </div>
                 </div>
 
@@ -147,7 +147,7 @@ const TestimonialCarousel = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-gray-700 text-base leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
                   {testimonial.content}
                 </p>
               </div>
@@ -162,8 +162,8 @@ const TestimonialCarousel = () => {
                 onClick={() => setCurrentIndex(i)}
                 className={`h-2 rounded-full transition-all duration-200 ${
                   i === currentIndex 
-                    ? 'bg-blue-500 w-8' 
-                    : 'bg-gray-300 w-2 hover:bg-gray-400'
+                    ? 'bg-blue-500 dark:bg-blue-400 w-8' 
+                    : 'bg-gray-300 dark:bg-gray-600 w-2 hover:bg-gray-400 dark:hover:bg-gray-500'
                 }`}
               />
             ))}

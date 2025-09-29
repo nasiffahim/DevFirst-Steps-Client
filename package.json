@@ -29,6 +29,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
+    "react-page-view-count": "^1.0.3",
     "recharts": "^3.2.1",
     "sweetalert2": "^11.23.0",
     "tailwind-merge": "^3.3.1"

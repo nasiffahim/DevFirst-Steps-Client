@@ -3,12 +3,12 @@ import HeroSection from "../Components/home/HeroSection";
 import TechStackSection from "../Components/home/TechStackSection";
 import HowItWorks from "../Components/home/HowItWorksSection";
 import FAQ from "../Components/home/FAQSection";
-import { CommunityDiscussions } from "../Components/home/DiscussionSection";
+// import { CommunityDiscussions } from "../Components/home/DiscussionSection";
 import TestimonialCarousel from "../Components/home/TestimonialCarousel";
 import ProjectsPage from "./projects/[id]/page";
 import ProjectList from "../Components/home/ProjectsList";
 import BlogPage from "../Components/Blog/BlogPage";
-
+import {CommunityDiscussions} from "../Components/home/CommunityDiscussions"
 export default function Home() {
   return (
     <div>
@@ -16,6 +16,7 @@ export default function Home() {
      <HowItWorks></HowItWorks>
      <TechStackSection></TechStackSection>
      <ProjectList limit={6}></ProjectList>
+     {/* <CommunityDiscussions></CommunityDiscussions> */}
      <CommunityDiscussions></CommunityDiscussions>
      <TestimonialCarousel></TestimonialCarousel>
      <BlogPage></BlogPage>

@@ -15,7 +15,7 @@ const Navbar = () => {
   // Prevent crash before context is ready
   if (!auth) return null;
   const { user, googleSign, logout } = auth;
-  console.log("user : ", user)
+  // console.log("user : ", user)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);

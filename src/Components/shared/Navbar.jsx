@@ -10,7 +10,6 @@ const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false); // ✅ NEW
   const timeoutRef = useRef(null);
   const containerRef = useRef(null);
-  console.log(user);
 
   // Cleanup on unmount
   useEffect(() => {

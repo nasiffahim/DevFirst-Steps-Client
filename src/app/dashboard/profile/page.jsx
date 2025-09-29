@@ -1,13 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
+import api from "../../../utils/api";
 
 export default function ProfilePage() {
   const [tab, setTab] = useState("blogs"); // default tab
   const { user, loading } = useAuth();
+  const [role, setRole] = useState(null);
+  const email = user?.email;
+  useEffect(() => {
+    if (!email) return;
 
+    const fetchRole = async () => {
+      try {
+        const res = await api.get("/user-role", {
+          params: { email },
+        });
+        setRole(res.data.role);
+      } catch (err) {
+        console.error("Failed to fetch role", err);
+      } 
+    };
+
+    fetchRole();
+  }, [email]);
   const projects = [
     { title: "Python Explorer", link: "#" },
     { title: "Web Scraper Toolkit", link: "#" },
@@ -64,6 +82,9 @@ export default function ProfilePage() {
               <h1 className="text-xl font-semibold">{user.displayName}</h1>
               <p className="text-sm text-gray-300">
               {user.email}
+              </p>
+              <p className="text-sm text-gray-300">
+              {role ? `Role: ${role}` : "Role: User"}
               </p>
             </div>
           </div>

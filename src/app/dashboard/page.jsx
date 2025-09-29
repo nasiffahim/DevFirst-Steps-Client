@@ -126,6 +126,8 @@ const Page = () => {
     { label: "Reports", value: 3, icon: AlertTriangle },
   ];
 
+  
+
   // Sample static data with thumbnails
   const blogs = [
     {
@@ -196,25 +198,28 @@ const Page = () => {
   return (
     <div className="space-y-10 p-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {(role === "admin" ? adminStats : userStats).map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
-            >
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
-                <Icon className="w-6 h-6" />
-              </div>
-              <span className="text-3xl font-bold text-gray-800">
-                {item.value}
-              </span>
-              <span className="text-sm text-gray-600 mt-1">{item.label}</span>
-            </div>
-          );
-        })}
-      </div>
+    {role === "user" && (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {userStats.map((item, idx) => {
+      const Icon = item.icon;
+      return (
+        <div
+          key={idx}
+          className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
+        >
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+            <Icon className="w-6 h-6" />
+          </div>
+          <span className="text-3xl font-bold text-gray-800">
+            {item.value}
+          </span>
+          <span className="text-sm text-gray-600 mt-1">{item.label}</span>
+        </div>
+      );
+    })}
+  </div>
+)}
+      
 
       {/* Blogs Section */}
       {role === "user" && (

@@ -8,7 +8,8 @@ import TestimonialCarousel from "../Components/home/TestimonialCarousel";
 import ProjectsPage from "./projects/[id]/page";
 import ProjectList from "../Components/home/ProjectsList";
 import BlogPage from "../Components/Blog/BlogPage";
-import {CommunityDiscussions} from "../Components/home/CommunityDiscussions"
+import {CommunityStats} from "../Components/shared/CommunityStats"
+// import {CommunityDiscussions} from "../Components/home/CommunityDiscussions"
 export default function Home() {
   return (
     <div>
@@ -17,7 +18,8 @@ export default function Home() {
      <TechStackSection></TechStackSection>
      <ProjectList limit={6}></ProjectList>
      {/* <CommunityDiscussions></CommunityDiscussions> */}
-     <CommunityDiscussions></CommunityDiscussions>
+     {/* <CommunityDiscussions></CommunityDiscussions> */}
+     <CommunityStats/>
      <TestimonialCarousel></TestimonialCarousel>
      <BlogPage></BlogPage>
      <FAQ></FAQ>

@@ -49,6 +49,7 @@ export default function Layout({ children }) {
     { name: "My Blogs", href: "/dashboard/my-blogs" },
     { name: "Start a Discussion", href: "/dashboard/discussion" },
     { name: "My Discussion", href: "/dashboard/my-discussion" },
+    { name: "Leaderboard", href: "/dashboard/leaderboard" },
     ...(role === "admin"
       ? [
           // { name: "Projects", href: "/dashboard/projects" },

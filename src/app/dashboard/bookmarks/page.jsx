@@ -36,8 +36,8 @@ const BookmarkedProjects = () => {
         params: {
           page: currentPage,
           limit: 12,
-          sort: 'bookmarkedAt'
-        }
+          sort: "bookmarkedAt",
+        },
       });
 
       setBookmarks(response.data.data);
@@ -54,7 +54,7 @@ const BookmarkedProjects = () => {
   const handleRemoveBookmark = async (projectId) => {
     try {
       const userEmail = user.email;
-      
+
       await api.delete(`/bookmarks/${projectId}?email=${user.email}`);
 
       // Refresh bookmarks list
@@ -79,7 +79,7 @@ const BookmarkedProjects = () => {
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
-      day: "numeric"
+      day: "numeric",
     });
   };
 
@@ -99,9 +99,12 @@ const BookmarkedProjects = () => {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">My Bookmarks</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            My Bookmarks
+          </h1>
           <p className="text-gray-600 text-lg">
-            {totalBookmarks} {totalBookmarks === 1 ? 'project' : 'projects'} saved for later
+            {totalBookmarks} {totalBookmarks === 1 ? "project" : "projects"}{" "}
+            saved for later
           </p>
         </div>
 
@@ -114,10 +117,14 @@ const BookmarkedProjects = () => {
         {bookmarks.length === 0 && !loading && !error ? (
           <div className="text-center py-16">
             <div className="text-gray-400 text-6xl mb-4">📚</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">No Bookmarks Yet</h2>
-            <p className="text-gray-600 mb-6">Start bookmarking projects to see them here!</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              No Bookmarks Yet
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Start bookmarking projects to see them here!
+            </p>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/projects")}
               className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-medium"
             >
               Explore Projects
@@ -130,7 +137,7 @@ const BookmarkedProjects = () => {
               {bookmarks.map((bookmark) => (
                 <div
                   key={bookmark._id}
-                  className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 group"
+                  className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 group flex flex-col"
                 >
                   {/* Project Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -144,7 +151,9 @@ const BookmarkedProjects = () => {
                         <h3 className="font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                           {bookmark.projectName}
                         </h3>
-                        <p className="text-sm text-gray-600 truncate">by {bookmark.owner}</p>
+                        <p className="text-sm text-gray-600 truncate">
+                          by {bookmark.owner}
+                        </p>
                       </div>
                     </div>
                     <button
@@ -191,6 +200,9 @@ const BookmarkedProjects = () => {
                     </div>
                   )}
 
+                  {/* Spacer to push content to bottom */}
+                  <div className="flex-1"></div>
+
                   {/* Stats */}
                   <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
@@ -203,15 +215,12 @@ const BookmarkedProjects = () => {
                     </div>
                   </div>
 
-                  {/* Bookmarked Date */}
-                  <p className="text-xs text-gray-500 mb-4">
-                    Bookmarked on {formatDate(bookmark.bookmarkedAt)}
-                  </p>
-
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => router.push(`/project/${bookmark.projectId}`)}
+                      onClick={() =>
+                        router.push(`/project/${bookmark.projectId}`)
+                      }
                       className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium"
                     >
                       View Details
@@ -222,8 +231,16 @@ const BookmarkedProjects = () => {
                       rel="noopener noreferrer"
                       className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-200 text-sm font-medium"
                     >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </a>
                   </div>
@@ -235,13 +252,15 @@ const BookmarkedProjects = () => {
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2">
                 <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
                   disabled={currentPage === 1}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex gap-2">
                   {[...Array(totalPages)].map((_, index) => (
                     <button
@@ -259,7 +278,9 @@ const BookmarkedProjects = () => {
                 </div>
 
                 <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >

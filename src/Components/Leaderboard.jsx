@@ -8,15 +8,15 @@ import Badge from "./Badge";
 const Leaderboard = () => {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchLeaderboard = async () => {
-      try {
-        const res = await api.get("/leaderboard");
-        setUsers(res.data);
-      } catch (err) {
-        console.error(err);
+      try {const response = await api.get("/leaderboard");
+      setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
       }
     };
+
     fetchLeaderboard();
   }, []);
 

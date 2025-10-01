@@ -1,9 +1,12 @@
 import React from 'react';
 import { CommunityDiscussions } from '../../../Components/home/CommunityDiscussions';
+import ProtectedPage from "../../../Components/Protected/ProtectedPage"
 const  CommunityHub= () => {
     return (
         <div>
-           <CommunityDiscussions></CommunityDiscussions>  
+         <ProtectedPage>  
+           <CommunityDiscussions></CommunityDiscussions> 
+            </ProtectedPage> 
         </div>
     );
 };

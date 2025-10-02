@@ -8,6 +8,7 @@ import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import api from "../../utils/api";
 
+
 export default function Layout({ children }) {
   const pathname = usePathname() ?? "";
   const isRootDashboard =
@@ -45,6 +46,7 @@ export default function Layout({ children }) {
     { name: "Profile", href: "/dashboard/profile" },
     { name: "Add Projects", href: "/dashboard/add-projects" },
     { name: "My Projects", href: "/dashboard/my-projects" },
+    { name: "Bookmarks", href: "/dashboard/bookmarks" },
     { name: "Add Blogs", href: "/dashboard/add-blogs" },
     { name: "My Blogs", href: "/dashboard/my-blogs" },
     { name: "Start a Discussion", href: "/dashboard/discussion" },

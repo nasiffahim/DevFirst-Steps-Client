@@ -124,6 +124,7 @@ const Navbar = () => {
           description:
             "Connect with maintainers and contributors in project communities.",
           icon: "👥",
+          href: "/discussions"
         },
       ],
     },
@@ -349,7 +350,7 @@ const Navbar = () => {
                   {item.items.map((dropdownItem) => (
                     <Link
                       key={dropdownItem.name}
-                      href="#"
+                      href={dropdownItem.href || "#"}
                       className="group p-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-transparent"
                     >
                       <div className="flex items-start">
@@ -417,7 +418,7 @@ const Navbar = () => {
                           {item.items.map((dropdownItem) => (
                             <Link
                               key={dropdownItem.name}
-                              href="#"
+                              href={dropdownItem.href || "#"}
                               className="flex items-start text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-3 text-sm transition-colors duration-200"
                             >
                               <span className="mr-3 text-lg mt-1">

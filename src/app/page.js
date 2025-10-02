@@ -9,6 +9,8 @@ import ProjectList from "../Components/home/ProjectsList";
 import BlogPage from "../Components/Blog/BlogPage";
 import {CommunityStats} from "../Components/shared/CommunityStats"
 import { CommunityDiscussions } from "../Components/home/CommunityDiscussions";
+
+
 export default function Home() {
   return (
     <div>
@@ -16,8 +18,7 @@ export default function Home() {
      <HowItWorks></HowItWorks>
      <TechStackSection></TechStackSection>
      <ProjectList limit={6}></ProjectList>
-     <CommunityStats/>
-       <CommunityDiscussions></CommunityDiscussions> 
+     <CommunityDiscussions></CommunityDiscussions>
      <TestimonialCarousel></TestimonialCarousel>
      <BlogPage></BlogPage>
      <FAQ></FAQ>

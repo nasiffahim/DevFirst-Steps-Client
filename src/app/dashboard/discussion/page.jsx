@@ -6,46 +6,68 @@ import useAuth from "../../hooks/useAuth";
 import ProtectedPage from "../../../Components/Protected/ProtectedPage";
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 export default function CommunityCreate() {
+  const router=useRouter()
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [imageUrl, setImageUrl] = useState(null); // Stores image URL
   const [selectedTags, setSelectedTags] = useState([]); // Stores selected tags
   const { user } = useAuth(); // User data from auth hook
 
-  const onSubmit = async (data) => {
-    try {
-      const payload = {
-        title: data.title,
-        preview: data.content.slice(0, 100), // Optional: generate preview from content
-        category: data.category,
-        content: data.content,
-        status: data.status || "active",
-        tags: selectedTags, // Send selected tags
-        author: {
-          name: user?.displayName || "Anonymous",
-          avatar: user?.photoURL || "👤",
-        },
-        email: user?.email,
-      };
+const onSubmit = async (data) => {
+  try {
+    const payload = {
+      title: data.title,
+      preview: data.content.slice(0, 100),
+      category: data.category,
+      content: data.content,
+      status: data.status || "active",
+      tags: selectedTags,
+      author: {
+        name: user?.displayName || "Anonymous",
+      avatar: user?.photoURL || "👤",
+      },
+      email: user?.email,
+    };
 
-      console.log(payload); // Log the payload to inspect
+    console.log("Payload:", payload);
 
-      // Send the post request with JSON, not multipart/form-data
-      const response = await axios.post("http://localhost:5000/create_post", payload, {
-        headers: { "Content-Type": "application/json" }, // Correct header for JSON
-      });
+    // Send the post request
+    const response = await axios.post("http://localhost:5000/create_post", payload, {
+      headers: { "Content-Type": "application/json" },
+    });
 
-      console.log("Discussion created:", response.data);
+    console.log("Discussion created:", response.data);
 
-      // Reset form fields after submission
-      // reset();
-      // setSelectedTags([]);
-      // setImageUrl(null);
-    } catch (error) {
-      console.error("Failed to create discussion:", error);
-    }
-  };
+    // ✅ Show success alert
+   Swal.fire({
+      title: "Success!",
+      text: "Your discussion was created successfully.",
+      icon: "success",
+      confirmButtonText: "OK",
+    }).then(() => {
+      // Redirect to home after alert confirmation
+      router.push("/");
+    });
+    // Reset form if needed
+    reset();
+    setSelectedTags([]);
+    setImageUrl(null);
+
+  } catch (error) {
+    console.error("Failed to create discussion:", error);
+
+    // ❌ Show error alert
+    Swal.fire({
+      title: "Error",
+      text: "Something went wrong. Please try again.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
+};
 
   return (
     <ProtectedPage>

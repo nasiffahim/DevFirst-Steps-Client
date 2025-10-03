@@ -30,7 +30,7 @@ export const CommunityDiscussions = () => {
       try {
         // discussions   check user  current check update match
         const { data: discussionData } = await axios.get(
-          "http://localhost:5000/api/discussions"
+          "http://localhost:5000/api/top-discussions"
         );
         setDiscussions(discussionData);
 
@@ -132,6 +132,8 @@ export const CommunityDiscussions = () => {
             developers solving real-world problems
           </p>
         </div>
+
+        <CommunityStats /> 
 
         {/* Discussions List */}
         <div className="space-y-4">

@@ -89,7 +89,7 @@ const TestimonialCarousel = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 px-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -147,7 +147,7 @@ const TestimonialCarousel = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 text-base text-justify leading-relaxed">
                   {testimonial.content}
                 </p>
               </div>

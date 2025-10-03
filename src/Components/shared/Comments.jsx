@@ -21,7 +21,6 @@ export const Comments = ({ discussionId }) => {
     setComments(data);
   };
 
-  console.log("user :", user);
   useEffect(() => {
     fetchComments();
   }, [discussionId]);

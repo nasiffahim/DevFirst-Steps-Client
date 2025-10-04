@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Button } from "../../../Components/ui/button";
+import useAxiosSecure from "../../hooks/useAxiosSecure"; // ✅ import the hook
 
 const popularSkills = [
   "JavaScript",
@@ -27,7 +28,7 @@ const popularSkills = [
   "Docker",
 ];
 
-// Generate random positions for floating icons
+// Generate floating background icons
 const generateFloatingIcons = (count) =>
   Array.from({ length: count }, (_, i) => ({
     id: i,
@@ -35,7 +36,9 @@ const generateFloatingIcons = (count) =>
     left: Math.random() * 100,
     size: 20 + Math.random() * 30,
     rotate: Math.random() * 360,
-    color: ["#FACC15", "#3B82F6", "#14B8A6", "#A78BFA"][Math.floor(Math.random() * 4)],
+    color: ["#FACC15", "#3B82F6", "#14B8A6", "#A78BFA"][
+      Math.floor(Math.random() * 4)
+    ],
   }));
 
 const EditProfilePage = () => {
@@ -43,6 +46,8 @@ const EditProfilePage = () => {
   const [databaseUser, setDatabaseUser] = useState(null);
   const [databaseLoading, setDatabaseLoading] = useState(true);
   const email = user?.email;
+    const axiosSecure = useAxiosSecure(); // ✅ call the hook, don’t import directly
+
 
   const [role, setRole] = useState(null);
   const [formData, setFormData] = useState({
@@ -58,7 +63,7 @@ const EditProfilePage = () => {
 
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
-  const [floatingIcons, setFloatingIcons] = useState(generateFloatingIcons(15));
+  const [floatingIcons] = useState(generateFloatingIcons(15));
 
   // Fetch user role
   useEffect(() => {
@@ -80,11 +85,13 @@ const EditProfilePage = () => {
     const fetchUserData = async () => {
       try {
         setDatabaseLoading(true);
-        const res = await api.get("/single_user", { params: { emailParams: email } });
+        const res = await api.get("/single_user", {
+          params: { emailParams: email },
+        });
         setDatabaseUser(res.data);
         setFormData({
-          displayName: res.data.displayName || "",
-          photoURL: res.data.photoURL || "",
+          displayName: res.data.username || "",
+          photoURL: res.data.image || "",
           address: res.data.address || "",
           education: res.data.education || "",
           skills: res.data.skills || [],
@@ -141,14 +148,33 @@ const EditProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    Swal.fire({
-      position: "top-bottom",
-      icon: "success",
-      title: "Profile updated successfully",
-      showConfirmButton: false,
-      timer: 1500,
-    });
+    try {
+      // Call backend update endpoint
+      const res = await axiosSecure.put(
+        "/update_user",
+        formData,
+        { params: { email } } // pass email as query param
+      );
+
+      if (res.status === 200) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Profile updated successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      console.error("Update failed:", error);
+      Swal.fire({
+        position: "top-end",
+        icon: "error",
+        title: "Failed to update profile",
+        text: error.response?.data?.message || "Something went wrong",
+        showConfirmButton: true,
+      });
+    }
   };
 
   if (loading || databaseLoading) {
@@ -161,7 +187,7 @@ const EditProfilePage = () => {
 
   return (
     <div className="relative min-h-screen bg-gray-50 p-6 overflow-hidden">
-      {/* Framer Motion Floating Background */}
+      {/* Floating Background */}
       {floatingIcons.map((icon) => (
         <motion.div
           key={icon.id}
@@ -187,155 +213,174 @@ const EditProfilePage = () => {
       ))}
 
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md relative z-10">
-        <h1 className="text-2xl font-semibold mb-6 text-gray-800">Edit Profile</h1>
+        <div className="mx-auto text-center">
+          <h1 className="text-2xl font-semibold mb-2 text-gray-800">
+            Edit Profile
+          </h1>
+        </div>
 
-        {/* Profile Picture */}
-        <div className="flex items-center gap-6 mb-6">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
-            {formData.photoURL && (
-              <img
-                src={formData.photoURL}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            )}
+        {/* Top Grid Section */}
+        <div className="flex flex-col md:flex-row gap-6 mb-8 items-center">
+          {/* Left - Image */}
+          <div className="flex justify-center md:justify-start">
+            <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200">
+              {formData.photoURL ? (
+                <img
+                  src={formData.photoURL}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  No Image
+                </div>
+              )}
+            </div>
           </div>
-          <input
-            type="text"
-            placeholder="Photo URL"
-            name="photoURL"
-            value={formData.photoURL}
-            onChange={handleChange}
-            className="border p-2 rounded-lg w-full"
-          />
-        </div>
 
-        {/* Name */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">Name</label>
-          <input
-            type="text"
-            name="displayName"
-            value={formData.displayName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
-
-        {/* Address */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="City, Country"
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
-
-        {/* Education */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">Education</label>
-          <input
-            type="text"
-            name="education"
-            value={formData.education}
-            onChange={handleChange}
-            placeholder="Your degree, university..."
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
-
-        {/* Skills */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2">Skills</label>
-          <div className="flex gap-2 flex-wrap mb-2">
-            {formData.skills.map((skill) => (
-              <span
-                key={skill}
-                className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-              >
-                {skill}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveSkill(skill)}
-                  className="text-red-500 font-bold"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
+          {/* Right - User Info */}
+          <div className=" space-y-2 text-center md:text-left">
+            <p className="text-lg font-semibold text-gray-800">
+              {formData.displayName || "Unnamed User"}
+            </p>
+            <p className="text-sm text-gray-600">{email}</p>
+            <p className="text-sm font-medium text-indigo-600">
+              {role || "User"}
+            </p>
           </div>
-          <div className="relative">
+        </div>
+
+        {/* Editable Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Address */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Address
+            </label>
             <input
               type="text"
-              value={skillInput}
-              onChange={handleSkillChange}
-              onKeyDown={(e) => e.key === "Enter" && handleAddSkill(skillInput)}
-              placeholder="Type a skill and press Enter"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="City, Country"
               className="w-full p-2 border rounded-lg"
             />
-            {filteredSkills.length > 0 && (
-              <ul className="absolute z-10 w-full bg-white border mt-1 rounded-lg shadow max-h-40 overflow-auto">
-                {filteredSkills.map((skill) => (
-                  <li
-                    key={skill}
-                    onClick={() => handleAddSkill(skill)}
-                    className="px-3 py-2 hover:bg-indigo-100 cursor-pointer"
-                  >
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
-        </div>
 
-        {/* Important Links */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">LinkedIn</label>
-          <input
-            type="text"
-            name="linkedin"
-            value={formData.linkedin}
-            onChange={handleChange}
-            placeholder="https://linkedin.com/in/username"
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
+          {/* Education */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Education
+            </label>
+            <input
+              type="text"
+              name="education"
+              value={formData.education}
+              onChange={handleChange}
+              placeholder="Your degree, university..."
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">GitHub</label>
-          <input
-            type="text"
-            name="github"
-            value={formData.github}
-            onChange={handleChange}
-            placeholder="https://github.com/username"
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
+          {/* Skills */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">
+              Skills
+            </label>
+            <div className="flex gap-2 flex-wrap mb-2">
+              {formData.skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSkill(skill)}
+                    className="text-red-500 font-bold"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={skillInput}
+                onChange={handleSkillChange}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleAddSkill(skillInput)
+                }
+                placeholder="Type a skill and press Enter"
+                className="w-full p-2 border rounded-lg"
+              />
+              {filteredSkills.length > 0 && (
+                <ul className="absolute z-10 w-full bg-white border mt-1 rounded-lg shadow max-h-40 overflow-auto">
+                  {filteredSkills.map((skill) => (
+                    <li
+                      key={skill}
+                      onClick={() => handleAddSkill(skill)}
+                      className="px-3 py-2 hover:bg-indigo-100 cursor-pointer"
+                    >
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-1">Resume</label>
-          <input
-            type="text"
-            name="resume"
-            value={formData.resume}
-            onChange={handleChange}
-            placeholder="Link to resume (PDF)"
-            className="w-full p-2 border rounded-lg"
-          />
-        </div>
+          {/* Links */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              LinkedIn
+            </label>
+            <input
+              type="text"
+              name="linkedin"
+              value={formData.linkedin}
+              onChange={handleChange}
+              placeholder="https://linkedin.com/in/username"
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
 
-        <Button
-          onClick={handleSubmit}
-          className="bg-indigo-600 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg cursor-pointer"
-        >
-          Save Changes
-        </Button>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              GitHub
+            </label>
+            <input
+              type="text"
+              name="github"
+              value={formData.github}
+              onChange={handleChange}
+              placeholder="https://github.com/username"
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Resume
+            </label>
+            <input
+              type="text"
+              name="resume"
+              value={formData.resume}
+              onChange={handleChange}
+              placeholder="Link to resume (PDF)"
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="bg-indigo-600 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg cursor-pointer"
+          >
+            Save Changes
+          </Button>
+        </form>
       </div>
     </div>
   );

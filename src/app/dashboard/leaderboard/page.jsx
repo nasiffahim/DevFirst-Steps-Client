@@ -1,6 +1,5 @@
-
-import Leaderboard from '../../../Components/Leaderboard';
-import React from 'react';
+import Leaderboard from "../../../Components/Leaderboard";
+import React from "react";
 
 export default function LeaderboardPage() {
   return (

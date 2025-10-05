@@ -1,3 +1,4 @@
+
 import React from "react";
 
 const Badge = ({ badge }) => {
@@ -7,8 +8,10 @@ const Badge = ({ badge }) => {
   if (badge === "Gold") color = "bg-yellow-400";
 
   return (
-    <span className={`px-2 py-1 rounded ${color} text-white text-sm`}>
-      {badge}
+    <span
+      className={`px-2 py-1 rounded ${color} text-white text-xs font-semibold`}
+    >
+      {badge || "Newbie"}
     </span>
   );
 };

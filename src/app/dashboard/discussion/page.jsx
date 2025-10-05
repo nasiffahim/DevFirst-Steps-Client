@@ -8,6 +8,7 @@ import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import api from "../../../utils/api";
 
 export default function CommunityCreate() {
   const router=useRouter()
@@ -15,7 +16,7 @@ export default function CommunityCreate() {
   const [imageUrl, setImageUrl] = useState(null); // Stores image URL
   const [selectedTags, setSelectedTags] = useState([]); // Stores selected tags
   const { user } = useAuth(); // User data from auth hook
-
+const userEmail=user?.email;
 const onSubmit = async (data) => {
   try {
     const payload = {
@@ -41,6 +42,12 @@ const onSubmit = async (data) => {
 
     console.log("Discussion created:", response.data);
 
+    if (userEmail) {
+      await api.post("/update-activity", {
+        email: userEmail,
+        activityType: "discussion-participation",
+      });
+    }
     // ✅ Show success alert
    Swal.fire({
       title: "Success!",

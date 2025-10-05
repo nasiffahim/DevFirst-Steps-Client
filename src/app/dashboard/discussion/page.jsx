@@ -8,26 +8,32 @@ import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { 
-  FileText, 
-  FolderOpen, 
-  AlignLeft, 
-  Tag, 
-  Send, 
+import {
+  FileText,
+  FolderOpen,
+  AlignLeft,
+  Tag,
+  Send,
   AlertCircle,
   CheckCircle,
   Flame,
   Star,
-  Circle
+  Circle,
 } from "lucide-react";
+import api from "../../../utils/api";
 
 export default function CommunityCreate() {
   const router = useRouter();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
-  const [imageUrl, setImageUrl] = useState(null);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const { user } = useAuth();
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+  const [imageUrl, setImageUrl] = useState(null); // Stores image URL
+  const [selectedTags, setSelectedTags] = useState([]); // Stores selected tags
+  const { user } = useAuth(); // User data from auth hook
+  const userEmail = user?.email;
   const onSubmit = async (data) => {
     try {
       const payload = {
@@ -46,25 +52,40 @@ export default function CommunityCreate() {
 
       console.log("Payload:", payload);
 
-      const response = await axios.post("http://localhost:5000/create_post", payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/create_post",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       console.log("Discussion created:", response.data);
 
+      if (userEmail) {
+        await api.post("/update-activity", {
+          email: userEmail,
+          activityType: "discussion-participation",
+        });
+      }
+      // ✅ Show success alert
       Swal.fire({
         title: "Success!",
         text: "Your discussion was created successfully.",
         icon: "success",
         confirmButtonText: "OK",
       }).then(() => {
+        // Redirect to home after alert confirmation
         router.push("/");
       });
-
+      // Reset form if needed
       reset();
       setSelectedTags([]);
       setImageUrl(null);
 
+      reset();
+      setSelectedTags([]);
+      setImageUrl(null);
     } catch (error) {
       console.error("Failed to create discussion:", error);
 
@@ -78,12 +99,17 @@ export default function CommunityCreate() {
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case "active": return <Circle className="w-4 h-4" />;
-      case "solved": return <CheckCircle className="w-4 h-4" />;
-      case "featured": return <Star className="w-4 h-4" />;
-      case "hot": return <Flame className="w-4 h-4" />;
-      default: return <Circle className="w-4 h-4" />;
+    switch (status) {
+      case "active":
+        return <Circle className="w-4 h-4" />;
+      case "solved":
+        return <CheckCircle className="w-4 h-4" />;
+      case "featured":
+        return <Star className="w-4 h-4" />;
+      case "hot":
+        return <Flame className="w-4 h-4" />;
+      default:
+        return <Circle className="w-4 h-4" />;
     }
   };
 
@@ -103,8 +129,10 @@ export default function CommunityCreate() {
 
           {/* Form Container */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 space-y-6">
-              
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="p-6 sm:p-8 space-y-6"
+            >
               {/* Title Field */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -135,7 +163,9 @@ export default function CommunityCreate() {
                 </label>
                 <input
                   type="text"
-                  {...register("category", { required: "Category is required" })}
+                  {...register("category", {
+                    required: "Category is required",
+                  })}
                   placeholder="e.g., Technology, Web Development, Design"
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent outline-none transition-all"
                 />
@@ -174,7 +204,10 @@ export default function CommunityCreate() {
                   <Tag className="w-4 h-4" />
                   Tags
                 </label>
-                <TagSelector selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
+                <TagSelector
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
               </div>
 
               {/* Status Dropdown */}
@@ -193,8 +226,18 @@ export default function CommunityCreate() {
                     <option value="hot">🔥 Hot</option>
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 dark:text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -212,7 +255,7 @@ export default function CommunityCreate() {
                   <Send className="w-4 h-4" />
                   Publish Discussion
                 </button>
-                
+
                 <button
                   type="button"
                   onClick={() => {
@@ -231,7 +274,8 @@ export default function CommunityCreate() {
           {/* Helper Text */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Fields marked with <span className="text-red-500">*</span> are required
+              Fields marked with <span className="text-red-500">*</span> are
+              required
             </p>
           </div>
         </div>

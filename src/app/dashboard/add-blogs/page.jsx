@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import api from "../../../utils/api";
 import { FileText, User, Tag, AlignLeft, Image, Save, RotateCcw, Upload } from "lucide-react";
+import useAuth from "../../hooks/useAuth";
 
 export default function AddBlogForm() {
   const [title, setTitle] = useState("");
@@ -13,6 +14,8 @@ export default function AddBlogForm() {
   const [content, setContent] = useState("");
   const [thumbPreview, setThumbPreview] = useState(null);
   const fileRef = useRef(null);
+  const {user} =useAuth();
+  const userEmail=user?.email;
 
   const handleThumbChange = (e) => {
     const file = e.target.files?.[0];
@@ -50,6 +53,12 @@ export default function AddBlogForm() {
       await api.post("/add-blogs", blog, {
         headers: { "Content-Type": "application/json" },
       });
+if (userEmail) {
+      await api.post("/update-activity", {
+        email: userEmail,
+        activityType: "blog-posting",
+      });
+    }
 
       Swal.fire({
         icon: "success",

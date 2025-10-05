@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
 
 export default function AddProjectForm() {
@@ -18,6 +19,8 @@ export default function AddProjectForm() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const {user} =useAuth();
+  const userEmail=user?.email;
 
   function handleThumbChange(e) {
     const file = e.target.files?.[0];
@@ -54,6 +57,13 @@ export default function AddProjectForm() {
 
     try {
       await api.post("/add-projects", project);
+
+   if (userEmail) {
+      await api.post("/update-activity", {
+        email: userEmail,
+        activityType: "project-addition",
+      });
+    }
 
       Swal.fire({
         icon: "success",

@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
-import { X } from "lucide-react";
+import { X, User, MapPin, GraduationCap, Briefcase, Linkedin, Github, FileText, Camera, Save } from "lucide-react";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Button } from "../../../Components/ui/button";
-import useAxiosSecure from "../../hooks/useAxiosSecure"; // ✅ import the hook
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const popularSkills = [
   "JavaScript",
@@ -46,8 +46,7 @@ const EditProfilePage = () => {
   const [databaseUser, setDatabaseUser] = useState(null);
   const [databaseLoading, setDatabaseLoading] = useState(true);
   const email = user?.email;
-    const axiosSecure = useAxiosSecure(); // ✅ call the hook, don’t import directly
-
+  const axiosSecure = useAxiosSecure();
 
   const [role, setRole] = useState(null);
   const [formData, setFormData] = useState({
@@ -149,11 +148,10 @@ const EditProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Call backend update endpoint
       const res = await axiosSecure.put(
         "/update_user",
         formData,
-        { params: { email } } // pass email as query param
+        { params: { email } }
       );
 
       if (res.status === 200) {
@@ -179,19 +177,22 @@ const EditProfilePage = () => {
 
   if (loading || databaseLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="inline-block w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-gray-50 p-6 overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8 overflow-hidden">
       {/* Floating Background */}
       {floatingIcons.map((icon) => (
         <motion.div
           key={icon.id}
-          className="absolute rounded-full opacity-30"
+          className="absolute rounded-full opacity-20 dark:opacity-10"
           style={{
             top: `${icon.top}%`,
             left: `${icon.left}%`,
@@ -212,175 +213,222 @@ const EditProfilePage = () => {
         />
       ))}
 
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md relative z-10">
-        <div className="mx-auto text-center">
-          <h1 className="text-2xl font-semibold mb-2 text-gray-800">
-            Edit Profile
-          </h1>
-        </div>
-
-        {/* Top Grid Section */}
-        <div className="flex flex-col md:flex-row gap-6 mb-8 items-center">
-          {/* Left - Image */}
-          <div className="flex justify-center md:justify-start">
-            <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200">
-              {formData.photoURL ? (
-                <img
-                  src={formData.photoURL}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-400">
-                  No Image
+      <div className="max-w-4xl mx-auto relative z-10">
+        {/* Header Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-6 overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="bg-[#113F67] h-32"></div>
+          
+          <div className="px-6 sm:px-8 pb-8">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16">
+              {/* Profile Image */}
+              <div className="relative group">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800 shadow-xl">
+                  {formData.photoURL ? (
+                    <img
+                      src={formData.photoURL}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      <User className="w-16 h-16" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+                <div className="absolute bottom-2 right-2 bg-indigo-600 p-2 rounded-full shadow-lg cursor-pointer hover:bg-indigo-700 transition">
+                  <Camera className="w-4 h-4 text-white" />
+                </div>
+              </div>
 
-          {/* Right - User Info */}
-          <div className=" space-y-2 text-center md:text-left">
-            <p className="text-lg font-semibold text-gray-800">
-              {formData.displayName || "Unnamed User"}
-            </p>
-            <p className="text-sm text-gray-600">{email}</p>
-            <p className="text-sm font-medium text-indigo-600">
-              {role || "User"}
-            </p>
+              {/* User Info */}
+              <div className="flex-1 text-center sm:text-left space-y-2 mt-4 sm:mt-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                  {formData.displayName || "Unnamed User"}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 flex items-center justify-center sm:justify-start gap-2">
+                  <User className="w-4 h-4" />
+                  {email}
+                </p>
+                <span className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
+                  <Briefcase className="w-4 h-4" />
+                  {role || "User"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Editable Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Address */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Address
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="City, Country"
-              className="w-full p-2 border rounded-lg"
-            />
+        {/* Edit Form Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200 dark:border-gray-700">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Edit Profile
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Update your personal information and professional details
+            </p>
           </div>
 
-          {/* Education */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Education
-            </label>
-            <input
-              type="text"
-              name="education"
-              value={formData.education}
-              onChange={handleChange}
-              placeholder="Your degree, university..."
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
-
-          {/* Skills */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              Skills
-            </label>
-            <div className="flex gap-2 flex-wrap mb-2">
-              {formData.skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-                >
-                  {skill}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSkill(skill)}
-                    className="text-red-500 font-bold"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-            <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Address */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Address
+              </label>
               <input
                 type="text"
-                value={skillInput}
-                onChange={handleSkillChange}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && handleAddSkill(skillInput)
-                }
-                placeholder="Type a skill and press Enter"
-                className="w-full p-2 border rounded-lg"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="City, Country"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
               />
-              {filteredSkills.length > 0 && (
-                <ul className="absolute z-10 w-full bg-white border mt-1 rounded-lg shadow max-h-40 overflow-auto">
-                  {filteredSkills.map((skill) => (
-                    <li
+            </div>
+
+            {/* Education */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Education
+              </label>
+              <input
+                type="text"
+                name="education"
+                value={formData.education}
+                onChange={handleChange}
+                placeholder="Your degree, university..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
+              />
+            </div>
+
+            {/* Skills */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Skills
+              </label>
+              
+              {/* Skills Tags */}
+              {formData.skills.length > 0 && (
+                <div className="flex gap-2 flex-wrap mb-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                  {formData.skills.map((skill) => (
+                    <motion.span
                       key={skill}
-                      onClick={() => handleAddSkill(skill)}
-                      className="px-3 py-2 hover:bg-indigo-100 cursor-pointer"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium"
                     >
                       {skill}
-                    </li>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSkill(skill)}
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </motion.span>
                   ))}
-                </ul>
+                </div>
               )}
+
+              {/* Skills Input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={skillInput}
+                  onChange={handleSkillChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (skillInput.trim()) {
+                        handleAddSkill(skillInput);
+                      }
+                    }
+                  }}
+                  placeholder="Type a skill and press Enter"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
+                />
+                {filteredSkills.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 mt-2 rounded-lg shadow-lg max-h-48 overflow-auto">
+                    {filteredSkills.map((skill) => (
+                      <li
+                        key={skill}
+                        onClick={() => handleAddSkill(skill)}
+                        className="px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer text-gray-900 dark:text-white transition"
+                      >
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Select from suggestions or type your own and press Enter
+              </p>
             </div>
-          </div>
 
-          {/* Links */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              LinkedIn
-            </label>
-            <input
-              type="text"
-              name="linkedin"
-              value={formData.linkedin}
-              onChange={handleChange}
-              placeholder="https://linkedin.com/in/username"
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
+            {/* LinkedIn */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <Linkedin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                LinkedIn
+              </label>
+              <input
+                type="text"
+                name="linkedin"
+                value={formData.linkedin}
+                onChange={handleChange}
+                placeholder="https://linkedin.com/in/username"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              GitHub
-            </label>
-            <input
-              type="text"
-              name="github"
-              value={formData.github}
-              onChange={handleChange}
-              placeholder="https://github.com/username"
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
+            {/* GitHub */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                GitHub
+              </label>
+              <input
+                type="text"
+                name="github"
+                value={formData.github}
+                onChange={handleChange}
+                placeholder="https://github.com/username"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Resume
-            </label>
-            <input
-              type="text"
-              name="resume"
-              value={formData.resume}
-              onChange={handleChange}
-              placeholder="Link to resume (PDF)"
-              className="w-full p-2 border rounded-lg"
-            />
-          </div>
+            {/* Resume */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Resume
+              </label>
+              <input
+                type="text"
+                name="resume"
+                value={formData.resume}
+                onChange={handleChange}
+                placeholder="Link to resume (PDF)"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
+              />
+            </div>
 
-          <Button
-            type="submit"
-            className="bg-indigo-600 text-white hover:bg-indigo-500 px-6 py-2 rounded-lg cursor-pointer"
-          >
-            Save Changes
-          </Button>
-        </form>
+            {/* Submit Button */}
+            <div className="pt-4">
+              <Button
+                type="submit"
+                className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+              >
+                <Save className="w-5 h-5" />
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

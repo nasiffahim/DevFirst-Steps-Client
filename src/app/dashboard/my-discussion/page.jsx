@@ -183,7 +183,7 @@ const MyDiscussion = () => {
         {/* Page Header */}
         <div className="text-center mb-12">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-900 dark:bg-gray-800 shadow-lg mb-4">
             <MessageCircle className="w-10 h-10 text-white" />
           </div>
 

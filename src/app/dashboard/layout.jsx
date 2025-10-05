@@ -187,23 +187,23 @@ export default function Layout({ children }) {
             );
           })}
         </nav>
-
-        {/* Fixed Back to Home Button */}
-        <div className="fixed bottom-6 left-6 w-64 z-50">
-          <Link
-            href="/"
-            className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
-          >
-            <Home className="w-4 h-4" />
-            <span>Back to Home</span>
-          </Link>
-        </div>
       </aside>
+
+      {/* Fixed Back to Home Button */}
+      <div className="fixed bottom-6 left-6 w-64 z-50">
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
+        >
+          <Home className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">
         {isRootDashboard && (
-          <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-6">
+          <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-4">
               <button
                 className="md:hidden text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -212,20 +212,11 @@ export default function Layout({ children }) {
               >
                 <Menu className="w-6 h-6" />
               </button>
-              {/* <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <span>👋</span>
-                  <span>Welcome Back!</span>
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Here's an overview of your activity.
-                </p>
-              </div> */}
             </div>
           </header>
         )}
 
-        <main className="p-6 pb-24 md:pb-6">
+        <main className="">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

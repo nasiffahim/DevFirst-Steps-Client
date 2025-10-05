@@ -4,8 +4,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 
 export const VoteButtons = ({ discussionId, initialVotes }) => {
   const { user } = useAuth();
@@ -75,45 +74,51 @@ export const VoteButtons = ({ discussionId, initialVotes }) => {
     }
   };
 
+  const totalVotes = votes.up - votes.down;
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       {/* Upvote */}
       <button
         onClick={() => handleVote("up")}
-        className={`p-2 rounded transition-all duration-200 ${
+        className={`p-1 rounded transition-colors duration-200 ${
           userVote === "up"
-            ? "bg-green-500 text-white"
-            : "hover:bg-gray-200 dark:hover:bg-gray-700"
+            ? "text-green-600 dark:text-green-400"
+            : "text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
         disabled={loadingVote}
+        aria-label="Upvote"
       >
-        {userVote === "up" ? (
-          <Image src="/like.png" alt="Like" width={20} height={20} />
-        ) : (
-          <ThumbsUp className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-        )}
+        <ArrowBigUp 
+          className={`w-5 h-5 ${userVote === "up" ? "fill-current" : ""}`} 
+        />
       </button>
 
-      {/* Vote Count */}
-      <span className="font-medium text-gray-800 dark:text-gray-200 pr-2">{votes.up}</span>
-      <span className="font-medium text-gray-800 dark:text-gray-200">{votes.down}</span>
+      {/* Up Vote */}
+      <span className="font-semibold text-gray-900 dark:text-gray-100 min-w-[2ch] text-center">
+        {votes.up}
+      </span>
 
       {/* Downvote */}
       <button
         onClick={() => handleVote("down")}
-        className={`p-2 rounded transition-all duration-200 ${
+        className={`p-1 rounded transition-colors duration-200 ${
           userVote === "down"
-            ? "bg-red-500 text-white"
-            : "hover:bg-gray-200 dark:hover:bg-gray-700"
+            ? "text-red-600 dark:text-red-400"
+            : "text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
         disabled={loadingVote}
+        aria-label="Downvote"
       >
-        {userVote === "down" ? (
-          <Image src="/dislike.png" alt="Dislike" width={20} height={20} />
-        ) : (
-          <ThumbsDown className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-        )}
+        <ArrowBigDown
+          className={`w-5 h-5 ${userVote === "down" ? "fill-current" : ""}`} 
+        />
       </button>
+
+      {/* Down Vote */}
+      <span className="font-semibold text-gray-900 dark:text-gray-100 min-w-[2ch] text-center">
+        {votes.down}
+      </span>
     </div>
   );
 };

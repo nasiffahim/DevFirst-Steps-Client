@@ -13,28 +13,23 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import useAuth from "../../app/hooks/useAuth";
-import { Comments } from "../shared/Comments";
-import { VoteButtons } from "../shared/VoteButtons";
+import { VoteButtons } from "../../Components/shared/VoteButtons";
 import Link from "next/link";
-import { CommunityStats } from "../shared/CommunityStats";
 
-// Main Community Discussions
-export const CommunityDiscussions = () => {
+const Discussions = () => {
   const { user } = useAuth();
   const [discussions, setDiscussions] = useState([]);
   const [hoveredDiscussion, setHoveredDiscussion] = useState(null);
-  const [commentCounts, setCommentCounts] = useState({}); // store total comment count
+  const [commentCounts, setCommentCounts] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // discussions   check user  current check update match
         const { data: discussionData } = await axios.get(
-          "http://localhost:5000/api/top-discussions"
+          "http://localhost:5000/api/discussions"
         );
         setDiscussions(discussionData);
 
-        // Fetch comment counts
         const countsPromises = discussionData.map(async (d) => {
           const res = await axios.get(
             `http://localhost:5000/api/comments/${d._id}`
@@ -59,9 +54,9 @@ export const CommunityDiscussions = () => {
       }
     };
 
-    fetchData(); // initial fetch
-    const interval = setInterval(fetchData, 1000); // refresh every 1 second
-    return () => clearInterval(interval); // cleanup
+    fetchData();
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const getStatusIcon = (status) => {
@@ -132,8 +127,6 @@ export const CommunityDiscussions = () => {
             developers solving real-world problems
           </p>
         </div>
-
-        <CommunityStats /> 
 
         {/* Discussions List */}
         <div className="space-y-4">
@@ -300,3 +293,5 @@ export const CommunityDiscussions = () => {
     </section>
   );
 };
+
+export default Discussions;

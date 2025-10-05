@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-export const CommunityDiscussions = () => {
+export const CommunityDiscussions2 = () => {
   const [hoveredDiscussion, setHoveredDiscussion] = useState(null);
 
   const discussions = [

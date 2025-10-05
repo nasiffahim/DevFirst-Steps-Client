@@ -3,6 +3,7 @@
 import React from 'react';
 import { Github, Twitter, Linkedin, Mail, Heart, Code, Users, Star, ExternalLink } from 'lucide-react';
 import { usePathname } from "next/navigation";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -53,7 +54,7 @@ if (isDashboard) return null;
                 <Github className="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-white" />
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-400 rounded-lg flex items-center justify-center transition-all duration-200 group">
-                <Twitter className="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-white" />
+                <FaXTwitter className="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-white" />
               </a>
               <a href="#" className="w-10 h-10 bg-gray-800 dark:bg-gray-700 hover:bg-blue-700 dark:hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-200 group">
                 <Linkedin className="w-5 h-5 text-gray-400 dark:text-gray-300 group-hover:text-white" />

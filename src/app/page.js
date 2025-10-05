@@ -11,7 +11,11 @@ import {CommunityStats} from "../Components/shared/CommunityStats"
 import { CommunityDiscussions } from "../Components/home/CommunityDiscussions";
 
 
+
+
 export default function Home() {
+
+
   return (
     <div>
      <HeroSection></HeroSection>
@@ -22,6 +26,7 @@ export default function Home() {
      <TestimonialCarousel></TestimonialCarousel>
      <BlogPage></BlogPage>
      <FAQ></FAQ>
+    
     </div>
   );
 }

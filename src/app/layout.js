@@ -4,7 +4,7 @@ import Navbar from "../Components/layout/Navbar";
 import AuthProvider from "./providers/AuthProvider.jsx";
 import Footer from "../Components/layout/Footer";
 import { ThemeProvider } from "next-themes";
-
+import AiChat from"../Components/shared/Chatbot"; 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -43,6 +43,7 @@ export default function RootLayout({ children }) {
               <Navbar />
               <main className="flex-grow bg-white dark:bg-gray-900">
                 {children}
+            <AiChat></AiChat>
               </main>
               <Footer />
             </div>

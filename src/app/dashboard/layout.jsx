@@ -3,11 +3,26 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  User,
+  FolderPlus,
+  FolderOpen,
+  Bookmark,
+  PenSquare,
+  FileText,
+  MessageSquare,
+  MessagesSquare,
+  Trophy,
+  Settings,
+  Home,
+  Code,
+} from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import api from "../../utils/api";
-
 
 export default function Layout({ children }) {
   const pathname = usePathname() ?? "";
@@ -40,28 +55,30 @@ export default function Layout({ children }) {
     fetchRole();
   }, [email]);
 
-  // dynamic nav items based on role
+  // dynamic nav items based on role with icons
   const navItems = [
-    { name: "Overview", href: "/dashboard" },
-    { name: "Profile", href: "/dashboard/profile" },
-    { name: "Add Projects", href: "/dashboard/add-projects" },
-    { name: "My Projects", href: "/dashboard/my-projects" },
-    { name: "Bookmarks", href: "/dashboard/bookmarks" },
-    { name: "Add Blogs", href: "/dashboard/add-blogs" },
-    { name: "My Blogs", href: "/dashboard/my-blogs" },
-    { name: "Start a Discussion", href: "/dashboard/discussion" },
-    { name: "My Discussion", href: "/dashboard/my-discussion" },
-    { name: "Leaderboard", href: "/dashboard/leaderboard" },
+    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Profile", href: "/dashboard/profile", icon: User },
+    { name: "Add Projects", href: "/dashboard/add-projects", icon: FolderPlus },
+    { name: "My Projects", href: "/dashboard/my-projects", icon: FolderOpen },
+    { name: "Bookmarks", href: "/dashboard/bookmarks", icon: Bookmark },
+    { name: "Add Blogs", href: "/dashboard/add-blogs", icon: PenSquare },
+    { name: "My Blogs", href: "/dashboard/my-blogs", icon: FileText },
+    {
+      name: "Start a Discussion",
+      href: "/dashboard/discussion",
+      icon: MessageSquare,
+    },
+    {
+      name: "My Discussion",
+      href: "/dashboard/my-discussion",
+      icon: MessagesSquare,
+    },
+    { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
     ...(role === "admin"
-      ? [
-          // { name: "Projects", href: "/dashboard/projects" },
-          { name: "Settings", href: "/dashboard/settings" },
-        ]
+      ? [{ name: "Settings", href: "/dashboard/settings", icon: Settings }]
       : role === "user"
-      ? [
-          // { name: "Projects", href: "/dashboard/projects" },
-          { name: "Settings", href: "/dashboard/settings" },
-        ]
+      ? [{ name: "Settings", href: "/dashboard/settings", icon: Settings }]
       : []), // default empty until role loads
   ];
 
@@ -89,15 +106,22 @@ export default function Layout({ children }) {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-4 border-gray-300 dark:border-gray-700 border-t-gray-800 dark:border-t-gray-300 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
           aria-hidden
         />
@@ -108,17 +132,27 @@ export default function Layout({ children }) {
         ref={sidebarRef}
         role="dialog"
         aria-modal={sidebarOpen ? "true" : "false"}
-        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 z-50
+        className={`fixed inset-y-0 left-0 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 z-50
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0 md:static md:flex md:flex-col`}
       >
-        <div className="px-6 py-4 border-b flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">Dashboard</h2>
-            <p className="text-xs text-gray-500">DevFirst Steps</p>
+        {/* Sidebar Header */}
+        <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Code className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                Dashboard
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                DevFirst Steps
+              </p>
+            </div>
           </div>
           <button
-            className="md:hidden text-gray-700 p-2 rounded hover:bg-gray-100"
+            className="md:hidden text-gray-600 dark:text-gray-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={() => setSidebarOpen(false)}
             aria-label="Close menu"
           >
@@ -126,22 +160,29 @@ export default function Layout({ children }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-auto pb-20">
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-auto">
           {navItems.map((item) => {
             const active = pathname === item.href;
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block px-4 py-2 rounded-lg text-sm transition-colors duration-150
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                   ${
                     active
-                      ? "bg-gray-800 text-white"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-gray-900 dark:bg-gray-800 text-white shadow-sm"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/50"
                   }`}
                 aria-current={active ? "page" : undefined}
               >
-                {item.name}
+                <Icon
+                  className={`w-5 h-5 ${
+                    active ? "text-white" : "text-gray-500 dark:text-gray-400"
+                  }`}
+                />
+                <span>{item.name}</span>
               </Link>
             );
           })}
@@ -149,40 +190,35 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Fixed Back to Home Button */}
-      <div className="fixed bottom-6 left-6 w-52 z-60">
+      <div className="fixed bottom-6 left-6 w-64 z-50">
         <Link
           href="/"
-          className="block w-full bg-gray-800 text-white text-center py-2 rounded-lg text-sm hover:bg-gray-700 transition shadow-lg"
+          className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
         >
-          Back to Home
+          <Home className="w-4 h-4" />
+          <span>Back to Home</span>
         </Link>
       </div>
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">
         {isRootDashboard && (
-          <header className="bg-white shadow p-6 ">
-            <div className="flex items-center gap-3">
+          <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+            <div className="flex items-center gap-4">
               <button
-                className="md:hidden text-gray-700 p-2 rounded hover:bg-gray-100"
+                className="md:hidden text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open menu"
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">
-                  👋 Welcome Back!
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Here's an overview of your activity.
-                </p>
-              </div>
             </div>
           </header>
         )}
 
-        <main className="p-6">{children}</main>
+        <main className="">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
       </div>
     </div>
   );

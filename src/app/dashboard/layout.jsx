@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   Menu,
   X,
@@ -19,10 +20,11 @@ import {
   Settings,
   Home,
   Code,
-  users
+  Users,
+  Sun,
+  Moon,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
-import axios from "axios";
 import api from "../../utils/api";
 
 export default function Layout({ children }) {
@@ -32,20 +34,21 @@ export default function Layout({ children }) {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
+  const { theme, setTheme } = useTheme();
 
   // store role from API
   const [role, setRole] = useState(null);
   const { user, loading } = useAuth();
-  const email = user?.email; // get email from auth context
+  const email = user?.email;
 
   // fetch user role on mount
   useEffect(() => {
-    if (!email) return; // stop if email not ready
+    if (!email) return;
 
     const fetchRole = async () => {
       try {
         const res = await api.get(`/user-role`, {
-          params: { email }, // axios handles query params
+          params: { email },
         });
         setRole(res.data.role);
       } catch (err) {
@@ -60,28 +63,42 @@ export default function Layout({ children }) {
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Profile", href: "/dashboard/profile", icon: User },
-    { name: "All Users", href: "/dashboard/all-users", icon:User },
-    { name: "Add Projects", href: "/dashboard/add-projects", icon: FolderPlus },
-    { name: "My Projects", href: "/dashboard/my-projects", icon: FolderOpen },
-    { name: "Bookmarks", href: "/dashboard/bookmarks", icon: Bookmark },
-    { name: "Add Blogs", href: "/dashboard/add-blogs", icon: PenSquare },
-    { name: "My Blogs", href: "/dashboard/my-blogs", icon: FileText },
-    {
-      name: "Start a Discussion",
-      href: "/dashboard/discussion",
-      icon: MessageSquare,
-    },
-    {
-      name: "My Discussion",
-      href: "/dashboard/my-discussion",
-      icon: MessagesSquare,
-    },
-    { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+
     ...(role === "admin"
-      ? [{ name: "Settings", href: "/dashboard/settings", icon: Settings }]
+      ? [
+          { name: "All Users", href: "/dashboard/all-users", icon: Users },
+          { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+          { name: "Settings", href: "/dashboard/settings", icon: Settings },
+        ]
       : role === "user"
-      ? [{ name: "Settings", href: "/dashboard/settings", icon: Settings }]
-      : []), // default empty until role loads
+      ? [
+          {
+            name: "Add Projects",
+            href: "/dashboard/add-projects",
+            icon: FolderPlus,
+          },
+          {
+            name: "My Projects",
+            href: "/dashboard/my-projects",
+            icon: FolderOpen,
+          },
+          { name: "Bookmarks", href: "/dashboard/bookmarks", icon: Bookmark },
+          { name: "Add Blogs", href: "/dashboard/add-blogs", icon: PenSquare },
+          { name: "My Blogs", href: "/dashboard/my-blogs", icon: FileText },
+          {
+            name: "Start a Discussion",
+            href: "/dashboard/discussion",
+            icon: MessageSquare,
+          },
+          {
+            name: "My Discussion",
+            href: "/dashboard/my-discussion",
+            icon: MessagesSquare,
+          },
+          { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+          { name: "Settings", href: "/dashboard/settings", icon: Settings },
+        ]
+      : []),
   ];
 
   // lock body scroll when sidebar is open
@@ -140,6 +157,7 @@ export default function Layout({ children }) {
       >
         {/* Sidebar Header */}
         <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          {/* Left side - Logo and title */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Code className="w-5 h-5 text-white" />
@@ -153,13 +171,31 @@ export default function Layout({ children }) {
               </p>
             </div>
           </div>
-          <button
-            className="md:hidden text-gray-600 dark:text-gray-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            onClick={() => setSidebarOpen(false)}
-            aria-label="Close menu"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          {/* Right side - Theme toggle and close button */}
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle - Hidden on mobile */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hidden md:block p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </button>
+
+            {/* Close button - Only on mobile */}
+            <button
+              className="md:hidden text-gray-600 dark:text-gray-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -192,7 +228,7 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Fixed Back to Home Button */}
-      <div className="fixed bottom-6 left-6 w-64 z-50">
+      <div className="fixed bottom-6 left-6 w-64 z-50 hidden md:block">
         <Link
           href="/"
           className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
@@ -206,13 +242,26 @@ export default function Layout({ children }) {
       <div className="flex-1 min-h-screen">
         {isRootDashboard && (
           <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between">
               <button
                 className="md:hidden text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open menu"
               >
                 <Menu className="w-6 h-6" />
+              </button>
+
+              {/* Mobile Theme Toggle */}
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors duration-200"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
               </button>
             </div>
           </header>

@@ -152,7 +152,7 @@ const Page = () => {
   const projects = [];
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto p-6">
+    <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Welcome Banner - User Only */}
       {role === "user" && (
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">

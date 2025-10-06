@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@variant dark (.dark &);
+
+@theme {
+  --default-transition-duration: 200ms;
+}
+
+html {
+  color-scheme: light dark;
+}

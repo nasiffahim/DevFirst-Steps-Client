@@ -19,49 +19,68 @@ import {
   AlertTriangle,
   Star,
   Users as UsersIcon,
+  TrendingUp,
+  ArrowUpRight,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import api from "../../utils/api";
 
-// ✅ Reusable Blog Card
+// ✅ Reusable Blog Card with dark mode
 const BlogCard = ({ blog }) => (
-  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
-    <img
-      src={blog.thumbnail}
-      alt={blog.title}
-      className="w-full h-40 object-cover"
-    />
-    <div className="p-4">
-      <h3 className="text-base font-semibold text-gray-800">{blog.title}</h3>
-      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{blog.excerpt}</p>
-      <div className="text-xs text-gray-400 mt-2">
-        By {blog.author} • {blog.date}
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
+    <div className="relative overflow-hidden">
+      <img
+        src={blog.thumbnail}
+        alt={blog.title}
+        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    </div>
+    <div className="p-5">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+        {blog.title}
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
+        {blog.excerpt}
+      </p>
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <span className="text-xs text-gray-500 dark:text-gray-500">
+          By {blog.author}
+        </span>
+        <span className="text-xs text-gray-400 dark:text-gray-600">
+          {blog.date}
+        </span>
       </div>
     </div>
   </div>
 );
 
-// ✅ Reusable Project Card
+// ✅ Reusable Project Card with dark mode
 const ProjectCard = ({ project }) => (
-  <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-lg transition">
-    <img
-      src={project.thumbnail}
-      alt={project.name}
-      className="w-full h-40 object-cover"
-    />
-    <div className="p-4">
-      <h3 className="text-base font-semibold text-gray-800">{project.name}</h3>
-      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
+    <div className="relative overflow-hidden">
+      <img
+        src={project.thumbnail}
+        alt={project.name}
+        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    </div>
+    <div className="p-5">
+      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+        {project.name}
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
         {project.description}
       </p>
-      <div className="flex justify-between text-xs text-gray-400 mt-3">
-        <span className="flex items-center gap-1">
-          <Star className="w-4 h-4 text-yellow-500" /> {project.stars}
+      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+          <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+          <span className="font-medium">{project.stars}</span>
         </span>
-        <span className="flex items-center gap-1">
-          <UsersIcon className="w-4 h-4 text-indigo-500" />{" "}
-          {project.contributors}
+        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+          <UsersIcon className="w-3.5 h-3.5 text-gray-500 dark:text-gray-500" />
+          <span className="font-medium">{project.contributors}</span>
         </span>
       </div>
     </div>
@@ -97,141 +116,108 @@ const Page = () => {
 
   if (loading || roleLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="w-10 h-10 border-4 border-gray-300 dark:border-gray-700 border-t-gray-800 dark:border-t-gray-300 rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">Loading your dashboard...</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="text-center mt-10 text-gray-600">
-        Please log in to access the dashboard.
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="text-center bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+          <p className="text-gray-600 dark:text-gray-400">Please log in to access the dashboard.</p>
+        </div>
       </div>
     );
   }
 
   // ✅ Stats with icons
   const userStats = [
-    { label: "My Blog", value: 12, icon: BookOpen },
-    { label: "My Project", value: 88, icon: FolderKanban },
-    { label: "Bookmark Project", value: 7, icon: Bookmark },
-    { label: "Project Match", value: 5, icon: Sparkles },
+    { label: "My Blogs", value: 12, icon: BookOpen, color: "from-blue-500 to-blue-600" },
+    { label: "My Projects", value: 88, icon: FolderKanban, color: "from-purple-500 to-purple-600" },
+    { label: "Bookmarks", value: 7, icon: Bookmark, color: "from-pink-500 to-pink-600" },
+    { label: "Project Match", value: 5, icon: Sparkles, color: "from-amber-500 to-amber-600" },
   ];
 
   const adminStats = [
-    { label: "Total Users", value: 120, icon: Users },
-    { label: "Total Projects", value: 450, icon: FileBox },
-    { label: "Pending Approvals", value: 14, icon: Clock },
-    { label: "Reports", value: 3, icon: AlertTriangle },
+    { label: "Total Users", value: 120, icon: Users, color: "from-blue-500 to-blue-600" },
+    { label: "Total Projects", value: 450, icon: FileBox, color: "from-purple-500 to-purple-600" },
+    { label: "Pending Approvals", value: 14, icon: Clock, color: "from-orange-500 to-orange-600" },
+    { label: "Reports", value: 3, icon: AlertTriangle, color: "from-red-500 to-red-600" },
   ];
 
-  // Sample static data with thumbnails
-  const blogs = [
-    {
-      id: 1,
-      title: "Getting Started with Open Source",
-      excerpt:
-        "Learn how to make your first contribution to open-source projects...",
-      author: "Jane Doe",
-      date: "2025-09-20",
-      thumbnail:
-        "https://images.unsplash.com/photo-1575089976121-8ed7b2a54265?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 2,
-      title: "Top 5 GitHub Repositories for Beginners",
-      excerpt:
-        "A curated list of beginner-friendly repositories to help you start...",
-      author: "John Smith",
-      date: "2025-09-18",
-      thumbnail:
-        "https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHByb2dyYW1taW5nfGVufDB8fDB8fHww",
-    },
-    {
-      id: 3,
-      title: "Why Open Source Matters",
-      excerpt:
-        "Exploring the impact of open source on tech innovation and community...",
-      author: "Emily Johnson",
-      date: "2025-09-15",
-      thumbnail:
-        "https://images.unsplash.com/photo-1637073849667-91120a924221?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZGV2ZWxvcGVyc3xlbnwwfHwwfHx8MA%3D%3D",
-    },
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      name: "Next.js Starter Kit",
-      description:
-        "A boilerplate for building fast, scalable apps with Next.js and Tailwind CSS.",
-      stars: 120,
-      contributors: 15,
-      thumbnail:
-        "https://images.unsplash.com/photo-1643116774075-acc00caa9a7b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmV4dGpzfGVufDB8fDB8fHww",
-    },
-    {
-      id: 2,
-      name: "Open Source Finder",
-      description:
-        "A platform that connects developers with open source projects.",
-      stars: 240,
-      contributors: 32,
-      thumbnail:
-        "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 3,
-      name: "React UI Components",
-      description:
-        "Reusable, accessible, and customizable React components for modern apps.",
-      stars: 90,
-      contributors: 8,
-      thumbnail:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVhY3R8ZW58MHx8MHx8fDA%3D",
-    },
-  ];
+  const blogs = [];
+  const projects = [];
 
   return (
-    <div className="space-y-10 p-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {(role === "admin" ? adminStats : userStats).map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-6 flex flex-col items-center shadow-sm border border-gray-100 hover:shadow-lg transition"
-            >
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
-                <Icon className="w-6 h-6" />
-              </div>
-              <span className="text-3xl font-bold text-gray-800">
-                {item.value}
-              </span>
-              <span className="text-sm text-gray-600 mt-1">{item.label}</span>
+    <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      {/* Welcome Banner - User Only */}
+      {role === "user" && (
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name || 'Developer'}! 👋</h1>
+              <p className="text-gray-300 text-sm">Here's what's happening with your projects and blogs today.</p>
             </div>
-          );
-        })}
-      </div>
+            <TrendingUp className="w-12 h-12 text-gray-400 opacity-50" />
+          </div>
+        </div>
+      )}
+
+      {/* Stats Cards - User */}
+      {role === "user" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {userStats.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={idx}
+                className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-gray-400 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {item.value}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{item.label}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Blogs Section */}
       {role === "user" && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Latest Blogs
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Latest Blogs</h2>
+            <button 
+              onClick={() => router.push("/dashboard/my-blogs")}
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
+            >
+              View all
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <Lottie animationData={blogAnim} loop className="h-52" />
-                <p className="text-center mt-3">No blogs found.</p>
+              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <Lottie animationData={blogAnim} loop className="h-48 opacity-80" />
+                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">No blogs yet</p>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">Start sharing your knowledge with the community</p>
                 <Button
                   onClick={() => router.push("/dashboard/add-blogs")}
-                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                  className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
                 >
-                  Write a Blog
+                  Write Your First Blog
                 </Button>
               </div>
             ) : (
@@ -244,19 +230,27 @@ const Page = () => {
       {/* Projects Section */}
       {role === "user" && (
         <section>
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Latest Projects
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Latest Projects</h2>
+            <button 
+              onClick={() => router.push("/dashboard/my-projects")}
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
+            >
+              View all
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                <Lottie animationData={projectAnim} loop className="h-52" />
-                <p className="text-center mt-3">No project found.</p>
+              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <Lottie animationData={projectAnim} loop className="h-48 opacity-80" />
+                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">No projects yet</p>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">Create your first project and showcase your work</p>
                 <Button
                   onClick={() => router.push("/dashboard/add-projects")}
-                  className="mt-4 bg-gray-800 text-white hover:bg-gray-700 transition"
+                  className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
                 >
-                  Add Project
+                  Add Your First Project
                 </Button>
               </div>
             ) : (

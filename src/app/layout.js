@@ -3,7 +3,8 @@ import "./globals.css";
 import Navbar from "../Components/layout/Navbar";
 import AuthProvider from "./providers/AuthProvider.jsx";
 import Footer from "../Components/layout/Footer";
-
+import { ThemeProvider } from "next-themes";
+import AiChat from"../Components/shared/Chatbot"; 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -16,12 +17,12 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "DevFirst Steps",
-  description: "Open Source Porjects Finder for Beginners",
+  description: "Open Source Projects Finder for Beginners",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
@@ -29,13 +30,25 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200`}
       >
-        <AuthProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </AuthProvider>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="system" 
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <AuthProvider>
+            <div className="min-h-screen flex flex-col">
+              <Navbar />
+              <main className="flex-grow bg-white dark:bg-gray-900">
+                {children}
+            <AiChat></AiChat>
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

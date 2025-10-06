@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-export const CommunityDiscussions = () => {
+export const CommunityDiscussions2 = () => {
   const [hoveredDiscussion, setHoveredDiscussion] = useState(null);
 
   const discussions = [
@@ -138,18 +138,18 @@ export const CommunityDiscussions = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-950/30 dark:to-indigo-950/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-blue-200 dark:border-blue-800">
             <MessageSquare className="w-4 h-4" />
             Live Community Activity
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Join Our Thriving Developer Community
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Get answers, share knowledge, and connect with thousands of
             developers solving real-world problems
           </p>
@@ -160,30 +160,29 @@ export const CommunityDiscussions = () => {
           {communityStats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-white/20"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-white/20 dark:border-gray-700"
             >
               <div
-                className={`inline-flex p-3 rounded-xl bg-gray-50 ${stat.color} mb-4`}
+                className={`inline-flex p-3 rounded-xl bg-gray-50 dark:bg-gray-700 ${stat.color} mb-4`}
               >
                 <stat.icon className="w-6 h-6" />
               </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
             </div>
           ))}
         </div>
 
-        {/* end */}
         {/* Featured Discussions */}
         <div className="space-y-6 mb-12">
           {discussions.map((discussion, index) => (
             <div
               key={discussion.id}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden ${
+              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-gray-900/25 transition-all duration-300 overflow-hidden ${
                 hoveredDiscussion === discussion.id
-                  ? "border-blue-200 shadow-lg"
+                  ? "border-blue-200 dark:border-blue-600 shadow-lg"
                   : ""
               }`}
               onMouseEnter={() => setHoveredDiscussion(discussion.id)}
@@ -193,30 +192,30 @@ export const CommunityDiscussions = () => {
                 {/* Discussion Header */}
                 <div className="flex items-start gap-4 mb-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl border-2 border-white shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl border-2 border-white dark:border-gray-600 shadow-sm">
                       {discussion.author.avatar}
                     </div>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 cursor-pointer">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
                         {discussion.title}
                       </h3>
                       {discussion.isHot && (
-                        <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-2 py-1 rounded-full text-xs font-medium border border-red-200 dark:border-red-800">
                           🔥 Hot
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <div className="flex items-center gap-1">
                         <User className="w-4 h-4" />
                         <span className="font-medium">
                           {discussion.author.name}
                         </span>
-                        <span className="text-gray-400">•</span>
+                        <span className="text-gray-400 dark:text-gray-500">•</span>
                         <span>{discussion.author.role}</span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -227,7 +226,7 @@ export const CommunityDiscussions = () => {
                       </div>
                     </div>
 
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                       {discussion.preview}
                     </p>
                   </div>
@@ -235,7 +234,7 @@ export const CommunityDiscussions = () => {
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex items-center gap-1">
                       {getStatusIcon(discussion.status)}
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {getStatusLabel(discussion.status)}
                       </span>
                     </div>
@@ -244,14 +243,14 @@ export const CommunityDiscussions = () => {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <div className="flex items-center gap-1 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
+                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs">
                     <Hash className="w-3 h-3" />
                     {discussion.category}
                   </div>
                   {discussion.tags.map((tag, tagIndex) => (
                     <span
                       key={tagIndex}
-                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium"
+                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-800"
                     >
                       {tag}
                     </span>
@@ -260,17 +259,17 @@ export const CommunityDiscussions = () => {
 
                 {/* Discussion Metrics */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6 text-sm text-gray-500">
+                  <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center">
-                        <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                          <ArrowUp className="w-4 h-4 text-green-600" />
+                        <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+                          <ArrowUp className="w-4 h-4 text-green-600 dark:text-green-400" />
                         </button>
-                        <span className="mx-1 font-medium text-gray-900">
+                        <span className="mx-1 font-medium text-gray-900 dark:text-white">
                           {discussion.votes.up - discussion.votes.down}
                         </span>
-                        <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                          <ArrowDown className="w-4 h-4 text-red-500" />
+                        <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+                          <ArrowDown className="w-4 h-4 text-red-500 dark:text-red-400" />
                         </button>
                       </div>
                     </div>
@@ -292,10 +291,10 @@ export const CommunityDiscussions = () => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {discussion.lastActivity}
                     </span>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+                    <button className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium text-sm">
                       Join Discussion
                     </button>
                   </div>
@@ -306,21 +305,21 @@ export const CommunityDiscussions = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <div className="text-center bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Ready to Join the Conversation?
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Connect with developers, share your expertise, and get help with
               your projects
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+              <button className="bg-blue-600 dark:bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-semibold flex items-center justify-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Ask a Question
               </button>
-              <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-semibold">
+              <button className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-semibold">
                 Browse All Discussions
               </button>
             </div>

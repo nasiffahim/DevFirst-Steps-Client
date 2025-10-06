@@ -19,6 +19,7 @@ import {
   Settings,
   Home,
   Code,
+  users
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
@@ -59,6 +60,7 @@ export default function Layout({ children }) {
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Profile", href: "/dashboard/profile", icon: User },
+    { name: "All Users", href: "/dashboard/all-users", icon:User },
     { name: "Add Projects", href: "/dashboard/add-projects", icon: FolderPlus },
     { name: "My Projects", href: "/dashboard/my-projects", icon: FolderOpen },
     { name: "Bookmarks", href: "/dashboard/bookmarks", icon: Bookmark },

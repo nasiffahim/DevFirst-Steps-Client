@@ -15,6 +15,7 @@ import axios from "axios";
 import useAuth from "../../app/hooks/useAuth";
 import { VoteButtons } from "../../Components/shared/VoteButtons";
 import Link from "next/link";
+import api from "../../utils/api";
 
 const Discussions = () => {
   const { user } = useAuth();
@@ -25,14 +26,14 @@ const Discussions = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: discussionData } = await axios.get(
-          "http://localhost:5000/api/discussions"
+        const { data: discussionData } = await api.get(
+          "/api/discussions"
         );
         setDiscussions(discussionData);
 
         const countsPromises = discussionData.map(async (d) => {
-          const res = await axios.get(
-            `http://localhost:5000/api/comments/${d._id}`
+          const res = await api.get(
+            `/api/comments/${d._id}`
           );
           const comments = res.data || [];
           const count = comments.reduce(

@@ -6,7 +6,7 @@ const useAxiosSecure = () => {
   const { logout } = useAuth();
   
   const axiosSecure = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     withCredentials: true,
   }); // Added missing closing brace and parenthesis
 

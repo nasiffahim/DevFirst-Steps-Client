@@ -17,6 +17,7 @@ import { Comments } from "../shared/Comments";
 import { VoteButtons } from "../shared/VoteButtons";
 import Link from "next/link";
 import { CommunityStats } from "../shared/CommunityStats";
+import api from "../../utils/api";
 
 // Main Community Discussions
 export const CommunityDiscussions = () => {
@@ -29,15 +30,15 @@ export const CommunityDiscussions = () => {
     const fetchData = async () => {
       try {
         // discussions   check user  current check update match
-        const { data: discussionData } = await axios.get(
-          "http://localhost:5000/api/top-discussions"
+        const { data: discussionData } = await api.get(
+          "/api/top-discussions"
         );
         setDiscussions(discussionData);
 
         // Fetch comment counts
         const countsPromises = discussionData.map(async (d) => {
-          const res = await axios.get(
-            `http://localhost:5000/api/comments/${d._id}`
+          const res = await api.get(
+            `/api/comments/${d._id}`
           );
           const comments = res.data || [];
           const count = comments.reduce(

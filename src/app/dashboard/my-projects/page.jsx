@@ -16,11 +16,15 @@ import {
   RefreshCw,
 } from "lucide-react";
 import api from "../../../utils/api";
+import useAuth from "../../../app/hooks/useAuth";
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {user} = useAuth();
+
+  console.log("user data:", user)
 
   const fetchProjects = async () => {
     try {

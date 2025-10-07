@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import api from "../../utils/api";
 
 export const Comments = ({ discussionId }) => {
   const [comments, setComments] = useState([]);
@@ -15,8 +16,8 @@ export const Comments = ({ discussionId }) => {
 
   //  all comment
   const fetchComments = async () => {
-    const { data } = await axios.get(
-      `http://localhost:5000/api/comments/${discussionId}`
+    const { data } = await api.get(
+      `/api/comments/${discussionId}`
     );
     setComments(data);
   };
@@ -41,7 +42,7 @@ export const Comments = ({ discussionId }) => {
       return;
     }
     // add comment
-    await axios.post(`http://localhost:5000/api/comments/${discussionId}`, {
+    await api.post(`/api/comments/${discussionId}`, {
       text,
       userEmail: user.email,
       username: user.displayName,
@@ -67,7 +68,7 @@ export const Comments = ({ discussionId }) => {
     }).then(async (result) => {
       // delete comment
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:5000/api/comments/${commentId}`, {
+        await api.delete(`/api/comments/${commentId}`, {
           data: { userEmail: user.email }, // pass userEmail for ownership check
         });
         fetchComments();

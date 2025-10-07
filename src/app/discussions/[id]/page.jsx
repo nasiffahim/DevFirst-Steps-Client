@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import axios from "axios";
 import { Comments } from "../../../Components/shared/Comments";
 import { VoteButtons } from "../../../Components/shared/VoteButtons";
 import {
@@ -12,6 +11,7 @@ import {
   Tag,
   TrendingUp,
 } from "lucide-react";
+import api from "@/utils/api";
 
 export default function DiscussionDetails() {
   const { id } = useParams();
@@ -20,8 +20,8 @@ export default function DiscussionDetails() {
   useEffect(() => {
     const fetchDiscussion = async () => {
       try {
-        const { data } = await axios.get(
-          `http://localhost:5000/api/discussions/${id}`
+        const { data } = await api.get(
+          `/api/discussions/${id}`
         );
         setDiscussion(data);
       } catch (err) {

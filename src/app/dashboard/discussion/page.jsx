@@ -5,7 +5,7 @@ import TagSelector from "./TagSelector";
 import useAuth from "../../hooks/useAuth";
 import ProtectedPage from "../../../Components/Protected/ProtectedPage";
 import ImageUpload from "../../../Components/register/ImageUpload/ImageUpload";
-import axios from "axios";
+import api from "../../../utils/api";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import {
@@ -20,7 +20,6 @@ import {
   Star,
   Circle,
 } from "lucide-react";
-import api from "../../../utils/api";
 
 export default function CommunityCreate() {
   const router = useRouter();
@@ -52,8 +51,8 @@ export default function CommunityCreate() {
 
       console.log("Payload:", payload);
 
-      const response = await axios.post(
-        "http://localhost:5000/create_post",
+      const response = await api.post(
+        "/create_post",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -75,10 +74,8 @@ export default function CommunityCreate() {
         icon: "success",
         confirmButtonText: "OK",
       }).then(() => {
-        // Redirect to home after alert confirmation
-        router.push("/");
+        router.push("/dashboard/my-discussion");
       });
-      // Reset form if needed
       reset();
       setSelectedTags([]);
       setImageUrl(null);

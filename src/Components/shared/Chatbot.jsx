@@ -1,7 +1,7 @@
 "use client";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { MessageCircle, X, Send, User, Sparkles } from "lucide-react";
+import api from "../../utils/api";
 
 const AiChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +53,7 @@ const AiChat = () => {
 
     try {
       setIsTyping(true);
-      const res = await axios.post("http://localhost:5000/chat", { message: text });
+      const res = await api.post("/chat", { message: text });
       const replyText = res.data.reply || "Sorry, I didn't understand that.";
 
       let i = 0;

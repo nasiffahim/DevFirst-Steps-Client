@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { ArrowBigUp, ArrowBigDown } from "lucide-react";
+import api from "../../utils/api";
 
 export const VoteButtons = ({ discussionId, initialVotes }) => {
   const { user } = useAuth();
@@ -18,8 +19,8 @@ export const VoteButtons = ({ discussionId, initialVotes }) => {
     const fetchUserVote = async () => {
       if (!user?.email) return;
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/discussions/${discussionId}/vote-status`,
+        const res = await api.get(
+          `/api/discussions/${discussionId}/vote-status`,
           { params: { userEmail: user.email } }
         );
         setVotes(res.data.votes);
@@ -49,8 +50,8 @@ export const VoteButtons = ({ discussionId, initialVotes }) => {
     setLoadingVote(true);
 
     try {
-      const res = await axios.patch(
-        `http://localhost:5000/api/discussions/${discussionId}/vote`,
+      const res = await api.patch(
+        `/api/discussions/${discussionId}/vote`,
         {
           type,
           userEmail: user.email,

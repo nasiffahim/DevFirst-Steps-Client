@@ -2,9 +2,9 @@
 
 import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
-import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
+import { useRouter } from "next/navigation";
 import {
   Save,
   RotateCcw,
@@ -31,6 +31,7 @@ export default function AddProjectForm() {
   const [contributors, setContributors] = useState("");
   const [thumbPreview, setThumbPreview] = useState(null);
   const fileRef = useRef(null);
+  const router = useRouter();
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -103,6 +104,7 @@ export default function AddProjectForm() {
       setThumbPreview(null);
 
       if (fileRef.current) fileRef.current.value = null;
+      router.push("/dashboard/my-projects");
     } catch (err) {
       console.error(err);
       setError("Something went wrong while saving the project.");

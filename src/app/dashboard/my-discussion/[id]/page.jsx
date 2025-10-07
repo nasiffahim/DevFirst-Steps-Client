@@ -8,7 +8,7 @@ import ProtectedPage from "../../../../Components/Protected/ProtectedPage";
 import { useRouter, usePathname } from "next/navigation";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
-import api from "@/utils/api";
+import api from "../../../../utils/api";
 // EditPost
 export default function EditPostPage() {
   const router = useRouter();

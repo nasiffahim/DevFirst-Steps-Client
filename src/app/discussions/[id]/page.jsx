@@ -11,7 +11,7 @@ import {
   Tag,
   TrendingUp,
 } from "lucide-react";
-import api from "@/utils/api";
+import api from "../../../utils/api";
 
 export default function DiscussionDetails() {
   const { id } = useParams();

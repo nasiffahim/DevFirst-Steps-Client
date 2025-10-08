@@ -35,8 +35,9 @@ export default function AddProjectForm() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const {user} =useAuth();
-  const userEmail=user?.email;
+  const { user } = useAuth();
+
+  const userEmail = user?.email;
 
   function handleThumbChange(e) {
     const file = e.target.files?.[0];
@@ -72,19 +73,22 @@ export default function AddProjectForm() {
       contributors: Number(contributors) || 0,
       thumbnail: thumbPreview || null,
       createdAt: new Date().toISOString(),
+      AuthorEmail: user?.email,
+      AuthorName: user?.displayName,
+      AuthorPhoto: user?.photoURL,
     };
 
     console.log(project, "Form Data Submitted:");
 
     try {
       await api.post("/add-projects", project);
-
-   if (userEmail) {
-      await api.post("/update-activity", {
-        email: userEmail,
-        activityType: "project-addition",
-      });
-    }
+      
+      if (userEmail) {
+        await api.post("/update-activity", {
+          email: userEmail,
+          activityType: "project-addition",
+        });
+      }
 
       Swal.fire({
         icon: "success",
@@ -135,7 +139,8 @@ export default function AddProjectForm() {
             Add New Project
           </h2>
           <p className="text-gray-300 text-sm text-center mt-2">
-            Share your project with the community and collaborate with developers
+            Share your project with the community and collaborate with
+            developers
           </p>
         </div>
 
@@ -150,7 +155,9 @@ export default function AddProjectForm() {
         {success && (
           <div className="mx-8 mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-            <p className="text-green-800 dark:text-green-300 text-sm">{success}</p>
+            <p className="text-green-800 dark:text-green-300 text-sm">
+              {success}
+            </p>
           </div>
         )}
 

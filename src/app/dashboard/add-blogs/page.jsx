@@ -56,6 +56,9 @@ export default function AddBlogForm() {
       content: content.trim(),
       thumbnail: thumbPreview || null,
       createdAt: new Date().toISOString(),
+      AuthorEmail: user?.email,
+      AuthorName: user?.displayName,
+      AuthorPhoto: user?.photoURL,
     };
 
     console.log(blog, "form data submitted");

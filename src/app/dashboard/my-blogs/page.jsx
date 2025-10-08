@@ -168,6 +168,19 @@ const MyBlogs = () => {
 
                 {/* Content */}
                 <div className="p-6 flex flex-col flex-grow">
+                  {/* Author  */}
+                  <div>
+                   <h2 className="flex items-center gap-2">
+                    Author Photo :{" "}
+                    <img
+                      className=" w-12 rounded-full"
+                      src={blog.AuthorPhoto}
+                      alt=""
+                    />
+                  </h2>
+                    <h2>Author Name : {blog.AuthorName}</h2>
+                    <h2>Author Email : {blog.AuthorEmail}</h2>
+                  </div>
                   {/* Title */}
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 leading-tight hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer line-clamp-2">
                     {blog.title}

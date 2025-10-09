@@ -4,8 +4,18 @@ import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import api from "../../../utils/api";
-import { FileText, User, Tag, AlignLeft, Image, Save, RotateCcw, Upload } from "lucide-react";
+import {
+  FileText,
+  User,
+  Tag,
+  AlignLeft,
+  Image,
+  Save,
+  RotateCcw,
+  Upload,
+} from "lucide-react";
 import useAuth from "../../hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function AddBlogForm() {
   const [title, setTitle] = useState("");
@@ -14,8 +24,9 @@ export default function AddBlogForm() {
   const [content, setContent] = useState("");
   const [thumbPreview, setThumbPreview] = useState(null);
   const fileRef = useRef(null);
-  const {user} =useAuth();
-  const userEmail=user?.email;
+  const router = useRouter();
+  const { user } = useAuth();
+  const userEmail = user?.email;
 
   const handleThumbChange = (e) => {
     const file = e.target.files?.[0];
@@ -45,6 +56,9 @@ export default function AddBlogForm() {
       content: content.trim(),
       thumbnail: thumbPreview || null,
       createdAt: new Date().toISOString(),
+      AuthorEmail: user?.email,
+      AuthorName: user?.displayName,
+      AuthorPhoto: user?.photoURL,
     };
 
     console.log(blog, "form data submitted");
@@ -53,12 +67,12 @@ export default function AddBlogForm() {
       await api.post("/add-blogs", blog, {
         headers: { "Content-Type": "application/json" },
       });
-if (userEmail) {
-      await api.post("/update-activity", {
-        email: userEmail,
-        activityType: "blog-posting",
-      });
-    }
+      if (userEmail) {
+        await api.post("/update-activity", {
+          email: userEmail,
+          activityType: "blog-posting",
+        });
+      }
 
       Swal.fire({
         icon: "success",
@@ -74,6 +88,7 @@ if (userEmail) {
       setContent("");
       setThumbPreview(null);
       if (fileRef.current) fileRef.current.value = null;
+      router.push("/dashboard/my-blogs");
     } catch (err) {
       console.error(err);
       Swal.fire({
@@ -179,9 +194,11 @@ if (userEmail) {
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <Image className="w-4 h-4" />
                 Thumbnail Image
-                <span className="text-xs font-normal text-gray-500 dark:text-gray-400">(Optional)</span>
+                <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                  (Optional)
+                </span>
               </label>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 items-start">
                 <div className="flex-1 w-full">
                   <label className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors bg-gray-50 dark:bg-gray-700/50">
@@ -230,7 +247,7 @@ if (userEmail) {
                 <Save className="w-4 h-4" />
                 Publish Blog
               </button>
-              
+
               <button
                 type="button"
                 onClick={handleReset}
@@ -246,7 +263,8 @@ if (userEmail) {
         {/* Helper Text */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Fields marked with <span className="text-red-500">*</span> are required
+            Fields marked with <span className="text-red-500">*</span> are
+            required
           </p>
         </div>
       </div>

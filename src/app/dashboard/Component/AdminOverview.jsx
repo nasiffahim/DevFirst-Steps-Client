@@ -44,7 +44,7 @@ const AdminOverview = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading dashboard...</p>
@@ -117,7 +117,7 @@ const AdminOverview = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">

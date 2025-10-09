@@ -16,11 +16,15 @@ import {
   RefreshCw,
 } from "lucide-react";
 import api from "../../../utils/api";
+import useAuth from "../../../app/hooks/useAuth";
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {user} = useAuth();
+
+  console.log("user data:", user)
 
   const fetchProjects = async () => {
     try {
@@ -182,10 +186,20 @@ const MyProjects = () => {
 
                 {/* Project Content */}
                 <div className="p-6">
+                  <h2>Author Name : {project.AuthorName}</h2>
+                  <h2>Author Email : {project.AuthorEmail}</h2>
+                  <h2 className="flex items-center gap-2">
+                    Author Photo :{" "}
+                    <img
+                      className=" w-12 rounded-full"
+                      src={project.AuthorPhoto}
+                      alt=""
+                    />
+                  </h2>
+
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
                     {project.description}
                   </p>
-
                   {/* Tags */}
                   {project.tags && (
                     <div className="flex items-center mb-4">
@@ -202,7 +216,6 @@ const MyProjects = () => {
                       </div>
                     </div>
                   )}
-
                   {/* Stats */}
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-500 mb-6">
                     <div className="flex items-center">
@@ -217,7 +230,6 @@ const MyProjects = () => {
                       <span>{formatDate(project.createdAt)}</span>
                     </div>
                   </div>
-
                   {/* Actions */}
                   <div className="flex space-x-3">
                     <a

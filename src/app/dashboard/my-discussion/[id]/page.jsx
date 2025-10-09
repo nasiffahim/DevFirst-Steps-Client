@@ -8,6 +8,7 @@ import ProtectedPage from "../../../../Components/Protected/ProtectedPage";
 import { useRouter, usePathname } from "next/navigation";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
+import api from "../../../../utils/api";
 // EditPost
 export default function EditPostPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ useEffect(() => {
   if (!id) return;
   const fetchPost = async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/posts/${id}`);
+      const resp = await api.get(`/api/posts/${id}`);
       const post = resp.data;
 
       reset({
@@ -77,8 +78,8 @@ const onSubmit = async (data) => {
   };
 
   try {
-   const resp = await axios.patch(
-  `http://localhost:5000/edit/post/${id}`,
+   const resp = await api.patch(
+  `/edit/post/${id}`,
   payload,
   { headers: { "Content-Type": "application/json" } }
 );

@@ -10,6 +10,7 @@ import {
   LinksSection,
   SkillsSection,
 } from "./ProfileSections";
+import EmptyProfileSection from "./EmptyProfileSection";
 import {
   Settings,
   Edit3,
@@ -227,14 +228,35 @@ export default function ProfilePage() {
 
       {userFromDatabase && (
         <>
-          <EducationSection educationList={userFromDatabase.education} />
-          <ExperienceSection experienceList={userFromDatabase.experience} />
-          <SkillsSection skillsList={userFromDatabase.skills} />
-          <LinksSection
-            linkedin={userFromDatabase.linkedin}
-            github={userFromDatabase.github}
-            resume={userFromDatabase.resume}
-          />
+          {userFromDatabase.education?.length > 0 ? (
+            <EducationSection educationList={userFromDatabase.education} />
+          ) : (
+            <EmptyProfileSection type="education" />
+          )}
+
+          {userFromDatabase.experience?.length > 0 ? (
+            <ExperienceSection experienceList={userFromDatabase.experience} />
+          ) : (
+            <EmptyProfileSection type="experience" />
+          )}
+
+          {userFromDatabase.skills?.length > 0 ? (
+            <SkillsSection skillsList={userFromDatabase.skills} />
+          ) : (
+            <EmptyProfileSection type="skills" />
+          )}
+
+          {userFromDatabase.linkedin ||
+          userFromDatabase.github ||
+          userFromDatabase.resume ? (
+            <LinksSection
+              linkedin={userFromDatabase.linkedin}
+              github={userFromDatabase.github}
+              resume={userFromDatabase.resume}
+            />
+          ) : (
+            <EmptyProfileSection type="links" />
+          )}
         </>
       )}
     </div>

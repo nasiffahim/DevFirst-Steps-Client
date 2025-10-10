@@ -1,5 +1,8 @@
 'use client';
+
+import Link from "next/link";
 import React, { useState, useEffect } from 'react';
+import api from "../../../utils/api"
 import { 
   BookOpen, 
   Calendar, 
@@ -17,7 +20,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import axios from 'axios';
-import api from '../../../utils/api';
+
 
 const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -42,6 +45,7 @@ const MyBlogs = () => {
   useEffect(() => {
     fetchBlogs();
   }, []);
+  console.log("blog", blogs)
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -262,9 +266,12 @@ const MyBlogs = () => {
                         <Share2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <button className="px-4 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md">
-                      Read Full
-                    </button>
+                    <Link
+  href={`/my-blogs/${blog._id}`}
+  className="px-4 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
+>
+  Read Full
+</Link>
                   </div>
                 </div>
               </article>

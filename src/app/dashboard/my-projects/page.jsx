@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-
 import React, { useState, useEffect } from "react";
 import {
   Code2,
@@ -17,20 +16,21 @@ import {
 } from "lucide-react";
 import api from "../../../utils/api";
 import useAuth from "../../../app/hooks/useAuth";
+import { useRouter } from "next/navigation"; 
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const router = useRouter(); 
 
-  console.log("user data:", user)
+  console.log("user data:", user);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Replace with your actual API endpoint
       const response = await api.get("/my-projects");
       setProjects(response.data);
     } catch (err) {
@@ -156,7 +156,10 @@ const MyProjects = () => {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
+                onClick={() =>
+                  router.push(`/dashboard/my-projects/${project._id}`)
+                } // ✅ Added click redirect
+                className="cursor-pointer bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
               >
                 {/* Project Header */}
                 <div className="p-6 bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white">
@@ -200,6 +203,7 @@ const MyProjects = () => {
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
                     {project.description}
                   </p>
+
                   {/* Tags */}
                   {project.tags && (
                     <div className="flex items-center mb-4">
@@ -216,6 +220,7 @@ const MyProjects = () => {
                       </div>
                     </div>
                   )}
+
                   {/* Stats */}
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-500 mb-6">
                     <div className="flex items-center">
@@ -230,6 +235,7 @@ const MyProjects = () => {
                       <span>{formatDate(project.createdAt)}</span>
                     </div>
                   </div>
+
                   {/* Actions */}
                   <div className="flex space-x-3">
                     <a
@@ -241,7 +247,9 @@ const MyProjects = () => {
                       <Github className="w-4 h-4 mr-2" />
                       View Code
                     </a>
-                    <button className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+                    <button
+                      className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    >
                       <ExternalLink className="w-4 h-4" />
                     </button>
                   </div>

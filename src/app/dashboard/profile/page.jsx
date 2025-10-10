@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
-import EducationSection from "./EducationSection";
+import {
+  EducationSection,
+  ExperienceSection,
+  LinksSection,
+  SkillsSection,
+} from "./ProfileSections";
 import {
   Settings,
   Edit3,
@@ -20,6 +25,7 @@ import {
   TrendingUp,
   Plus,
 } from "lucide-react";
+import { set } from "react-hook-form";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -27,11 +33,10 @@ export default function ProfilePage() {
   const [points, setPoints] = useState(0);
   const [badge, setBadge] = useState(null);
   const [userFromDatabase, setUserFromDatabase] = useState(null);
+  const [databaaseLoading, setDatabaseLoading] = useState(false);
   const email = user?.email;
 
-
   console.log(userFromDatabase);
-
 
   useEffect(() => {
     if (!email) return;
@@ -53,22 +58,24 @@ export default function ProfilePage() {
   }, [email]);
 
   useEffect(() => {
-  if (!email) return;
+    if (!email) return;
 
-  const fetchUserFromDatabase = async () => {
-    try {
-      const res = await api.get("/single_user", {
-        params: { emailParams: email }, // match backend
-      });
-      setUserFromDatabase(res.data);
-    } catch (err) {
-      console.error("Failed to fetch user from database", err);
-    }
-  };
+    const fetchUserFromDatabase = async () => {
+      setDatabaseLoading(true);
+      try {
+        const res = await api.get("/single_user", {
+          params: { emailParams: email }, // match backend
+        });
+        setUserFromDatabase(res.data);
+        setDatabaseLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch user from database", err);
+        setDatabaseLoading(false);
+      }
+    };
 
-  fetchUserFromDatabase();
-}, [email]);
-
+    fetchUserFromDatabase();
+  }, [email]);
 
   const getBadgeColor = (badgeType) => {
     switch (badgeType?.toLowerCase()) {
@@ -92,7 +99,7 @@ export default function ProfilePage() {
     // You can add more here if needed
   ];
 
-  if (loading) {
+  if (loading || databaaseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
@@ -218,7 +225,18 @@ export default function ProfilePage() {
 
       {/* Main Content */}
 
-      <EducationSection educationList={educationList} />
+      {userFromDatabase && (
+        <>
+          <EducationSection educationList={userFromDatabase.education} />
+          <ExperienceSection experienceList={userFromDatabase.experience} />
+          <SkillsSection skillsList={userFromDatabase.skills} />
+          <LinksSection
+            linkedin={userFromDatabase.linkedin}
+            github={userFromDatabase.github}
+            resume={userFromDatabase.resume}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -10,9 +10,6 @@ import BlogPage from "../Components/Blog/BlogPage";
 import {CommunityStats} from "../Components/shared/CommunityStats"
 import { CommunityDiscussions } from "../Components/home/CommunityDiscussions";
 
-
-
-
 export default function Home() {
 
 

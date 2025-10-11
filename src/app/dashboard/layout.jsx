@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
@@ -269,6 +271,7 @@ export default function Layout({ children }) {
 
         <main className="">
           <div className="max-w-7xl mx-auto">{children}</div>
+           <ToastContainer position="top-center" />
         </main>
       </div>
     </div>

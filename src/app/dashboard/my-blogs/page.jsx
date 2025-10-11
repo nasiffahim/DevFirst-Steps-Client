@@ -267,7 +267,7 @@ const MyBlogs = () => {
                       </button>
                     </div>
                     <Link
-  href={`/my-blogs/${blog._id}`}
+  href={`/dashboard/my-blogs/${blog._id}`}
   className="px-4 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
 >
   Read Full

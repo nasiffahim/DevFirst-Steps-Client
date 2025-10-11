@@ -2,8 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, User, Tag, Clock, Loader2, Share2, Heart } from "lucide-react";
-import api from "../../../../utils/api"
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  Clock,
+  Loader2,
+  Share2,
+  Heart,
+  Edit,       
+  Trash2,     
+} from "lucide-react";
+import api from "../../../../utils/api";
+import { toast } from "react-toastify";
 
 export default function BlogDetailPage() {
   const { id } = useParams();
@@ -24,6 +35,31 @@ export default function BlogDetailPage() {
     };
     fetchBlog();
   }, [id]);
+
+  const handleDelete = async () => {
+  // toast.info("Deleting blog...");
+
+  try {
+    const response = await api.delete(`/my-blogs/${id}`);
+
+    if (response.status === 200) {
+      toast.success("Blog deleted successfully!");
+      setTimeout(() => {
+        router.push("/dashboard//my-blogs"); // ✅ redirect after success
+      }, 1000); // wait 1 second for toast to show
+    } else {
+      toast.error("Failed to delete blog!");
+    }
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    toast.error("Error deleting blog!");
+  }
+};
+
+
+  const handleEdit = () => { // 🆕 Added edit functionality (redirect)
+    router.push(`/dashboard/edit-blog/${id}`);
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -132,7 +168,25 @@ export default function BlogDetailPage() {
             <button className="text-gray-600 hover:text-blue-500 transition">
               <Share2 className="w-5 h-5" />
             </button>
+
+            {/* 🆕 Edit and Delete Buttons */}
+            <div className="flex items-center gap-3">
+  <button
+    onClick={handleEdit}
+    className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all duration-200"
+  >
+    <Edit className="w-4 h-4" /> Edit
+  </button>
+
+  <button
+    onClick={handleDelete}
+    className="inline-flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-200"
+  >
+    <Trash2 className="w-4 h-4" /> Delete
+  </button>
+</div>
           </div>
+
           <p className="text-sm text-gray-500">
             Last updated: {formatDate(blog.updatedAt || blog.createdAt)}
           </p>

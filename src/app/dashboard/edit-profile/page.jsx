@@ -1,223 +1,97 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
-import { X, User, MapPin, GraduationCap, Briefcase, Linkedin, Github, FileText, Camera, Save } from "lucide-react";
+import {
+  User,
+  MapPin,
+  GraduationCap,
+  Wrench,
+  Linkedin,
+  Github,
+  FileText,
+  Save,
+  X,
+  Camera,
+  Briefcase,
+  Plus,
+} from "lucide-react";
 import Swal from "sweetalert2";
-import { motion } from "framer-motion";
-import { Button } from "../../../Components/ui/button";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 
-const popularSkills = [
-  "JavaScript",
-  "React",
-  "Next.js",
-  "Node.js",
-  "Express",
-  "MongoDB",
-  "Python",
-  "Django",
-  "Flask",
-  "TypeScript",
-  "HTML",
-  "CSS",
-  "Tailwind",
-  "Git",
-  "GitHub",
-  "SQL",
-  "Docker",
-];
+export default function EditProfilePage() {
+  const { user } = useAuth();
+  const router = useRouter();
 
-// Generate floating background icons
-const generateFloatingIcons = (count) =>
-  Array.from({ length: count }, (_, i) => ({
-    id: i,
-    top: Math.random() * 100,
-    left: Math.random() * 100,
-    size: 20 + Math.random() * 30,
-    rotate: Math.random() * 360,
-    color: ["#FACC15", "#3B82F6", "#14B8A6", "#A78BFA"][
-      Math.floor(Math.random() * 4)
-    ],
-  }));
-
-const EditProfilePage = () => {
-  const { user, loading } = useAuth();
-  const [databaseUser, setDatabaseUser] = useState(null);
-  const [databaseLoading, setDatabaseLoading] = useState(true);
-  const email = user?.email;
-  const axiosSecure = useAxiosSecure();
-
-  const [role, setRole] = useState(null);
   const [formData, setFormData] = useState({
     displayName: "",
     photoURL: "",
     address: "",
-    education: "",
+    education: [],
+    experience: [],
     skills: [],
     linkedin: "",
     github: "",
     resume: "",
   });
 
-  const [skillInput, setSkillInput] = useState("");
-  const [filteredSkills, setFilteredSkills] = useState([]);
-  const [floatingIcons] = useState(generateFloatingIcons(15));
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const email = user?.email;
 
-  // Fetch user role
   useEffect(() => {
-    if (!email) return;
-    const getRole = async () => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "",
+      }));
+    }
+
+    const fetchRole = async () => {
       try {
         const res = await api.get("/user-role", { params: { email } });
-        setRole(res.data.role);
-      } catch (err) {
-        console.error(err);
+        setRole(res.data.role || "User");
+      } catch {
+        setRole("User");
       }
     };
-    getRole();
-  }, [email]);
-
-  // Fetch user data from DB
-  useEffect(() => {
-    if (!email) return;
-    const fetchUserData = async () => {
-      try {
-        setDatabaseLoading(true);
-        const res = await api.get("/single_user", {
-          params: { emailParams: email },
-        });
-        setDatabaseUser(res.data);
-        setFormData({
-          displayName: res.data.username || "",
-          photoURL: res.data.image || "",
-          address: res.data.address || "",
-          education: res.data.education || "",
-          skills: res.data.skills || [],
-          linkedin: res.data.linkedin || "",
-          github: res.data.github || "",
-          resume: res.data.resume || "",
-        });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setDatabaseLoading(false);
-      }
-    };
-    fetchUserData();
-  }, [email]);
-
-  // Skills input handlers
-  const handleSkillChange = (e) => {
-    const value = e.target.value;
-    setSkillInput(value);
-
-    if (!value.trim()) {
-      setFilteredSkills([]);
-      return;
-    }
-
-    const suggestions = popularSkills.filter(
-      (skill) =>
-        skill.toLowerCase().includes(value.toLowerCase()) &&
-        !formData.skills.includes(skill)
-    );
-    setFilteredSkills(suggestions);
-  };
-
-  const handleAddSkill = (skill) => {
-    if (!formData.skills.includes(skill)) {
-      setFormData({ ...formData, skills: [...formData.skills, skill] });
-    }
-    setSkillInput("");
-    setFilteredSkills([]);
-  };
-
-  const handleRemoveSkill = (skill) => {
-    setFormData({
-      ...formData,
-      skills: formData.skills.filter((s) => s !== skill),
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    if (email) fetchRole();
+  }, [user, email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axiosSecure.put(
-        "/update_user",
-        formData,
-        { params: { email } }
-      );
+    setLoading(true);
 
-      if (res.status === 200) {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Profile updated successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    } catch (error) {
-      console.error("Update failed:", error);
+    try {
+      await api.put(`/update_user?email=${email}`, { ...formData }); // email in query, data in body
       Swal.fire({
         position: "top-end",
-        icon: "error",
-        title: "Failed to update profile",
-        text: error.response?.data?.message || "Something went wrong",
-        showConfirmButton: true,
+        icon: "success",
+        title: "Profile updated successfully",
+        showConfirmButton: false,
+        timer: 1500,
       });
+      router.push("/dashboard/profile");
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to update profile",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading || databaseLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="inline-block w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8 overflow-hidden">
-      {/* Floating Background */}
-      {floatingIcons.map((icon) => (
-        <motion.div
-          key={icon.id}
-          className="absolute rounded-full opacity-20 dark:opacity-10"
-          style={{
-            top: `${icon.top}%`,
-            left: `${icon.left}%`,
-            width: icon.size,
-            height: icon.size,
-            backgroundColor: icon.color,
-          }}
-          animate={{
-            y: [0, 20, 0],
-            rotate: [0, 360, 0],
-          }}
-          transition={{
-            duration: 6 + Math.random() * 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: Math.random() * 3,
-          }}
-        />
-      ))}
-
-      <div className="max-w-4xl mx-auto relative z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-10">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-10">
         {/* Header Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-6 overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg mb-8 overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="bg-[#113F67] h-32"></div>
-          
           <div className="px-6 sm:px-8 pb-8">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16">
               {/* Profile Image */}
@@ -258,180 +132,404 @@ const EditProfilePage = () => {
           </div>
         </div>
 
-        {/* Edit Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200 dark:border-gray-700">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Edit Profile
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Update your personal information and professional details
-            </p>
-          </div>
+        {/* ======= FORM ======= */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Basic Info */}
+          <InputField
+            icon={
+              <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            }
+            label="Display Name"
+            value={formData.displayName}
+            onChange={(val) => setFormData({ ...formData, displayName: val })}
+          />
+          <InputField
+            icon={
+              <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            }
+            label="Address"
+            placeholder="City, Country"
+            value={formData.address}
+            onChange={(val) => setFormData({ ...formData, address: val })}
+          />
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Address */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <MapPin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Address
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="City, Country"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-              />
-            </div>
+          {/* Education */}
+          <EducationSection formData={formData} setFormData={setFormData} />
 
-            {/* Education */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Education
-              </label>
-              <input
-                type="text"
-                name="education"
-                value={formData.education}
-                onChange={handleChange}
-                placeholder="Your degree, university..."
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-              />
-            </div>
+          {/* Experience */}
+          <ExperienceSection formData={formData} setFormData={setFormData} />
 
-            {/* Skills */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Skills
-              </label>
-              
-              {/* Skills Tags */}
-              {formData.skills.length > 0 && (
-                <div className="flex gap-2 flex-wrap mb-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                  {formData.skills.map((skill) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 px-3 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium"
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </motion.span>
-                  ))}
-                </div>
-              )}
+          {/* Skills */}
+          <SkillsSection formData={formData} setFormData={setFormData} />
 
-              {/* Skills Input */}
-              <div className="relative">
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={handleSkillChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      if (skillInput.trim()) {
-                        handleAddSkill(skillInput);
-                      }
-                    }
-                  }}
-                  placeholder="Type a skill and press Enter"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-                />
-                {filteredSkills.length > 0 && (
-                  <ul className="absolute z-10 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 mt-2 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {filteredSkills.map((skill) => (
-                      <li
-                        key={skill}
-                        onClick={() => handleAddSkill(skill)}
-                        className="px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer text-gray-900 dark:text-white transition"
-                      >
-                        {skill}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Select from suggestions or type your own and press Enter
-              </p>
-            </div>
+          {/* Links */}
+          <InputField
+            icon={
+              <Linkedin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            }
+            label="LinkedIn"
+            value={formData.linkedin}
+            placeholder="https://linkedin.com/in/yourprofile"
+            onChange={(val) => setFormData({ ...formData, linkedin: val })}
+          />
+          <InputField
+            icon={
+              <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            }
+            label="GitHub"
+            value={formData.github}
+            placeholder="Your GitHub url"
+            onChange={(val) => setFormData({ ...formData, github: val })}
+          />
+          <InputField
+            icon={
+              <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            }
+            label="Resume (URL)"
+            value={formData.resume}
+            placeholder="https://example.com/your-resume.pdf"
+            onChange={(val) => setFormData({ ...formData, resume: val })}
+          />
 
-            {/* LinkedIn */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <Linkedin className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                LinkedIn
-              </label>
-              <input
-                type="text"
-                name="linkedin"
-                value={formData.linkedin}
-                onChange={handleChange}
-                placeholder="https://linkedin.com/in/username"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-              />
-            </div>
-
-            {/* GitHub */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <Github className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                GitHub
-              </label>
-              <input
-                type="text"
-                name="github"
-                value={formData.github}
-                onChange={handleChange}
-                placeholder="https://github.com/username"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-              />
-            </div>
-
-            {/* Resume */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Resume
-              </label>
-              <input
-                type="text"
-                name="resume"
-                value={formData.resume}
-                onChange={handleChange}
-                placeholder="Link to resume (PDF)"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4">
-              <Button
-                type="submit"
-                className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-              >
-                <Save className="w-5 h-5" />
-                Save Changes
-              </Button>
-            </div>
-          </form>
-        </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
+          >
+            <Save className="w-5 h-5" />
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </form>
       </div>
     </div>
   );
-};
+}
 
-export default EditProfilePage;
+/* ------------------ REUSABLE INPUT FIELD ------------------ */
+function InputField({ icon, label, value, onChange, placeholder }) {
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        {icon}
+        {label}
+      </label>
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+    </div>
+  );
+}
+
+/* ---------------- EDUCATION SECTION ---------------- */
+function EducationSection({ formData, setFormData }) {
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        Education
+      </label>
+
+      {formData.education.map((edu, index) => (
+        <EducationOrWorkBlock
+          key={index}
+          type="education"
+          index={index}
+          data={edu}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ))}
+
+      <AddButton
+        label="Add Education"
+        onClick={() =>
+          setFormData({
+            ...formData,
+            education: [
+              ...formData.education,
+              {
+                degree: "",
+                university: "",
+                start: "",
+                end: "",
+                ongoing: false,
+              },
+            ],
+          })
+        }
+      />
+    </div>
+  );
+}
+
+/* ---------------- EXPERIENCE SECTION ---------------- */
+function ExperienceSection({ formData, setFormData }) {
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        Work Experience
+      </label>
+
+      {formData.experience.map((exp, index) => (
+        <EducationOrWorkBlock
+          key={index}
+          type="experience"
+          index={index}
+          data={exp}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ))}
+
+      <AddButton
+        label="Add Work Experience"
+        onClick={() =>
+          setFormData({
+            ...formData,
+            experience: [
+              ...formData.experience,
+              {
+                title: "",
+                company: "",
+                start: "",
+                end: "",
+                ongoing: false,
+                description: "",
+              },
+            ],
+          })
+        }
+      />
+    </div>
+  );
+}
+
+/* ---------------- EDUCATION/WORK COMMON BLOCK ---------------- */
+function EducationOrWorkBlock({ type, index, data, formData, setFormData }) {
+  const listName = type === "education" ? "education" : "experience";
+
+  const handleChange = (field, value) => {
+    const updated = [...formData[listName]];
+    updated[index][field] = value;
+    setFormData({ ...formData, [listName]: updated });
+  };
+
+  return (
+    <div className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg mb-4 bg-gray-50 dark:bg-gray-800/50 space-y-3">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <input
+          type="text"
+          placeholder={type === "education" ? "Degree" : "Job Title"}
+          value={data.degree || data.title || ""}
+          onChange={(e) =>
+            handleChange(
+              type === "education" ? "degree" : "title",
+              e.target.value
+            )
+          }
+          className="input"
+        />
+        <input
+          type="text"
+          placeholder={type === "education" ? "University" : "Company"}
+          value={data.university || data.company || ""}
+          onChange={(e) =>
+            handleChange(
+              type === "education" ? "university" : "company",
+              e.target.value
+            )
+          }
+          className="input"
+        />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">
+            Start Date
+          </label>
+          <input
+            type="month"
+            value={data.start}
+            onChange={(e) => handleChange("start", e.target.value)}
+            className="input"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">
+            End Date
+          </label>
+          <input
+            type="month"
+            value={data.end}
+            disabled={data.ongoing}
+            onChange={(e) => handleChange("end", e.target.value)}
+            className={`input ${
+              data.ongoing ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+          />
+        </div>
+      </div>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 mt-1">
+        <input
+          type="checkbox"
+          checked={data.ongoing}
+          onChange={(e) => handleChange("ongoing", e.target.checked)}
+        />
+        Currently {type === "education" ? "Studying" : "Working"}
+      </label>
+
+      {type === "experience" && (
+        <textarea
+          placeholder="Description (role, achievements, etc.)"
+          value={data.description || ""}
+          onChange={(e) => handleChange("description", e.target.value)}
+          className="w-full mt-3 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      )}
+
+      <button
+        type="button"
+        onClick={() => {
+          const updated = formData[listName].filter((_, i) => i !== index);
+          setFormData({ ...formData, [listName]: updated });
+        }}
+        className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
+      >
+        <X className="w-4 h-4" /> Remove
+      </button>
+    </div>
+  );
+}
+
+/* ---------------- ADD BUTTON ---------------- */
+function AddButton({ label, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+    >
+      <Plus className="w-4 h-4" /> {label}
+    </button>
+  );
+}
+
+/* ---------------- SKILLS SECTION WITH AUTOCOMPLETE ---------------- */
+function SkillsSection({ formData, setFormData }) {
+  const predefinedSkills = [
+    "React",
+    "Next.js",
+    "Node.js",
+    "Express",
+    "MongoDB",
+    "TypeScript",
+    "JavaScript",
+    "HTML",
+    "CSS",
+    "TailwindCSS",
+    "Redux",
+    "GraphQL",
+    "Python",
+    "Django",
+    "Java",
+    "C++",
+    "Git",
+    "Docker",
+    "AWS",
+  ];
+
+  const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  const addSkill = (skill) => {
+    if (skill && !formData.skills.includes(skill)) {
+      setFormData({ ...formData, skills: [...formData.skills, skill] });
+    }
+    setInput("");
+    setSuggestions([]);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addSkill(input.trim());
+    }
+  };
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setInput(value);
+
+    if (value) {
+      const filtered = predefinedSkills.filter(
+        (skill) =>
+          skill.toLowerCase().includes(value.toLowerCase()) &&
+          !formData.skills.includes(skill)
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const removeSkill = (index) => {
+    const updated = formData.skills.filter((_, i) => i !== index);
+    setFormData({ ...formData, skills: updated });
+  };
+
+  return (
+    <div className="relative">
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+        <Wrench className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        Skills / Technologies
+      </label>
+
+      <div className="flex flex-wrap gap-2 mb-2">
+        {formData.skills.map((skill, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-indigo-100 dark:bg-indigo-800/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm flex items-center gap-1"
+          >
+            {skill}
+            <X
+              className="w-3 h-3 cursor-pointer hover:text-red-500"
+              onClick={() => removeSkill(index)}
+            />
+          </span>
+        ))}
+      </div>
+
+      <input
+        type="text"
+        placeholder="Type and press Enter..."
+        value={input}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+
+      {/* Suggestions Dropdown */}
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md mt-1 max-h-40 overflow-y-auto shadow-lg">
+          {suggestions.map((skill, index) => (
+            <li
+              key={index}
+              className="px-3 py-2 hover:bg-indigo-100 dark:hover:bg-indigo-700 cursor-pointer"
+              onClick={() => addSkill(skill)}
+            >
+              {skill}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

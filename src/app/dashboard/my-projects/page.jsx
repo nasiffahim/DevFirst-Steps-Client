@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import api from "../../../utils/api";
 import useAuth from "../../../app/hooks/useAuth";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const MyProjects = () => {
@@ -24,7 +24,7 @@ const MyProjects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  const router = useRouter(); 
+  const router = useRouter();
 
   console.log("user data:", user);
 
@@ -249,13 +249,18 @@ const MyProjects = () => {
                       View Code
                     </a>
                     {/* <button
-  onClick={() => router.push(`/dashboard/my-projects/${project._id}`)}
-  className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
->
-  <ExternalLink className="w-4 h-4 mr-2" />
-  View Details
-</button> */}
-<Link className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" href={`/dashboard/my-projects/${project._id}`}>View Details</Link>
+                      onClick={() => router.push(`/dashboard/my-projects/${project._id}`)}
+                      className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View Details
+                    </button> */}
+                    <Link
+                      className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                      href={`/dashboard/my-projects/${project._id}`}
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
               </div>

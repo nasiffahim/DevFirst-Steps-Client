@@ -118,6 +118,7 @@ const Navbar = () => {
           description:
             "Discover projects that match your programming skills and interests.",
           icon: "⚡",
+          href: "/skill-matcher"
         },
         {
           name: "Community Hub",

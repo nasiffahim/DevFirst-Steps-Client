@@ -14,7 +14,7 @@ import {
   Trash2,     
 } from "lucide-react";
 import api from "../../../../utils/api";
-import { toast } from "react-toastify"; // 🆕 Added (for notifications)
+import { toast } from "react-toastify";
 
 export default function BlogDetailPage() {
   const { id } = useParams();

@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
-import api from "../../../../utils/api"
+import api from "../../../../utils/api";
 import { toast } from "react-toastify";
+import ImageUpload from "../../../../Components/register/ImageUpload/ImageUpload";
 
 export default function EditBlogPage() {
   const { id } = useParams();
@@ -39,8 +40,14 @@ export default function EditBlogPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
+
     try {
-      await api.put(`/my-blogs/${id}`, blog);
+      const updatedBlog = {
+        ...blog,
+        thumbnail: blog.thumbnail?.trim() === "" ? null : blog.thumbnail,
+      };
+
+      await api.put(`/my-blogs/${id}`, updatedBlog);
       toast.success("Blog updated successfully!");
       router.push("/dashboard/my-blogs");
     } catch (error) {
@@ -127,7 +134,7 @@ export default function EditBlogPage() {
             name="tags"
             value={blog.tags || ""}
             onChange={handleChange}
-            placeholder="e.g. javascript webdev nextjs"
+            placeholder="e.g. javascript, webdev, nextjs"
             className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
           />
         </div>
@@ -147,18 +154,16 @@ export default function EditBlogPage() {
           ></textarea>
         </div>
 
-        {/* Thumbnail URL */}
+        {/* Thumbnail Image */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Thumbnail URL
+            Thumbnail Image
           </label>
-          <input
-            type="text"
-            name="thumbnail"
-            value={blog.thumbnail || ""}
-            onChange={handleChange}
-            placeholder="https://example.com/image.jpg"
-            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          <ImageUpload
+            imageUrl={blog.thumbnail || ""}
+            setImageUrl={(url) =>
+              setBlog((prev) => ({ ...prev, thumbnail: url }))
+            }
           />
         </div>
 

@@ -29,6 +29,18 @@ const MyProjects = () => {
   const { user } = useAuth();
   const router = useRouter();
 
+  // project edit 
+  const handleEdit = useCallback(
+
+  (id) => {
+    if (id) {
+      router.push(`/dashboard/my-projects/${id}/edit`);
+    }
+  },
+  [router]
+);
+
+// project delate 
   const handleDelete = useCallback((id) => {
     if (!id) return;
 
@@ -287,13 +299,16 @@ const MyProjects = () => {
 
                     <div className="flex gap-1">
                       {/* Edit Button  */}
-                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200">
+                      <button
+                        onClick={()=> handleEdit(project._id)}
+                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                      >
                         <Pencil className="w-4 h-4"></Pencil> Edit
                       </button>
                       {/* Delete Button  */}
                       <button
                         onClick={() => handleDelete(project._id)}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
                       >
                         <Trash2 className="w-4 h-4"></Trash2>
                         Delete

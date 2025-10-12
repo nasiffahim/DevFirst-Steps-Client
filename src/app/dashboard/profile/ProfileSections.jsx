@@ -113,7 +113,7 @@ export function LinksSection({ linkedin, github, resume }) {
 
 /* ---------------- EDUCATION SECTION ---------------- */
 export function EducationSection({ educationList }) {
-  if (!educationList || educationList.length === 0) return null;
+  if (!Array.isArray(educationList) || educationList.length === 0) return null;
 
   return (
     <div className="border rounded-2xl bg-white dark:bg-gray-900 shadow-md max-w-2xl mx-auto mt-8">

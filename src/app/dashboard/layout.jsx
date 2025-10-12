@@ -93,12 +93,11 @@ export default function Layout({ children }) {
             icon: MessageSquare,
           },
           {
-            name: "My Discussion",
+            name: "My Discussions",
             href: "/dashboard/my-discussion",
             icon: MessagesSquare,
           },
           { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
-          { name: "Settings", href: "/dashboard/settings", icon: Settings },
         ]
       : []),
   ];

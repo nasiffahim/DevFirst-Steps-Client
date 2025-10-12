@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Pencil,
   Trash2,
+  Eye,
 } from "lucide-react";
 import api from "../../../utils/api";
 import useAuth from "../../../app/hooks/useAuth";
@@ -28,6 +29,8 @@ const MyProjects = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const router = useRouter();
+
+  console.log("user data:", user);
 
   // project edit 
   const handleEdit = useCallback(
@@ -238,17 +241,6 @@ const MyProjects = () => {
 
                 {/* Project Content */}
                 <div className="p-6">
-                  <h2>Author Name : {project.AuthorName}</h2>
-                  <h2>Author Email : {project.AuthorEmail}</h2>
-                  <h2 className="flex items-center gap-2">
-                    Author Photo :{" "}
-                    <img
-                      className=" w-12 rounded-full"
-                      src={project.AuthorPhoto}
-                      alt=""
-                    />
-                  </h2>
-
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
                     {project.description}
                   </p>
@@ -286,40 +278,32 @@ const MyProjects = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-3">
-                    {/* <a
-                      href={project.repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+                  <div className="flex gap-2">
+                    {/* Edit Button  */}
+                    <button
+                      onClick={()=> handleEdit(project._id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium shadow-sm hover:bg-blue-700 dark:hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-200"
                     >
-                      <Github className="w-4 h-4 mr-2" />
-                      View Code
-                    </a> */}
-
-                    <div className="flex gap-1">
-                      {/* Edit Button  */}
-                      <button
-                        onClick={()=> handleEdit(project._id)}
-                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                      >
-                        <Pencil className="w-4 h-4"></Pencil> Edit
-                      </button>
-                      {/* Delete Button  */}
-                      <button
-                        onClick={() => handleDelete(project._id)}
-                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                      >
-                        <Trash2 className="w-4 h-4"></Trash2>
-                        Delete
-                      </button>
-                    </div>
+                      <Pencil className="w-4 h-4" />
+                      Edit
+                    </button>
+                    
+                    {/* Delete Button  */}
+                    <button
+                      onClick={() => handleDelete(project._id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-600 dark:bg-red-500 text-white text-sm font-medium shadow-sm hover:bg-red-700 dark:hover:bg-red-600 hover:shadow-md hover:scale-105 transition-all duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                    
                     {/* Details Button  */}
                     <Link
-                      className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 border-gray-900 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm font-medium hover:bg-gray-900 hover:text-white dark:hover:bg-gray-700 dark:hover:border-gray-700 hover:shadow-md hover:scale-105 transition-all duration-200"
                       href={`/dashboard/my-projects/${project._id}`}
                     >
-                      View Details
+                      <Eye className="w-4 h-4" />
+                      Details
                     </Link>
                   </div>
                 </div>

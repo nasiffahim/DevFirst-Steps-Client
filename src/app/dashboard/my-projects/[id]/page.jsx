@@ -26,7 +26,7 @@ export default function UserProjectDetail() {
 
     const fetchProject = async () => {
       try {
-        const res = await api.get(`/my-projects/${id}`); // Make sure endpoint is correct
+        const res = await api.get(`/my-projects/${id}`);
         console.log("Fetched project:", res.data);
         setProject(res.data);
       } catch (error) {

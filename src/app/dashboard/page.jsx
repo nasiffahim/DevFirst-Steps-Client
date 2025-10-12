@@ -26,69 +26,11 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import api from "../../utils/api";
+import BlogCard from "./Component/BlogCard";
+import ProjectCard from "./Component/ProjectCard";
 
 
-// ✅ Reusable Blog Card with dark mode
-const BlogCard = ({ blog }) => (
-  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
-    <div className="relative overflow-hidden">
-      <img
-        src={blog.thumbnail}
-        alt={blog.title}
-        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
-    <div className="p-5">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-        {blog.title}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-        {blog.excerpt}
-      </p>
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <span className="text-xs text-gray-500 dark:text-gray-500">
-          By {blog.author}
-        </span>
-        <span className="text-xs text-gray-400 dark:text-gray-600">
-          {blog.date}
-        </span>
-      </div>
-    </div>
-  </div>
-);
 
-// ✅ Reusable Project Card with dark mode
-const ProjectCard = ({ project }) => (
-  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
-    <div className="relative overflow-hidden">
-      <img
-        src={project.thumbnail}
-        alt={project.name}
-        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
-    <div className="p-5">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-        {project.name}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-        {project.description}
-      </p>
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-          <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-          <span className="font-medium">{project.stars}</span>
-        </span>
-        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-          <UsersIcon className="w-3.5 h-3.5 text-gray-500 dark:text-gray-500" />
-          <span className="font-medium">{project.contributors}</span>
-        </span>
-      </div>
-    </div>
-  </div>
-);
 
 const Page = () => {
   const { user, loading } = useAuth();
@@ -97,7 +39,7 @@ const Page = () => {
   const [roleLoading, setRoleLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
-  console.log(dashboardData)
+  console.log(dashboardData);
 
   const router = useRouter();
 
@@ -163,32 +105,6 @@ const Page = () => {
     );
   }
 
-const statsArray = [
-    {
-      label: "Bookmarks",
-      value: dashboardData?.stats?.bookmarks ?? 0,
-      color: "from-blue-500 to-blue-700",
-      icon: BookmarkCheck,
-    },
-    {
-      label: "Projects",
-      value: dashboardData?.stats?.projects ?? 0,
-      color: "from-green-500 to-green-700",
-      icon: FolderKanban,
-    },
-    {
-      label: "Blogs",
-      value: dashboardData?.stats?.blogs ?? 0,
-      color: "from-purple-500 to-purple-700",
-      icon: FileText,
-    },
-    {
-      label: "Project Matches",
-      value: dashboardData?.stats?.projectMatches ?? 0,
-      color: "from-orange-500 to-orange-700",
-      icon: Sparkles,
-    },
-  ];
   const adminStats = [
     {
       label: "Total Users",
@@ -216,8 +132,34 @@ const statsArray = [
     },
   ];
 
-  const blogs = [];
-  const projects = [];
+  const statsArray = [
+    {
+      label: "Bookmarks",
+      value: dashboardData?.stats?.bookmarks ?? 0,
+      color: "from-blue-500 to-blue-700",
+      icon: BookmarkCheck,
+    },
+    {
+      label: "Projects",
+      value: dashboardData?.stats?.projects ?? 0,
+      color: "from-green-500 to-green-700",
+      icon: FolderKanban,
+    },
+    {
+      label: "Blogs",
+      value: dashboardData?.stats?.blogs ?? 0,
+      color: "from-purple-500 to-purple-700",
+      icon: FileText,
+    },
+    {
+      label: "Project Matches",
+      value: dashboardData?.stats?.projectMatches ?? 0,
+      color: "from-orange-500 to-orange-700",
+      icon: Sparkles,
+    },
+  ];
+
+
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -286,7 +228,7 @@ const statsArray = [
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.length === 0 ? (
+            {dashboardData?.latest?.blogs?.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <Lottie
                   animationData={blogAnim}
@@ -307,7 +249,9 @@ const statsArray = [
                 </Button>
               </div>
             ) : (
-              blogs.map((b) => <BlogCard key={b.id} blog={b} />)
+              dashboardData?.latest?.blogs?.map((b) => (
+                <BlogCard key={b.id} blog={b} />
+              ))
             )}
           </div>
         </section>
@@ -329,7 +273,7 @@ const statsArray = [
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.length === 0 ? (
+            {dashboardData?.latest?.projects?.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <Lottie
                   animationData={projectAnim}
@@ -350,7 +294,9 @@ const statsArray = [
                 </Button>
               </div>
             ) : (
-              projects.map((p) => <ProjectCard key={p.id} project={p} />)
+              dashboardData?.latest?.projects?.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))
             )}
           </div>
         </section>

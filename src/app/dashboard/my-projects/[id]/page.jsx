@@ -12,7 +12,7 @@ import {
   Calendar,
   User,
 } from "lucide-react";
-import api from "../../../../utils/api"
+import api from "../../../../utils/api";
 
 export default function UserProjectDetail() {
   const { id } = useParams();

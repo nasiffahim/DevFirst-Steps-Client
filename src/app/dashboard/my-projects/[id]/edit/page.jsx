@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import Swal from "sweetalert2";
-import useAuth from "../../hooks/useAuth";
-import api from "../../../utils/api";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect } from "react";
+
+import { useRouter, useParams } from "next/navigation";
 import {
-  Save,
   RotateCcw,
   Code,
   Tag,
@@ -19,9 +16,13 @@ import {
   CheckCircle,
   Upload,
   X,
+  Pencil,
 } from "lucide-react";
+import api from "../../../../../utils/api";
+import useAuth from "../../../../../app/hooks/useAuth";
+import Swal from "sweetalert2";
 
-export default function AddProjectForm() {
+export default function UpdateProjectForm() {
   const [name, setName] = useState("");
   const [language, setLanguage] = useState("");
   const [difficulty, setDifficulty] = useState("Easy");
@@ -30,14 +31,38 @@ export default function AddProjectForm() {
   const [repoUrl, setRepoUrl] = useState("");
   const [contributors, setContributors] = useState("");
   const [thumbPreview, setThumbPreview] = useState(null);
-  const fileRef = useRef(null);
-  const router = useRouter();
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const fileRef = useRef(null);
+  const router = useRouter();
+  const { id } = useParams();
   const { user } = useAuth();
 
-  const userEmail = user?.email;
+  useEffect(() => {
+    if (!id) return;
+
+    async function fetchProject() {
+      try {
+        const res = await api.get(`/update-project/${id}`);
+        const data = res.data;
+
+        setName(data.name || "");
+        setLanguage(data.language || "");
+        setDifficulty(data.difficulty || "Easy");
+        setTags(data.tags || "");
+        setDescription(data.description || "");
+        setRepoUrl(data.repoUrl || "");
+        setContributors(data.contributors || 0);
+        setThumbPreview(data.thumbnail || null);
+      } catch (err) {
+        console.error(err);
+        setError("Something went wrong while fetching project");
+      }
+    }
+
+    fetchProject();
+  }, [id]);
 
   function handleThumbChange(e) {
     const file = e.target.files?.[0];
@@ -58,12 +83,11 @@ export default function AddProjectForm() {
     setError("");
     setSuccess("");
 
-    if (!name.trim()) return setError("Project name is required.");
-    if (!language.trim()) return setError("Language is required.");
-    if (!repoUrl.trim()) return setError("Repository URL is required.");
+    if (!name.trim()) return setError("Project name is required");
+    if (!language.trim()) return setError("Language is required");
+    if (!repoUrl.trim()) return setError("Repository URL is required");
 
-    const project = {
-      id: Date.now().toString(),
+    const updatedProject = {
       name: name.trim(),
       language: language.trim(),
       difficulty,
@@ -72,46 +96,22 @@ export default function AddProjectForm() {
       repoUrl: repoUrl.trim(),
       contributors: Number(contributors) || 0,
       thumbnail: thumbPreview || null,
-      createdAt: new Date().toISOString(),
-      AuthorEmail: user?.email,
-      AuthorName: user?.displayName,
-      AuthorPhoto: user?.photoURL,
     };
 
-    console.log(project, "Form Data Submitted:");
-
     try {
-      await api.post("/add-projects", project);
-      
-      if (userEmail) {
-        await api.post("/update-activity", {
-          email: userEmail,
-          activityType: "project-addition",
-        });
-      }
+      await api.put(`/update-project/${id}`, updatedProject);
 
       Swal.fire({
         icon: "success",
-        title: "Project added successfully",
+        title: "Project update successfully",
         showConfirmButton: false,
         timer: 1500,
       });
 
-      // reset
-      setName("");
-      setLanguage("");
-      setDifficulty("Easy");
-      setTags("");
-      setDescription("");
-      setRepoUrl("");
-      setContributors("");
-      setThumbPreview(null);
-
-      if (fileRef.current) fileRef.current.value = null;
       router.push("/dashboard/my-projects");
     } catch (err) {
       console.error(err);
-      setError("Something went wrong while saving the project.");
+      setError("Something went wrong while fetching Project update ");
     }
   }
 
@@ -133,14 +133,13 @@ export default function AddProjectForm() {
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 px-8 py-6">
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-8 py-6">
           <h2 className="text-2xl font-bold text-white flex justify-center items-center gap-3">
-            <Layers className="w-7 h-7" />
-            Add New Project
+            <Pencil className="w-6 h-6"></Pencil>
+            Edit Project
           </h2>
           <p className="text-gray-300 text-sm text-center mt-2">
-            Share your project with the community and collaborate with
-            developers
+            Update your project details and share it with the community.
           </p>
         </div>
 
@@ -162,32 +161,30 @@ export default function AddProjectForm() {
         )}
 
         {/* Form */}
-        <div className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
           {/* Project Name + Language */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <Code className="w-4 h-4" />
-                Project Name *
+              <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+                <Code className="w-4 h-4" /> Project Name *
               </label>
               <input
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Beginner ToDo App"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <Code className="w-4 h-4" />
-                Language *
+              <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+                <Code className="w-4 h-4" /> Language *
               </label>
               <input
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
                 placeholder="JavaScript, Python..."
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
               />
             </div>
           </div>
@@ -195,14 +192,13 @@ export default function AddProjectForm() {
           {/* Difficulty + Contributors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <Layers className="w-4 h-4" />
-                Difficulty Level
+              <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+                <Layers className="w-4 h-4" /> Difficulty
               </label>
               <select
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
               >
                 <option>Easy</option>
                 <option>Medium</option>
@@ -211,69 +207,64 @@ export default function AddProjectForm() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Contributors (approx.)
+              <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+                <Users className="w-4 h-4" /> Contributors
               </label>
               <input
                 type="number"
                 min="0"
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
                 value={contributors}
                 onChange={(e) => setContributors(e.target.value)}
                 placeholder="0"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
               />
             </div>
           </div>
 
           {/* Tags */}
           <div>
-            <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Tag className="w-4 h-4" />
-              Tags
+            <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+              <Tag className="w-4 h-4" /> Tags
             </label>
             <input
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              placeholder="web, ai, machine-learning (comma separated)"
+              placeholder="web, ai, open-source"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Short Description
+            <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+              <FileText className="w-4 h-4" /> Description
             </label>
             <textarea
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all resize-none"
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="One paragraph about the project and what makes it special..."
+              placeholder="Write a short project description..."
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all resize-none"
             />
           </div>
 
-          {/* Repository URL */}
+          {/* Repo URL */}
           <div>
-            <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Link2 className="w-4 h-4" />
-              Repository URL *
+            <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+              <Link2 className="w-4 h-4" /> Repository URL *
             </label>
             <input
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent transition-all"
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
               placeholder="https://github.com/owner/repo"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-700 focus:border-transparent outline-none transition-all"
             />
           </div>
 
           {/* Thumbnail */}
           <div>
-            <label className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Image className="w-4 h-4" />
-              Thumbnail (optional)
+            <label className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white mb-2">
+              <Image className="w-4 h-4" /> Thumbnail
             </label>
 
             {!thumbPreview ? (
@@ -320,12 +311,10 @@ export default function AddProjectForm() {
           {/* Action Buttons */}
           <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
             <button
-              type="button"
-              onClick={handleSubmit}
-              className="cursor-pointer flex items-center gap-2 bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+              type="submit"
+              className="cursor-pointer bg-blue-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-blue-700 transition text-lg"
             >
-              <Save className="w-4 h-4" />
-              Save Project
+              Update Project
             </button>
             <button
               type="button"
@@ -336,7 +325,7 @@ export default function AddProjectForm() {
               Reset
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

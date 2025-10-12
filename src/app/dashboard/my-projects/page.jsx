@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Code2,
   Calendar,
@@ -13,18 +13,68 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import api from "../../../utils/api";
 import useAuth from "../../../app/hooks/useAuth";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Swal from "sweetalert2";
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  const router = useRouter(); 
+  const router = useRouter();
+
+  // project edit 
+  const handleEdit = useCallback(
+
+  (id) => {
+    if (id) {
+      router.push(`/dashboard/my-projects/${id}/edit`);
+    }
+  },
+  [router]
+);
+
+// project delate 
+  const handleDelete = useCallback((id) => {
+    if (!id) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`/my-projects/${id}`);
+          setProjects((prev) => prev.filter((p) => p._id !== id));
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Your Project has been removed.",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        } catch (err) {
+          console.error("Delete error:", err);
+          Swal.fire({
+            icon: "error",
+            title: "Failed!",
+            text: "Something went wrong. Try again.",
+          });
+        }
+      }
+    });
+  }, []);
 
   console.log("user data:", user);
 
@@ -157,10 +207,8 @@ const MyProjects = () => {
             {projects.map((project) => (
               <div
                 key={project._id}
-                onClick={() =>
-                  router.push(`/dashboard/my-projects/${project._id}`)
-                } // ✅ Added click redirect
-                className="cursor-pointer bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
+                // ✅ Added click redirect
+                className=" bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
               >
                 {/* Project Header */}
                 <div className="p-6 bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white">
@@ -239,7 +287,7 @@ const MyProjects = () => {
 
                   {/* Actions */}
                   <div className="flex space-x-3">
-                    <a
+                    {/* <a
                       href={project.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -247,15 +295,32 @@ const MyProjects = () => {
                     >
                       <Github className="w-4 h-4 mr-2" />
                       View Code
-                    </a>
-                    {/* <button
-  onClick={() => router.push(`/dashboard/my-projects/${project._id}`)}
-  className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
->
-  <ExternalLink className="w-4 h-4 mr-2" />
-  View Details
-</button> */}
-<Link className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200" href={`/dashboard/my-projects/${project._id}`}>View Details</Link>
+                    </a> */}
+
+                    <div className="flex gap-1">
+                      {/* Edit Button  */}
+                      <button
+                        onClick={()=> handleEdit(project._id)}
+                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                      >
+                        <Pencil className="w-4 h-4"></Pencil> Edit
+                      </button>
+                      {/* Delete Button  */}
+                      <button
+                        onClick={() => handleDelete(project._id)}
+                        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                      >
+                        <Trash2 className="w-4 h-4"></Trash2>
+                        Delete
+                      </button>
+                    </div>
+                    {/* Details Button  */}
+                    <Link
+                      className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                      href={`/dashboard/my-projects/${project._id}`}
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
               </div>

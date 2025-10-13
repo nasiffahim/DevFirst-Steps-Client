@@ -22,7 +22,7 @@ export default function CollaborationHubLayout({ children }) {
   const { user, loading } = useAuth();
 
   const navItems = [
-    { name: "Over View", href: "/Collaboration", icon: MessageSquare },
+    { name: "Overview", href: "/Collaboration", icon: MessageSquare },
     { name: "Team Feed", href: "/collaboration-hub", icon: MessageSquare },
     { name: "My Teams", href:"/Collaboration/teams", icon: Users },
     {
@@ -30,7 +30,6 @@ export default function CollaborationHubLayout({ children }) {
       href: "/Collaboration/starting-collaboration",
       icon: UserPlus,
     },
-    { name: "Projects", href: "/collaboration-hub/projects", icon: FolderKanban },
   ];
 
   // Lock body scroll when sidebar is open
@@ -126,7 +125,7 @@ export default function CollaborationHubLayout({ children }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 min-h-screen md:ml-80 pt-20 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+      <div className="flex-1 min-h-screen md:ml-80  px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         {/* Mobile menu button */}
         <button
           className="fixed top-20 left-4 md:hidden p-2 rounded-lg bg-white/50 dark:bg-gray-700/50 backdrop-blur-md text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-white/70 dark:hover:bg-gray-700/70 transition-all z-50"

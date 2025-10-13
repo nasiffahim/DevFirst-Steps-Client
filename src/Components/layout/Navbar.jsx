@@ -101,6 +101,13 @@ const Navbar = () => {
             "Get AI-powered feedback on your code contributions and pull requests.",
           icon: "🤖",
         },
+      {
+      name: "Learning Path Integration",
+     description: "Curated weekly projects and exercises to reinforce your learning in C/C++/Java/TypeScript.",
+     icon: "📚",
+     href:"platform/learning-path"
+     },
+
         {
           name: "Issue Tracker",
           description:
@@ -210,6 +217,7 @@ const Navbar = () => {
             "Weekly curated project recommendations and industry insights.",
           icon: "📧",
         },
+      
       ],
     },
     { name: "All Projects", hasDropdown: false, href: "/projects" },

@@ -52,6 +52,7 @@ export default function AddBlogForm() {
 
     try {
       await api.post("/add-blogs", blog, {
+        withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
 

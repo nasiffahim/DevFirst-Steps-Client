@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
 import api from "../../../../utils/api";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import ImageUpload from "../../../../Components/register/ImageUpload/ImageUpload";
 
 export default function EditBlogPage() {
@@ -22,7 +22,7 @@ export default function EditBlogPage() {
         setBlog(res.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
-        toast.error("Failed to load blog data.");
+        Swal.fire("Error", "Failed to load blog data.", "error");
       } finally {
         setLoading(false);
       }
@@ -48,11 +48,12 @@ export default function EditBlogPage() {
       };
 
       await api.put(`/my-blogs/${id}`, updatedBlog);
-      toast.success("Blog updated successfully!");
+
+      await Swal.fire("Success", "Blog updated successfully!", "success");
       router.push("/dashboard/my-blogs");
     } catch (error) {
       console.error("Error updating blog:", error);
-      toast.error("Failed to update blog!");
+      Swal.fire("Error", "Failed to update blog!", "error");
     } finally {
       setUpdating(false);
     }
@@ -86,9 +87,7 @@ export default function EditBlogPage() {
         Back
       </button>
 
-      <h1 className="text-3xl font-semibold text-gray-900 mb-6">
-        Edit Blog
-      </h1>
+      <h1 className="text-3xl font-semibold text-gray-900 mb-6">Edit Blog</h1>
 
       <form
         onSubmit={handleSubmit}

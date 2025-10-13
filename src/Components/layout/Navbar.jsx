@@ -58,7 +58,9 @@ const Navbar = () => {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <Code className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">DevFirst Steps</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  DevFirst Steps
+                </h3>
               </div>
             </Link>
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
@@ -95,6 +97,7 @@ const Navbar = () => {
           description:
             "Browse trending open source projects with advanced filtering and sorting capabilities.",
           icon: "🔍",
+          href: "/projects",
         },
         {
           name: "AI Code Review",
@@ -102,13 +105,13 @@ const Navbar = () => {
             "Get AI-powered feedback on your code contributions and pull requests.",
           icon: "🤖",
         },
-      {
-      name: "Learning Path Integration",
-     description: "Curated weekly projects and exercises to reinforce your learning in C/C++/Java/TypeScript.",
-     icon: "📚",
-     href:"platform/learning-path"
-     },
-
+        {
+          name: "Learning Path",
+          description:
+            "Curated projects and exercises to reinforce your skills in C/C++, Java, and TypeScript",
+          icon: "🎯",
+          href: "platform/learning-path",
+        },
         {
           name: "Issue Tracker",
           description:
@@ -126,14 +129,7 @@ const Navbar = () => {
           description:
             "Discover projects that match your programming skills and interests.",
           icon: "⚡",
-          href: "/skill-matcher"
-        },
-        {
-          name: "Community Hub",
-          description:
-            "Connect with maintainers and contributors in project communities.",
-          icon: "👥",
-          href: "/discussions"
+          href: "/skill-matcher",
         },
       ],
     },
@@ -146,6 +142,7 @@ const Navbar = () => {
           description:
             "Curated projects perfect for first-time open source contributors.",
           icon: "🌱",
+          href: "/beginner-projects",
         },
         {
           name: "JavaScript Hub",
@@ -195,10 +192,11 @@ const Navbar = () => {
           icon: "⭐",
         },
         {
-          name: "Developer Blog",
+          name: "Developer Blogs",
           description:
             "Latest trends, tips, and success stories in open source development.",
           icon: "✍️",
+          href: "/blogs",
         },
         {
           name: "API Documentation",
@@ -211,6 +209,7 @@ const Navbar = () => {
           description:
             "Connect, ask questions, and share knowledge with other developers.",
           icon: "💬",
+          href: "/discussions",
         },
         {
           name: "Newsletter",
@@ -218,13 +217,22 @@ const Navbar = () => {
             "Weekly curated project recommendations and industry insights.",
           icon: "📧",
         },
-      
       ],
     },
     { name: "All Projects", hasDropdown: false, href: "/projects" },
-    { name: "Blogs", hasDropdown: false, href: "/blogs" },
-    ...(user ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }] : []),
-    ...(user ? [{ name: "Collaboration Hub", hasDropdown: false, href: "/Collaboration" }] : []),
+    // { name: "Blogs", hasDropdown: false, href: "/blogs" },
+    ...(user
+      ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }]
+      : []),
+    ...(user
+      ? [
+          {
+            name: "Collaboration Hub",
+            hasDropdown: false,
+            href: "/Collaboration",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -240,7 +248,9 @@ const Navbar = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Code className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">DevFirst Steps</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                DevFirst Steps
+              </h3>
             </div>
           </Link>
 

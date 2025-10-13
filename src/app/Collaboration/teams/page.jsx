@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 const Page = () => {
+  const { user } = useAuth();
+  const role = "pending"; // Change to "member" to test member view
   const [joinRequests, setJoinRequests] = useState([
     {
       id: 1,
@@ -58,9 +61,16 @@ const Page = () => {
 
   const handleRejectSubmit = () => {
     updateStatus(currentRejectId, "Rejected", reason);
-    console.log("Rejected Reason:", reason);
     setRejectModalOpen(false);
   };
+
+  // Filter requests based on role
+  const visibleRequests = joinRequests.filter((req) => {
+    if (role === "owner") return true;
+    if (req.status === "Approved") return true;
+    if (req.email === user?.email) return true;
+    return false;
+  });
 
   return (
     <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -77,22 +87,15 @@ const Page = () => {
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Role</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Message</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Actions</th>
+              {role === "owner" && <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Actions</th>}
             </tr>
           </thead>
           <tbody>
-            {joinRequests.map((user) => (
-              <tr
-                key={user.id}
-                className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-              >
+            {visibleRequests.map((user) => (
+              <tr key={user.id} className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
                 <td className="px-4 py-3 flex items-center gap-3">
                   {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    <img src={user.photoURL} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
                       {user.name.charAt(0)}
@@ -104,36 +107,32 @@ const Page = () => {
                 <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{user.role}</td>
                 <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{user.message}</td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      user.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                        : user.status === "Approved"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                    }`}
-                  >
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    user.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                      : user.status === "Approved"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                  }`}>
                     {user.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 flex gap-2">
-                  {user.status === "Pending" && (
-                    <>
-                      <button
-                        onClick={() => updateStatus(user.id, "Approved")}
-                        className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleRejectClick(user.id)}
-                        className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-                </td>
+                {role === "owner" && user.status === "Pending" && (
+                  <td className="px-4 py-3 flex gap-2">
+                    <button
+                      onClick={() => updateStatus(user.id, "Approved")}
+                      className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleRejectClick(user.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+                    >
+                      Reject
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -143,13 +142,13 @@ const Page = () => {
       {/* Reject Modal */}
       {rejectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/50 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
+          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Reject Join Request
             </h2>
             <textarea
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={4}
+              rows={6}
               placeholder="Write rejection reason..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}

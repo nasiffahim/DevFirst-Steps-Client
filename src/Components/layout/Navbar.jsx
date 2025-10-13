@@ -24,7 +24,6 @@ const Navbar = () => {
   const containerRef = useRef(null);
   const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
-  const isCollaboration = pathname.startsWith("/Collaboration");
 
   useEffect(() => {
     return () => {
@@ -70,7 +69,7 @@ const Navbar = () => {
     );
   }
 
-  if (isDashboard || isCollaboration) return null;
+  if (isDashboard ) return null;
 
   const handleMouseEnter = (index) => {
     if (timeoutRef.current) {

@@ -1,11 +1,11 @@
 import React from 'react';
 
-const JoinRequestForm = () => {
+const page = () => {
     return (
         <div>
-            
+            my teams page
         </div>
     );
 };
 
-export default JoinRequestForm;
+export default page;

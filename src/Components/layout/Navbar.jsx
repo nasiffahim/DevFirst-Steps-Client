@@ -24,6 +24,7 @@ const Navbar = () => {
   const containerRef = useRef(null);
   const pathname = usePathname();
   const isDashboard = pathname.startsWith("/dashboard");
+  const isCollaboration = pathname.startsWith("/Collaboration");
 
   useEffect(() => {
     return () => {
@@ -67,7 +68,7 @@ const Navbar = () => {
     );
   }
 
-  if (isDashboard) return null;
+  if (isDashboard || isCollaboration) return null;
 
   const handleMouseEnter = (index) => {
     if (timeoutRef.current) {
@@ -223,6 +224,7 @@ const Navbar = () => {
     { name: "All Projects", hasDropdown: false, href: "/projects" },
     { name: "Blogs", hasDropdown: false, href: "/blogs" },
     ...(user ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }] : []),
+    ...(user ? [{ name: "Collaboration Hub", hasDropdown: false, href: "/Collaboration" }] : []),
   ];
 
   return (

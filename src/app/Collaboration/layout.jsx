@@ -19,6 +19,7 @@ import {
   Moon,
   Home,
   Code,
+  UserPlus,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 
@@ -32,6 +33,7 @@ export default function CollaborationHubLayout({ children }) {
   const navItems = [
     { name: "Team Feed", href: "/collaboration-hub", icon: MessageSquare },
     { name: "My Teams", href: "/collaboration-hub/teams", icon: Users },
+    {name: "Start new collaboration", href: "/Collaboration/starting-collaboration", icon: UserPlus},
     { name: "Projects", href: "/collaboration-hub/projects", icon: FolderKanban },
     { name: "Calendar", href: "/collaboration-hub/calendar", icon: Calendar },
     { name: "Notifications", href: "/collaboration-hub/notifications", icon: Bell },
@@ -156,11 +158,11 @@ export default function CollaborationHubLayout({ children }) {
       {/* Back to Dashboard */}
       <div className="fixed bottom-6 left-6 w-64 z-50 hidden md:block">
         <Link
-          href="/dashboard"
+          href="/"
           className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
         >
           <Home className="w-4 h-4" />
-          <span>Back to Dashboard</span>
+          <span>Back to Home</span>
         </Link>
       </div>
 

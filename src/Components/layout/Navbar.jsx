@@ -216,6 +216,7 @@ const Navbar = () => {
     { name: "All Projects", hasDropdown: false, href: "/projects" },
     { name: "Blogs", hasDropdown: false, href: "/blogs" },
     ...(user ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }] : []),
+    ...(user ? [{ name: "Collaboration Hub", hasDropdown: false, href: "/Collaboration" }] : []),
   ];
 
   return (

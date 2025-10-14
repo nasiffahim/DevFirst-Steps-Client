@@ -59,19 +59,14 @@ export default function CollaborationCard({ collaboration }) {
       </div>
 
       {/* Footer / Join Button */}
-      <div className="px-6 pb-6 pt-2 flex justify-between items-center">
-        <Link
-          href={`/collaboration/${_id}`}
-          className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-        >
-          View Details
-        </Link>
+      <div className="px-6 pb-6 pt-2 flex justify-end ">
+        
 
         <Link
-          href={`/collaboration/${_id}/join`}
+          href={`/Collaboration/ProjectDetails/${_id}`}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg"
         >
-          Join Team
+          View Details
         </Link>
       </div>
     </div>

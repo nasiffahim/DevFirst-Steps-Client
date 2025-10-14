@@ -189,6 +189,7 @@ const Navbar = () => {
           description:
             "Learn code quality standards and project management techniques.",
           icon: "⭐",
+          href:"/best-practices"
         },
         {
           name: "Developer Blogs",
@@ -202,6 +203,7 @@ const Navbar = () => {
           description:
             "Complete API reference for integrating with our platform.",
           icon: "📋",
+          href:"/api-documentation"
         },
         {
           name: "Community Forum",

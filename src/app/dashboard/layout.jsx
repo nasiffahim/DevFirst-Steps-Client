@@ -25,6 +25,7 @@ import {
   Users,
   Sun,
   Moon,
+  Award
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import api from "../../utils/api";
@@ -70,7 +71,10 @@ export default function Layout({ children }) {
       ? [
           { name: "All Users", href: "/dashboard/all-users", icon: Users },
           { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+          { name: "Mentorship Request", href: "/dashboard/admin", icon: Settings },
           { name: "Settings", href: "/dashboard/settings", icon: Settings },
+          
+          
         ]
       : role === "user"
       ? [
@@ -97,7 +101,19 @@ export default function Layout({ children }) {
             href: "/dashboard/my-discussion",
             icon: MessagesSquare,
           },
-          { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+          {
+            name: "Find a Mentor",
+            href: "/dashboard/find-mentor",
+            icon: MessagesSquare,
+          },
+          { name: "Leaderboard",
+            href: "/dashboard/leaderboard",
+            icon: Trophy
+          },
+          { name: "Become a Mentor",
+            href: "/dashboard/become-mentor",
+            icon: Award
+          },
         ]
       : []),
   ];

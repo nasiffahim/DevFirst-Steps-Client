@@ -270,7 +270,7 @@ export default function Layout({ children }) {
 
         <main className="">
           <div className="max-w-7xl mx-auto">{children}</div>
-           <ToastContainer position="top-center" />
+          <ToastContainer position="top-center" />
         </main>
       </div>
     </div>

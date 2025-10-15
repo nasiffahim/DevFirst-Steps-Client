@@ -50,7 +50,7 @@ const Navbar = () => {
       name: "Platform",
       hasDropdown: true,
       items: [
-        {
+      {
           name: "Project Explorer",
           description:
             "Browse trending open source projects with advanced filtering and sorting capabilities.",
@@ -144,6 +144,7 @@ const Navbar = () => {
           description:
             "Learn code quality standards and project management techniques.",
           icon: "⭐",
+       
         },
         {
           name: "Developer Blog",

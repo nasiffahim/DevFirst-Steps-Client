@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, User, Code2 } from "lucide-react";
+import { Users, User } from "lucide-react";
 import Link from "next/link";
 
 export default function CollaborationCard({ collaboration }) {
@@ -16,7 +16,7 @@ export default function CollaborationCard({ collaboration }) {
   } = collaboration;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-800 group overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-800 group overflow-hidden flex flex-col h-full">
       {/* Card Header */}
       <div className="px-6 pt-6 pb-3 flex items-center justify-between">
         <div>
@@ -58,10 +58,11 @@ export default function CollaborationCard({ collaboration }) {
         )}
       </div>
 
-      {/* Footer / Join Button */}
-      <div className="px-6 pb-6 pt-2 flex justify-end ">
-        
+      {/* Spacer to push button down */}
+      <div className="flex-grow"></div>
 
+      {/* Footer / Join Button */}
+      <div className="px-6 pb-6 pt-2 flex justify-end mt-auto">
         <Link
           href={`/Collaboration/ProjectDetails/${_id}`}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg"

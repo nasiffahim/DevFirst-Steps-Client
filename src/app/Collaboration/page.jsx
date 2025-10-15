@@ -1,58 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CollaborationCard from "../../Components/Collaboration/Card/CollaborationCard";
 import { Search } from "lucide-react";
+import api from "../../utils/api";
 
 const Page = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [collaborations, setCollaborations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const dummyData = [
-    {
-      _id: "1",
-      title: "AI Task Manager",
-      owner: "Shohel",
-      description:
-        "An AI-driven productivity tool to manage your daily tasks efficiently.",
-      skills: ["React", "Node.js", "MongoDB", "Tailwind"],
-      currentMembers: 3,
-      teamSizeGoal: 5,
-    },
-    {
-      _id: "2",
-      title: "Crypto Dashboard",
-      owner: "Shohel",
-      description: "Track crypto prices in real-time with advanced charts.",
-      skills: ["React", "Next.js", "Chart.js", "Tailwind"],
-      currentMembers: 2,
-      teamSizeGoal: 4,
-    },
-    {
-      _id: "3",
-      title: "Blog Platform",
-      owner: "Shohel",
-      description: "A modern blogging platform for writers and readers.",
-      skills: ["Next.js", "Node.js", "MongoDB", "Tailwind"],
-      currentMembers: 4,
-      teamSizeGoal: 6,
-    },
-    {
-      _id: "4",
-      title: "E-commerce App",
-      owner: "Shohel",
-      description: "A full-featured e-commerce app with payment integration.",
-      skills: ["React", "Redux", "Node.js", "Stripe"],
-      currentMembers: 5,
-      teamSizeGoal: 8,
-    },
-  ];
+  // Fetch collaborations from API
+  useEffect(() => {
+    const fetchCollaborations = async () => {
+      try {
+        const res = await api.get("/collaboration/all");
+        setCollaborations(res.data || []);
+      } catch (err) {
+        console.error("Error fetching collaborations:", err);
+        setError("Failed to load collaborations. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Filter collaborations by technology (case-insensitive)
-  const filteredData = dummyData.filter((collab) =>
-    collab.skills.some((skill) =>
-      skill.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    fetchCollaborations();
+  }, []);
+
+  // Filter collaborations by search term (skills or title)
+  const filteredData = collaborations.filter((collab) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      collab.title?.toLowerCase().includes(term) ||
+      collab.description?.toLowerCase().includes(term) ||
+      collab.skills?.some((skill) => skill.toLowerCase().includes(term))
+    );
+  });
 
   return (
     <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -64,25 +48,40 @@ const Page = () => {
 
         <input
           type="text"
-          placeholder="Search projects by technology..."
+          placeholder="Search projects by name or technology..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
         />
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center text-gray-600 dark:text-gray-400 mt-10">
+          <div className="w-8 h-8 mx-auto border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-3">Loading collaborations...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {!loading && error && (
+        <p className="text-center text-red-500 mt-6">{error}</p>
+      )}
+
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredData.length > 0 ? (
-          filteredData.map((collab) => (
-            <CollaborationCard key={collab._id} collaboration={collab} />
-          ))
-        ) : (
-          <p className="text-center col-span-full text-gray-600 dark:text-gray-400">
-            No projects found for "{searchTerm}"
-          </p>
-        )}
-      </div>
+      {!loading && !error && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredData.length > 0 ? (
+            filteredData.map((collab) => (
+              <CollaborationCard key={collab._id} collaboration={collab} />
+            ))
+          ) : (
+            <p className="text-center col-span-full text-gray-600 dark:text-gray-400">
+              No projects found for "{searchTerm}"
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

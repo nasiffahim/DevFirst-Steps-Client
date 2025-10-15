@@ -110,6 +110,7 @@ export default function NewCollaborationForm() {
       ...formData,
       ownerName: user?.name || user?.displayName || "Unknown",
       ownerEmail: user?.email,
+      ownerPhoto: user?.photoURL || "",
       createdAt: new Date().toISOString(),
     };
 

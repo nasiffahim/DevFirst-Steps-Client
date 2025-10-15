@@ -13,9 +13,20 @@ export default function ProjectDetails({ project }) {
 
   if (!project) return null;
 
+  // --- Dynamic button states ---
+  const isOwner = user?.email === project.ownerEmail;
+  const teamIsFull = project.members?.length >= Number(project.teamSize);
+
+  const joinDisabled = isOwner || teamIsFull;
+  const buttonLabel = isOwner
+    ? "You are the Owner"
+    : teamIsFull
+    ? "Team is Full"
+    : "Join Team";
+
   return (
     <div className="min-h-screen pb-10 transition-colors duration-300">
-      <div className="mx-auto space-y-10 ">
+      <div className="mx-auto space-y-10">
         {/* Header Section */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -29,10 +40,16 @@ export default function ProjectDetails({ project }) {
             </div>
 
             <button
-              onClick={() => setModalOpen(true)}
-              className="px-6 py-3 cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-green-500 text-white font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-all"
+              disabled={joinDisabled}
+              onClick={() => !joinDisabled && setModalOpen(true)}
+              className={`px-6 py-3 rounded-xl font-semibold shadow-md transition-all
+                ${
+                  joinDisabled
+                    ? "bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-green-500 text-white hover:shadow-lg hover:scale-[1.03] active:scale-[0.98]"
+                }`}
             >
-              Join Team
+              {buttonLabel}
             </button>
           </div>
 
@@ -91,45 +108,54 @@ export default function ProjectDetails({ project }) {
         </div>
 
         {/* Team Members Section */}
-        {project.teamMembers && project.teamMembers.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              Team Members
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {project.teamMembers.map((member, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
-                >
-                  {member.avatar ? (
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
-                      {member.name.charAt(0)}
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">
-                      {member.name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {member.position}
-                    </p>
-                  </div>
-                </div>
-              ))}
+{project.members && project.members.length > 0 && (
+  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
+    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+      Team Members
+    </h2>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {project.members.map((member, idx) => (
+        <div
+          key={idx}
+          className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
+        >
+          {/* Avatar */}
+          {member.avatar ? (
+            <img
+              src={member.avatar}
+              alt={member.name}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
+              {member.name?.charAt(0) || "U"}
             </div>
+          )}
+
+          {/* Name, Email & Role */}
+          <div>
+            <p className="text-gray-900 dark:text-gray-100 font-medium">
+              {member.name || "Unknown User"}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {member.email || "No email"}
+            </p>
+            {member.role && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                {member.role}
+              </p>
+            )}
           </div>
-        )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
       </div>
 
       {/* Modal */}
-      {modalOpen && (
+      {modalOpen && !joinDisabled && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/50 backdrop-blur-sm p-4">
           <div className="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
             <button
@@ -145,7 +171,6 @@ export default function ProjectDetails({ project }) {
                 name: user?.displayName || "",
                 email: user?.email || "",
                 avatar: user?.photoURL || "",
-                 
               }}
               onClose={() => setModalOpen(false)}
             />

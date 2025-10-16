@@ -107,9 +107,9 @@ export default function MentorDetailPage() {
             {/* Action Button */}
             <div className="mt-6">
               <Link
-              href={"/dashboard/mentorRequestForm"}
+              href={"/dashboard/sessionRequestForm"}
                className="cursor-pointer px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-transform transform hover:scale-105">
-                Request Mentorship
+                Request Session
               </Link>
             </div>
           </div>

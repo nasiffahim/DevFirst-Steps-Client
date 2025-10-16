@@ -82,8 +82,8 @@ export default function Layout({ children }) {
       : role === "mentor"
       ? [
           {
-            name: "User Request",
-            href: "/dashboard/adSession",
+            name: "Session Request",
+            href: "/dashboard/sessionRequest",
             icon: UserPlus2,
           },
           {

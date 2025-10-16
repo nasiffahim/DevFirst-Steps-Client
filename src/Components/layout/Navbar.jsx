@@ -221,6 +221,7 @@ const Navbar = () => {
       ],
     },
     { name: "All Projects", hasDropdown: false, href: "/projects" },
+    ...(!user ? [{ name: "Our Blogs", hasDropdown: false, href: "/blogs" }] : []),
     // { name: "Blogs", hasDropdown: false, href: "/blogs" },
     ...(user
       ? [{ name: "Dashboard", hasDropdown: false, href: "/dashboard" }]

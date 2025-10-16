@@ -101,6 +101,10 @@ export default function Layout({ children }) {
             href: "/dashboard/my-discussion",
             icon: MessagesSquare,
           },
+          { name: "Become a Mentor",
+            href: "/dashboard/become-mentor",
+            icon: Award
+          },
           {
             name: "Find a Mentor",
             href: "/dashboard/find-mentor",
@@ -109,11 +113,7 @@ export default function Layout({ children }) {
           { name: "Leaderboard",
             href: "/dashboard/leaderboard",
             icon: Trophy
-          },
-          { name: "Become a Mentor",
-            href: "/dashboard/become-mentor",
-            icon: Award
-          },
+          },    
         ]
       : []),
   ];

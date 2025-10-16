@@ -14,12 +14,16 @@ import {
   UserPlus,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
+import api from "../../utils/api";
 
 export default function CollaborationHubLayout({ children }) {
   const pathname = usePathname() ?? "";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
   const { user, loading } = useAuth();
+  const [isOwner, setIsOwner] = useState(false);
+  const [ownerloading, setOwnerLoading] = useState(true);
+console.log(isOwner)
 
   const navItems = [
     { name: "Overview", href: "/Collaboration", icon: MessageSquare },
@@ -30,6 +34,9 @@ export default function CollaborationHubLayout({ children }) {
       href: "/Collaboration/starting-collaboration",
       icon: UserPlus,
     },
+    ...(isOwner
+    ? [{ name: "Manage Projects", href: "/Collaboration/manage-projects", icon: FolderKanban }]
+    : []),
   ];
 
   // Lock body scroll when sidebar is open
@@ -40,6 +47,28 @@ export default function CollaborationHubLayout({ children }) {
       return () => (document.body.style.overflow = prev);
     }
   }, [sidebarOpen]);
+
+  useEffect(() => {
+  const checkOwnership = async () => {
+    if (!user?.email) return;
+    setOwnerLoading(true);
+    try {
+      const res = await api.get(
+        `/collaboration/check-owner?userEmail=${user.email}`
+      );
+
+      setIsOwner(res.data.isOwner);
+    } catch (err) {
+      setOwnerLoading(false);
+      console.error("Failed to check ownership:", err);
+    } finally {
+      setOwnerLoading(false);
+    }
+  };
+
+  checkOwnership(); 
+}, [user]);
+
 
   // Close sidebar on route change
   useEffect(() => {
@@ -53,7 +82,7 @@ export default function CollaborationHubLayout({ children }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  if (loading) {
+  if (loading || ownerloading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">

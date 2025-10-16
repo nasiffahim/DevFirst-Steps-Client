@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "../../../../utils/api";
 import { Timer, UserPlus } from "lucide-react";
+import Link from "next/link";
 
 export default function MentorDetailPage() {
   const { id } = useParams();
@@ -105,9 +106,11 @@ export default function MentorDetailPage() {
 
             {/* Action Button */}
             <div className="mt-6">
-              <button className="cursor-pointer px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-transform transform hover:scale-105">
+              <Link
+              href={"/dashboard/mentorRequestForm"}
+               className="cursor-pointer px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-transform transform hover:scale-105">
                 Request Mentorship
-              </button>
+              </Link>
             </div>
           </div>
         </div>

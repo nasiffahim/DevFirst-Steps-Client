@@ -1,24 +1,16 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import useAuth from "../hooks/useAuth";
-import AdminOverview from "../dashboard/Component/AdminOverview";
-import MentorOverview from "../dashboard/Component/MentorOverview"
-import projectAnim from "../../../public/Animation/No-project.json";
-import blogAnim from "../../../public/Animation/no-blogs.json";
+import useAuth from "../../hooks/useAuth";
+import projectAnim from "../../../../public/Animation/No-project.json";
+import blogAnim from "../../../../public/Animation/no-blogs.json";
 import Lottie from "lottie-react";
-import { Button } from "../../Components/ui/button";
+import { Button } from "../../../Components/ui/button";
 import Image from "next/image";
 
 import {
-  BookOpen,
   FolderKanban,
-  Bookmark,
   Sparkles,
-  Users,
-  FileBox,
-  Clock,
-  AlertTriangle,
-  Star,
   Users as UsersIcon,
   TrendingUp,
   ArrowUpRight,
@@ -26,14 +18,11 @@ import {
   FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import api from "../../utils/api";
-import BlogCard from "./Component/BlogCard";
-import ProjectCard from "./Component/ProjectCard";
+import api from "../../../utils/api";
+import BlogCard from "./BlogCard";
+import ProjectCard from "./ProjectCard";
 
-
-
-
-const Page = () => {
+const MentorOverview = () => {
   const { user, loading } = useAuth();
   const email = user?.email;
   const [role, setRole] = useState(null);
@@ -106,33 +95,6 @@ const Page = () => {
     );
   }
 
-  const adminStats = [
-    {
-      label: "Total Users",
-      value: 120,
-      icon: Users,
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      label: "Total Projects",
-      value: 450,
-      icon: FileBox,
-      color: "from-purple-500 to-purple-600",
-    },
-    {
-      label: "Pending Approvals",
-      value: 14,
-      icon: Clock,
-      color: "from-orange-500 to-orange-600",
-    },
-    {
-      label: "Reports",
-      value: 3,
-      icon: AlertTriangle,
-      color: "from-red-500 to-red-600",
-    },
-  ];
-
   const statsArray = [
     {
       label: "Bookmarks",
@@ -160,17 +122,15 @@ const Page = () => {
     },
   ];
 
-
-
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Welcome Banner - User Only */}
-      {role === "user" && (
+      {role === "mentor" && (
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold mb-2">
-                Welcome back, {user?.name || "Developer"}! 👋
+                Welcome back,  {user?.name || "Mentor"}! 👋
               </h1>
               <p className="text-gray-300 text-sm">
                 Here's what's happening with your projects and blogs today.
@@ -182,7 +142,7 @@ const Page = () => {
       )}
 
       {/* Stats Cards - User */}
-      {role === "user" && (
+      {role === "mentor" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {statsArray.map((item, idx) => {
             const Icon = item.icon;
@@ -214,7 +174,7 @@ const Page = () => {
       )}
 
       {/* Blogs Section */}
-      {role === "user" && (
+      {role === "mentor" && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -259,7 +219,7 @@ const Page = () => {
       )}
 
       {/* Projects Section */}
-      {role === "user" && (
+      {role === "mentor" && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -302,15 +262,8 @@ const Page = () => {
           </div>
         </section>
       )}
-
-      {/* Admin Overview */}
-      {role === "admin" && <AdminOverview />}
-      {/* MentorOverview  */}
-      {role === "mentor" && <MentorOverview/> }
-      
-   
     </div>
   );
 };
 
-export default Page;
+export default MentorOverview;

@@ -25,7 +25,8 @@ import {
   Users,
   Sun,
   Moon,
-  Award
+  Award,
+  UserPlus2,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import api from "../../utils/api";
@@ -71,10 +72,25 @@ export default function Layout({ children }) {
       ? [
           { name: "All Users", href: "/dashboard/all-users", icon: Users },
           { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
-          { name: "Mentorship Request", href: "/dashboard/admin", icon: Settings },
+          {
+            name: "Mentorship Request",
+            href: "/dashboard/admin",
+            icon: Settings,
+          },
           { name: "Settings", href: "/dashboard/settings", icon: Settings },
-          
-          
+        ]
+      : role === "mentor"
+      ? [
+          {
+            name: "Session Request",
+            href: "/dashboard/sessionRequest",
+            icon: UserPlus2,
+          },
+          {
+            name: "Schedules a Session",
+            href: "/dashboard/sessionForm",
+            icon: FolderPlus,
+          },
         ]
       : role === "user"
       ? [
@@ -102,17 +118,20 @@ export default function Layout({ children }) {
             icon: MessagesSquare,
           },
           {
+            name: "My Session",
+            href: "/dashboard/my-session",
+            icon: MessagesSquare,
+          },
+          {
             name: "Find a Mentor",
             href: "/dashboard/find-mentor",
             icon: MessagesSquare,
           },
-          { name: "Leaderboard",
-            href: "/dashboard/leaderboard",
-            icon: Trophy
-          },
-          { name: "Become a Mentor",
+          { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
+          {
+            name: "Become a Mentor",
             href: "/dashboard/become-mentor",
-            icon: Award
+            icon: Award,
           },
         ]
       : []),
@@ -286,7 +305,7 @@ export default function Layout({ children }) {
 
         <main className="">
           <div className="max-w-7xl mx-auto">{children}</div>
-           <ToastContainer position="top-center" />
+          <ToastContainer position="top-center" />
         </main>
       </div>
     </div>

@@ -125,12 +125,12 @@ const MentorOverview = () => {
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Welcome Banner - User Only */}
-      {role === "user" && (
+      {role === "mentor" && (
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold mb-2">
-                Welcome back, Mentor {user?.name || "Developer"}! 👋
+                Welcome back,  {user?.name || "Mentor"}! 👋
               </h1>
               <p className="text-gray-300 text-sm">
                 Here's what's happening with your projects and blogs today.
@@ -142,7 +142,7 @@ const MentorOverview = () => {
       )}
 
       {/* Stats Cards - User */}
-      {role === "user" && (
+      {role === "mentor" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {statsArray.map((item, idx) => {
             const Icon = item.icon;
@@ -174,7 +174,7 @@ const MentorOverview = () => {
       )}
 
       {/* Blogs Section */}
-      {role === "user" && (
+      {role === "mentor" && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -219,7 +219,7 @@ const MentorOverview = () => {
       )}
 
       {/* Projects Section */}
-      {role === "user" && (
+      {role === "mentor" && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">

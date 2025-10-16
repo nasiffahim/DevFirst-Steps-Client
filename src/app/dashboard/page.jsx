@@ -306,8 +306,9 @@ const Page = () => {
       {/* Admin Overview */}
       {role === "admin" && <AdminOverview />}
       {/* MentorOverview  */}
-      {/* {role === "mentor" && <MentorOverview/> } */}
-   <MentorOverview></MentorOverview>
+      {role === "mentor" && <MentorOverview/> }
+      
+   
     </div>
   );
 };

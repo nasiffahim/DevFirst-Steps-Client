@@ -1,61 +1,54 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import api from "../../../utils/api";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 import {
   CheckCircle,
   XCircle,
   Clock,
   Mail,
-  FileText,
-  Tags,
-  MessageSquare,
-  Loader2,
+  Briefcase,
   Calendar,
+  MessageSquare,
+  Award,
+  Loader2,
+  UserCheck,
+  UserX,
   Search,
-  BookOpen,
 } from "lucide-react";
-import useAuth from "../../hooks/useAuth";
 
-export default function SessionRequests() {
-  const { user } = useAuth();
-  const [requests, setRequests] = useState([]);
+export default function MentorApplications() {
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const axiosSecure = useAxiosSecure();
 
-  // ✅ Fetch all session requests
-  const fetchRequests = async () => {
-  try {
-    setLoading(true);
-    const res = await api.get("/session-requests", {
-      params: {
-        email: user?.email
-      }
-    });
-    // Filter out rejected requests
-    const filteredRequests = res.data.filter(
-      (req) => req.status !== "rejected"
-    );
-    setRequests(filteredRequests);
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Failed!",
-      text: "Could not fetch session requests.",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res = await axiosSecure.get("/admin/mentor-applications");
+      // Filter out rejected applications
+      const filteredApps = res.data.filter(app => app.status !== "rejected");
+      setApplications(filteredApps);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Failed to fetch mentor applications.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // ✅ Handle status change
   const handleStatus = async (id, status) => {
     const confirm = await Swal.fire({
-      title: `Are you sure you want to ${status} this session?`,
+      title: `Are you sure you want to ${status} this application?`,
       text:
         status === "approved"
-          ? "This session will be marked as approved."
-          : "This session will be rejected and removed from the list.",
+          ? "This mentor will be marked as approved."
+          : "This application will be rejected and removed from the list.",
       icon: status === "approved" ? "success" : "warning",
       showCancelButton: true,
       confirmButtonColor: status === "approved" ? "#16a34a" : "#dc2626",
@@ -65,27 +58,27 @@ export default function SessionRequests() {
 
     if (confirm.isConfirmed) {
       try {
-        await api.patch(`/session-requests/${id}`, { status });
+        await axiosSecure.patch(`/admin/mentor-applications/${id}`, { status });
 
         await Swal.fire({
           icon: "success",
           title:
-            status === "approved" ? "Session Approved!" : "Session Rejected!",
+            status === "approved"
+              ? "Application Approved!"
+              : "Application Rejected!",
           text:
             status === "approved"
-              ? "The session has been successfully approved."
-              : "The session has been rejected and removed.",
+              ? "The mentor has been successfully approved."
+              : "The application has been rejected and removed.",
           timer: 1800,
           showConfirmButton: false,
         });
 
-        // Remove rejected request from state immediately
+        // Remove rejected application from state immediately
         if (status === "rejected") {
-          setRequests((prevRequests) =>
-            prevRequests.filter((req) => req._id !== id)
-          );
+          setApplications(prevApps => prevApps.filter(app => app._id !== id));
         } else {
-          fetchRequests();
+          fetchData();
         }
       } catch (error) {
         Swal.fire({
@@ -98,7 +91,7 @@ export default function SessionRequests() {
   };
 
   useEffect(() => {
-    fetchRequests();
+    fetchData();
   }, []);
 
   const getStatusBadge = (status) => {
@@ -127,25 +120,12 @@ export default function SessionRequests() {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const filteredRequests = requests.filter((req) => {
+  const filteredApplications = applications.filter((app) => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      req.title?.toLowerCase().includes(searchLower) ||
-      req.description?.toLowerCase().includes(searchLower) ||
-      req.skills?.toLowerCase().includes(searchLower) ||
-      req.menteeEmail?.toLowerCase().includes(searchLower)
+      app.email?.toLowerCase().includes(searchLower) ||
+      app.expertise?.toLowerCase().includes(searchLower) ||
+      app.motivation?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -155,7 +135,7 @@ export default function SessionRequests() {
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 dark:text-blue-400 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-300 text-lg">
-            Loading session requests...
+            Loading applications...
           </p>
         </div>
       </div>
@@ -168,10 +148,10 @@ export default function SessionRequests() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">
-            Session Requests
+            Mentor Applications
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Review and manage mentorship session requests
+            Review and manage mentor applications
           </p>
         </div>
 
@@ -181,7 +161,7 @@ export default function SessionRequests() {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search by title, description, skills, or email..."
+              placeholder="Search by email, expertise, or motivation..."
               className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200 shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -189,19 +169,19 @@ export default function SessionRequests() {
           </div>
         </div>
 
-        {/* Session Requests Table */}
-        {filteredRequests.length === 0 ? (
+        {/* Applications Table */}
+        {filteredApplications.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
-              <BookOpen className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+              <Award className="w-10 h-10 text-gray-400 dark:text-gray-500" />
             </div>
             <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              No session requests found
+              No applications found
             </p>
             <p className="text-gray-500 dark:text-gray-400">
               {searchTerm
                 ? "Try adjusting your search criteria"
-                : "All requests have been processed"}
+                : "All applications have been processed"}
             </p>
           </div>
         ) : (
@@ -213,26 +193,26 @@ export default function SessionRequests() {
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        Title
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
-                        <Tags className="w-4 h-4" />
-                        Skills
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                      <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4" />
-                        Requested By
+                        Email
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      <div className="flex items-center gap-2">
+                        <Award className="w-4 h-4" />
+                        Expertise
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="w-4 h-4" />
+                        Experience
                       </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        Created At
+                        Availability
                       </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -247,40 +227,35 @@ export default function SessionRequests() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredRequests.map((req) => (
+                  {filteredApplications.map((app) => (
                     <tr
-                      key={req._id}
+                      key={app._id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <div className="max-w-xs">
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                            {req.title}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                            {req.description}
-                          </div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {app.email}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {req.skills}
+                          {app.expertise}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {req.menteeEmail}
+                          {app.experience} years
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {formatDate(req.createdAt)}
+                        <div className="text-sm text-gray-700 dark:text-gray-300 capitalize">
+                          {app.availability}
                         </div>
                       </td>
-                      <td className="px-6 py-4">{getStatusBadge(req.status)}</td>
+                      <td className="px-6 py-4">{getStatusBadge(app.status)}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          {req.status === "approved" ? (
+                          {app.status === "approved" ? (
                             <div className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg">
                               <CheckCircle className="w-4 h-4" />
                               Approved
@@ -288,19 +263,19 @@ export default function SessionRequests() {
                           ) : (
                             <>
                               <button
-                                onClick={() => handleStatus(req._id, "approved")}
+                                onClick={() => handleStatus(app._id, "approved")}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-                                title="Approve session"
+                                title="Approve application"
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <UserCheck className="w-4 h-4" />
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleStatus(req._id, "rejected")}
+                                onClick={() => handleStatus(app._id, "rejected")}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-                                title="Reject session"
+                                title="Reject application"
                               >
-                                <XCircle className="w-4 h-4" />
+                                <UserX className="w-4 h-4" />
                                 Reject
                               </button>
                             </>
@@ -315,70 +290,70 @@ export default function SessionRequests() {
 
             {/* Mobile Card View */}
             <div className="lg:hidden divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredRequests.map((req) => (
-                <div key={req._id} className="p-6 space-y-4">
-                  {/* Title */}
+              {filteredApplications.map((app) => (
+                <div key={app._id} className="p-6 space-y-4">
+                  {/* Email */}
                   <div className="flex items-start gap-3">
-                    <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                    <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                        Title
+                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                        Email
                       </p>
-                      <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {req.title}
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
+                        {app.email}
                       </p>
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                    <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                        Description
-                      </p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {req.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Skills */}
+                  {/* Expertise */}
                   <div className="flex items-start gap-3">
-                    <Tags className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <Award className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                        Skills/Topics
+                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                        Expertise
                       </p>
                       <p className="text-sm text-gray-700 dark:text-gray-300">
-                        {req.skills}
+                        {app.expertise}
                       </p>
                     </div>
                   </div>
 
-                  {/* Requested By & Date */}
-                  <div className="grid grid-cols-1 gap-3">
+                  {/* Experience & Availability */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-start gap-2">
-                      <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                          Requested By
+                      <Briefcase className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                          Experience
                         </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
-                          {req.menteeEmail}
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {app.experience} years
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <Calendar className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                          Created At
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                          Availability
                         </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                          {formatDate(req.createdAt)}
+                        <p className="text-sm text-gray-700 dark:text-gray-300 capitalize">
+                          {app.availability}
                         </p>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Motivation */}
+                  <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                    <MessageSquare className="w-4 h-4 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                        Motivation
+                      </p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {app.motivation}
+                      </p>
                     </div>
                   </div>
 
@@ -387,41 +362,33 @@ export default function SessionRequests() {
                     <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                       Status:
                     </p>
-                    {getStatusBadge(req.status)}
+                    {getStatusBadge(app.status)}
                   </div>
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    {req.status === "approved" ? (
-                      <div className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg">
-                        <CheckCircle className="w-4 h-4" />
-                        Session Approved
-                      </div>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleStatus(req._id, "approved")}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleStatus(req._id, "rejected")}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-                        >
-                          <XCircle className="w-4 h-4" />
-                          Reject
-                        </button>
-                      </>
-                    )}
+                    <button
+                      onClick={() => handleStatus(app._id, "approved")}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors disabled:cursor-not-allowed"
+                      disabled={app.status === "approved"}
+                    >
+                      <UserCheck className="w-4 h-4" />
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleStatus(app._id, "rejected")}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors disabled:cursor-not-allowed"
+                      disabled={app.status === "rejected"}
+                    >
+                      <UserX className="w-4 h-4" />
+                      Reject
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        )}
-        
+        )}       
       </div>
     </div>
   );

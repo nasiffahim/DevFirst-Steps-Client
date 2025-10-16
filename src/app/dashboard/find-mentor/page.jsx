@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 import api from "../../../utils/api";
 import { Loader2, Search } from "lucide-react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Link from "next/link";
 
 export default function FindMentor() {
   const [mentors, setMentors] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-   const axiosSecure = useAxiosSecure();
-
+  const axiosSecure = useAxiosSecure();
   useEffect(() => {
     const fetchMentors = async () => {
       try {
@@ -27,18 +27,18 @@ export default function FindMentor() {
     fetchMentors();
   }, []);
 
- useEffect(() => {
-  const filteredMentors = mentors.filter((m) => {
-    // Use optional chaining and fallback to empty string
-    const name = m.name?.toLowerCase() || "";
-    const expertise = m.expertise?.toLowerCase() || "";
-    const term = search.toLowerCase();
+  useEffect(() => {
+    const filteredMentors = mentors.filter((m) => {
+      // Use optional chaining and fallback to empty string
+      const name = m.name?.toLowerCase() || "";
+      const expertise = m.expertise?.toLowerCase() || "";
+      const term = search.toLowerCase();
 
-    return name.includes(term) || expertise.includes(term);
-  });
+      return name.includes(term) || expertise.includes(term);
+    });
 
-  setFiltered(filteredMentors);
-}, [search, mentors]);
+    setFiltered(filteredMentors);
+  }, [search, mentors]);
 
   if (loading) {
     return (
@@ -77,17 +77,19 @@ export default function FindMentor() {
               className="w-20 h-20 rounded-full object-cover mx-auto mb-3"
             />
             <h3 className="text-xl font-semibold text-center">{mentor.name}</h3>
-            <p className="text-center text-sm text-gray-500">{mentor.expertise}</p>
+            <p className="text-center text-sm text-gray-500">
+              {mentor.expertise}
+            </p>
             <p className="text-center mt-2 text-gray-700">
               Experience: {mentor.experience} years
             </p>
             <div className="text-center mt-4">
-              <a
-                href={`/mentor/${mentor._id}`}
+              <Link
+                href={`/dashboard/find-mentor/${mentor._id}`}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 View Profile
-              </a>
+              </Link>
             </div>
           </div>
         ))}

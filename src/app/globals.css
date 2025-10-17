@@ -214,21 +214,3 @@ html {
   animation-delay: 1s;
 }
 
-
-.mentor-swiper {
-  width: 100%;
-  padding: 40px 0;
-}
-
-.mentor-swiper .swiper-slide {
-  position: relative;
-  width: 65%;
-  height: 70vh;
-  aspect-ratio: 3/4;
-}
-
-@media (max-width: 768px) {
-  .mentor-swiper .swiper-slide {
-    width: 70%;
-  }
-}

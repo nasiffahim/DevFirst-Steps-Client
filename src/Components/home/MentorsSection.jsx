@@ -10,7 +10,7 @@ import Link from "next/link";
 import useAuth from "../../app/hooks/useAuth";
 
 const MentorHeroSection = () => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [mentors, setMentors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const axiosSecure = useAxiosSecure();
@@ -55,7 +55,9 @@ const MentorHeroSection = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center">
-        <div className="text-slate-900 dark:text-white text-xl">Loading mentors...</div>
+        <div className="text-slate-900 dark:text-white text-xl">
+          Loading mentors...
+        </div>
       </div>
     );
   }
@@ -102,7 +104,10 @@ const MentorHeroSection = () => {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button onClick={handleFindMentor} className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold text-white hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105">
+                <button
+                  onClick={handleFindMentor}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold text-white hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105"
+                >
                   Find Your Mentor
                 </button>
 
@@ -114,6 +119,25 @@ const MentorHeroSection = () => {
 
             {/* Right Content - Swiper Carousel */}
             <div className="w-full">
+              <style>{`               
+                .mentor-swiper {
+                width: 100%;
+                padding: 40px 0;
+                }
+
+                .mentor-swiper .swiper-slide {
+                position: relative;
+                width: 65%;
+                height: 70vh;
+                aspect-ratio: 3/4;
+                }
+
+                @media (max-width: 768px) {
+                .mentor-swiper .swiper-slide {
+                    width: 70%;
+                }
+                }              
+              `}</style>
               <Swiper
                 effect={"coverflow"}
                 grabCursor={true}

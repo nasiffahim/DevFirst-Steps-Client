@@ -5,6 +5,13 @@ import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
 import {
+  EducationSection,
+  ExperienceSection,
+  LinksSection,
+  SkillsSection,
+} from "./ProfileSections";
+import EmptyProfileSection from "./EmptyProfileSection";
+import {
   Settings,
   Edit3,
   FileText,
@@ -17,15 +24,20 @@ import {
   Shield,
   Award,
   TrendingUp,
+  Plus,
 } from "lucide-react";
+import { set } from "react-hook-form";
 
 export default function ProfilePage() {
-  const [tab, setTab] = useState("blogs");
   const { user, loading } = useAuth();
   const [role, setRole] = useState(null);
   const [points, setPoints] = useState(0);
   const [badge, setBadge] = useState(null);
+  const [userFromDatabase, setUserFromDatabase] = useState(null);
+  const [databaaseLoading, setDatabaseLoading] = useState(false);
   const email = user?.email;
+
+  console.log(userFromDatabase);
 
   useEffect(() => {
     if (!email) return;
@@ -46,6 +58,26 @@ export default function ProfilePage() {
     fetchUserInfo();
   }, [email]);
 
+  useEffect(() => {
+    if (!email) return;
+
+    const fetchUserFromDatabase = async () => {
+      setDatabaseLoading(true);
+      try {
+        const res = await api.get("/single_user", {
+          params: { emailParams: email }, // match backend
+        });
+        setUserFromDatabase(res.data);
+        setDatabaseLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch user from database", err);
+        setDatabaseLoading(false);
+      }
+    };
+
+    fetchUserFromDatabase();
+  }, [email]);
+
   const getBadgeColor = (badgeType) => {
     switch (badgeType?.toLowerCase()) {
       case "gold":
@@ -58,42 +90,17 @@ export default function ProfilePage() {
         return "bg-gradient-to-r from-gray-200 to-gray-400 text-gray-700";
     }
   };
-
-  const projects = [
-    { title: "Python Explorer", link: "#", tech: "Python", stars: 45 },
-    { title: "Web Scraper Toolkit", link: "#", tech: "JavaScript", stars: 32 },
-    { title: "Linux Resource Manager", link: "#", tech: "Shell", stars: 28 },
+  const educationList = [
+    {
+      degree: "BS in Computer Science",
+      university: "Holy Name University",
+      location: "Tagbilaran City, Bohol",
+      year: "2002–2006",
+    },
+    // You can add more here if needed
   ];
 
-  const blogs = [
-    {
-      title: "Getting Started with Open Source",
-      description: "Tips and resources for making your first contribution.",
-      date: "Dec 15, 2024",
-      views: 1234,
-    },
-    {
-      title: "Top 5 Open Source Projects",
-      description: "Explore trending projects and how to get involved.",
-      date: "Dec 10, 2024",
-      views: 892,
-    },
-  ];
-
-  const communityPosts = [
-    {
-      text: "This is an awesome project!",
-      info: "Check out more open-source projects by JohnDoe.",
-      date: "2 days ago",
-    },
-    {
-      text: "Loved your latest blog on open-source resources.",
-      info: "Let's talk about new projects in the community!",
-      date: "5 days ago",
-    },
-  ];
-
-  if (loading) {
+  if (loading || databaaseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
@@ -217,154 +224,41 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      {/* Tabs */}
-      <section className="max-w-lg mx-auto px-4 mt-8">
-        <div className="flex justify-center items-center gap-3 bg-white dark:bg-gray-900 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 mx-auto">
-          <button
-            onClick={() => setTab("blogs")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-              tab === "blogs"
-                ? "bg-gray-900 dark:bg-gray-800 text-white shadow-sm"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            Blogs
-          </button>
-          <button
-            onClick={() => setTab("projects")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-              tab === "projects"
-                ? "bg-gray-900 dark:bg-gray-800 text-white shadow-sm"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            }`}
-          >
-            <FolderGit2 className="w-4 h-4" />
-            Projects
-          </button>
-          <button
-            onClick={() => setTab("community")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-              tab === "community"
-                ? "bg-gray-900 dark:bg-gray-800 text-white shadow-sm"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            }`}
-          >
-            <MessageCircle className="w-4 h-4" />
-            Community
-          </button>
-        </div>
-      </section>
+      {/* Main Content */}
 
-      {/* Conditional Sections */}
-      <section className="max-w-6xl mx-auto py-10 px-4">
-        {tab === "blogs" && (
-          <>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              My Recent Blog Posts
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {blogs.map((blog, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-800 rounded-xl hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-                      {blog.title}
-                    </h3>
-                    <ExternalLink className="w-4 h-4 text-gray-400 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    {blog.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
-                    <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {blog.date}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-500">
-                      {blog.views} views
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+      {userFromDatabase && (
+        <>
+          {userFromDatabase.education?.length > 0 ? (
+            <EducationSection educationList={userFromDatabase.education} />
+          ) : (
+            <EmptyProfileSection type="education" />
+          )}
 
-        {tab === "projects" && (
-          <>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              My Projects
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {projects.map((proj, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-800 rounded-xl hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group"
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full mb-4 flex items-center justify-center">
-                      <FolderGit2 className="w-8 h-8 text-gray-600 dark:text-gray-400" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                      {proj.title}
-                    </h3>
-                    <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-300 rounded-full mb-3">
-                      {proj.tech}
-                    </span>
-                    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-500 mb-4">
-                      <span>⭐</span>
-                      <span>{proj.stars} stars</span>
-                    </div>
-                    <a
-                      href={proj.link}
-                      className="flex items-center gap-2 text-sm text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors font-medium"
-                    >
-                      <Github className="w-4 h-4" />
-                      View on GitHub
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+          {userFromDatabase.experience?.length > 0 ? (
+            <ExperienceSection experienceList={userFromDatabase.experience} />
+          ) : (
+            <EmptyProfileSection type="experience" />
+          )}
 
-        {tab === "community" && (
-          <>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              Community Interaction
-            </h2>
-            <div className="space-y-4">
-              {communityPosts.map((post, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center flex-shrink-0">
-                      <MessageCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-gray-900 dark:text-white font-medium mb-2">
-                        "{post.text}"
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        {post.info}
-                      </p>
-                      <span className="text-xs text-gray-500 dark:text-gray-500">
-                        {post.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </section>
+          {userFromDatabase.skills?.length > 0 ? (
+            <SkillsSection skillsList={userFromDatabase.skills} />
+          ) : (
+            <EmptyProfileSection type="skills" />
+          )}
+
+          {userFromDatabase.linkedin ||
+          userFromDatabase.github ||
+          userFromDatabase.resume ? (
+            <LinksSection
+              linkedin={userFromDatabase.linkedin}
+              github={userFromDatabase.github}
+              resume={userFromDatabase.resume}
+            />
+          ) : (
+            <EmptyProfileSection type="links" />
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import AdminOverview from "../dashboard/Component/AdminOverview";
+import MentorOverview from "../dashboard/Component/MentorOverview"
 import projectAnim from "../../../public/Animation/No-project.json";
 import blogAnim from "../../../public/Animation/no-blogs.json";
 import Lottie from "lottie-react";
@@ -21,78 +22,46 @@ import {
   Users as UsersIcon,
   TrendingUp,
   ArrowUpRight,
+  BookmarkCheck,
+  FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import api from "../../utils/api";
+import BlogCard from "./Component/BlogCard";
+import ProjectCard from "./Component/ProjectCard";
 
-// ✅ Reusable Blog Card with dark mode
-const BlogCard = ({ blog }) => (
-  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
-    <div className="relative overflow-hidden">
-      <img
-        src={blog.thumbnail}
-        alt={blog.title}
-        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
-    <div className="p-5">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-        {blog.title}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-        {blog.excerpt}
-      </p>
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <span className="text-xs text-gray-500 dark:text-gray-500">
-          By {blog.author}
-        </span>
-        <span className="text-xs text-gray-400 dark:text-gray-600">
-          {blog.date}
-        </span>
-      </div>
-    </div>
-  </div>
-);
 
-// ✅ Reusable Project Card with dark mode
-const ProjectCard = ({ project }) => (
-  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group">
-    <div className="relative overflow-hidden">
-      <img
-        src={project.thumbnail}
-        alt={project.name}
-        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    </div>
-    <div className="p-5">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-        {project.name}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-        {project.description}
-      </p>
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-          <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-          <span className="font-medium">{project.stars}</span>
-        </span>
-        <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-          <UsersIcon className="w-3.5 h-3.5 text-gray-500 dark:text-gray-500" />
-          <span className="font-medium">{project.contributors}</span>
-        </span>
-      </div>
-    </div>
-  </div>
-);
+
 
 const Page = () => {
   const { user, loading } = useAuth();
   const email = user?.email;
   const [role, setRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+  console.log(dashboardData);
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (!email) return;
+
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get("/api/user/dashboard", {
+          params: { email }, // if your API expects user email
+        });
+        setDashboardData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data", err);
+      } finally {
+        setDashboardLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [email]);
 
   // fetch user role
   useEffect(() => {
@@ -114,11 +83,13 @@ const Page = () => {
     fetchRole();
   }, [email]);
 
-  if (loading || roleLoading) {
+  if (loading || roleLoading || dashboardLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
         <div className="w-10 h-10 border-4 border-gray-300 dark:border-gray-700 border-t-gray-800 dark:border-t-gray-300 rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">Loading your dashboard...</p>
+        <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">
+          Loading your dashboard...
+        </p>
       </div>
     );
   }
@@ -127,29 +98,69 @@ const Page = () => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
         <div className="text-center bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
-          <p className="text-gray-600 dark:text-gray-400">Please log in to access the dashboard.</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Please log in to access the dashboard.
+          </p>
         </div>
       </div>
     );
   }
 
-  // ✅ Stats with icons
-  const userStats = [
-    { label: "My Blogs", value: 12, icon: BookOpen, color: "from-blue-500 to-blue-600" },
-    { label: "My Projects", value: 88, icon: FolderKanban, color: "from-purple-500 to-purple-600" },
-    { label: "Bookmarks", value: 7, icon: Bookmark, color: "from-pink-500 to-pink-600" },
-    { label: "Project Match", value: 5, icon: Sparkles, color: "from-amber-500 to-amber-600" },
-  ];
-
   const adminStats = [
-    { label: "Total Users", value: 120, icon: Users, color: "from-blue-500 to-blue-600" },
-    { label: "Total Projects", value: 450, icon: FileBox, color: "from-purple-500 to-purple-600" },
-    { label: "Pending Approvals", value: 14, icon: Clock, color: "from-orange-500 to-orange-600" },
-    { label: "Reports", value: 3, icon: AlertTriangle, color: "from-red-500 to-red-600" },
+    {
+      label: "Total Users",
+      value: 120,
+      icon: Users,
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      label: "Total Projects",
+      value: 450,
+      icon: FileBox,
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      label: "Pending Approvals",
+      value: 14,
+      icon: Clock,
+      color: "from-orange-500 to-orange-600",
+    },
+    {
+      label: "Reports",
+      value: 3,
+      icon: AlertTriangle,
+      color: "from-red-500 to-red-600",
+    },
   ];
 
-  const blogs = [];
-  const projects = [];
+  const statsArray = [
+    {
+      label: "Bookmarks",
+      value: dashboardData?.stats?.bookmarks ?? 0,
+      color: "from-blue-500 to-blue-700",
+      icon: BookmarkCheck,
+    },
+    {
+      label: "Projects",
+      value: dashboardData?.stats?.projects ?? 0,
+      color: "from-green-500 to-green-700",
+      icon: FolderKanban,
+    },
+    {
+      label: "Blogs",
+      value: dashboardData?.stats?.blogs ?? 0,
+      color: "from-purple-500 to-purple-700",
+      icon: FileText,
+    },
+    {
+      label: "Project Matches",
+      value: dashboardData?.stats?.projectMatches ?? 0,
+      color: "from-orange-500 to-orange-700",
+      icon: Sparkles,
+    },
+  ];
+
+
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -158,8 +169,12 @@ const Page = () => {
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name || 'Developer'}! 👋</h1>
-              <p className="text-gray-300 text-sm">Here's what's happening with your projects and blogs today.</p>
+              <h1 className="text-2xl font-bold mb-2">
+                Welcome back, {user?.name || "Developer"}! 👋
+              </h1>
+              <p className="text-gray-300 text-sm">
+                Here's what's happening with your projects and blogs today.
+              </p>
             </div>
             <TrendingUp className="w-12 h-12 text-gray-400 opacity-50" />
           </div>
@@ -169,7 +184,7 @@ const Page = () => {
       {/* Stats Cards - User */}
       {role === "user" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {userStats.map((item, idx) => {
+          {statsArray.map((item, idx) => {
             const Icon = item.icon;
             return (
               <div
@@ -177,7 +192,9 @@ const Page = () => {
                 className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}>
+                  <div
+                    className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}
+                  >
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-gray-400 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -186,7 +203,9 @@ const Page = () => {
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {item.value}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{item.label}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {item.label}
+                  </p>
                 </div>
               </div>
             );
@@ -198,8 +217,10 @@ const Page = () => {
       {role === "user" && (
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Latest Blogs</h2>
-            <button 
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Latest Blogs
+            </h2>
+            <button
               onClick={() => router.push("/dashboard/my-blogs")}
               className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
             >
@@ -208,11 +229,19 @@ const Page = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.length === 0 ? (
+            {dashboardData?.latest?.blogs?.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <Lottie animationData={blogAnim} loop className="h-48 opacity-80" />
-                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">No blogs yet</p>
-                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">Start sharing your knowledge with the community</p>
+                <Lottie
+                  animationData={blogAnim}
+                  loop
+                  className="h-48 opacity-80"
+                />
+                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">
+                  No blogs yet
+                </p>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">
+                  Start sharing your knowledge with the community
+                </p>
                 <Button
                   onClick={() => router.push("/dashboard/add-blogs")}
                   className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
@@ -221,7 +250,9 @@ const Page = () => {
                 </Button>
               </div>
             ) : (
-              blogs.map((b) => <BlogCard key={b.id} blog={b} />)
+              dashboardData?.latest?.blogs?.map((b) => (
+                <BlogCard key={b.id} blog={b} />
+              ))
             )}
           </div>
         </section>
@@ -231,8 +262,10 @@ const Page = () => {
       {role === "user" && (
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Latest Projects</h2>
-            <button 
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Latest Projects
+            </h2>
+            <button
               onClick={() => router.push("/dashboard/my-projects")}
               className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
             >
@@ -241,11 +274,19 @@ const Page = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.length === 0 ? (
+            {dashboardData?.latest?.projects?.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <Lottie animationData={projectAnim} loop className="h-48 opacity-80" />
-                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">No projects yet</p>
-                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">Create your first project and showcase your work</p>
+                <Lottie
+                  animationData={projectAnim}
+                  loop
+                  className="h-48 opacity-80"
+                />
+                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">
+                  No projects yet
+                </p>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">
+                  Create your first project and showcase your work
+                </p>
                 <Button
                   onClick={() => router.push("/dashboard/add-projects")}
                   className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
@@ -254,7 +295,9 @@ const Page = () => {
                 </Button>
               </div>
             ) : (
-              projects.map((p) => <ProjectCard key={p.id} project={p} />)
+              dashboardData?.latest?.projects?.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))
             )}
           </div>
         </section>
@@ -262,6 +305,10 @@ const Page = () => {
 
       {/* Admin Overview */}
       {role === "admin" && <AdminOverview />}
+      {/* MentorOverview  */}
+      {role === "mentor" && <MentorOverview/> }
+      
+   
     </div>
   );
 };

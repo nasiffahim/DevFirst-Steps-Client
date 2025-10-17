@@ -1,8 +1,7 @@
 "use client";
 
 import axios from "axios";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Code2,
   Calendar,
@@ -14,23 +13,78 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
+  Pencil,
+  Trash2,
+  Eye,
 } from "lucide-react";
 import api from "../../../utils/api";
 import useAuth from "../../../app/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Swal from "sweetalert2";
 
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
 
-  console.log("user data:", user)
+  console.log("user data:", user);
+
+  // project edit 
+  const handleEdit = useCallback(
+
+  (id) => {
+    if (id) {
+      router.push(`/dashboard/my-projects/${id}/edit`);
+    }
+  },
+  [router]
+);
+
+// project delate 
+  const handleDelete = useCallback((id) => {
+    if (!id) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`/my-projects/${id}`);
+          setProjects((prev) => prev.filter((p) => p._id !== id));
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Your Project has been removed.",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        } catch (err) {
+          console.error("Delete error:", err);
+          Swal.fire({
+            icon: "error",
+            title: "Failed!",
+            text: "Something went wrong. Try again.",
+          });
+        }
+      }
+    });
+  }, []);
+
+  console.log("user data:", user);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Replace with your actual API endpoint
       const response = await api.get("/my-projects");
       setProjects(response.data);
     } catch (err) {
@@ -156,7 +210,8 @@ const MyProjects = () => {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
+                // ✅ Added click redirect
+                className=" bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-gray-900/50 hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-800"
               >
                 {/* Project Header */}
                 <div className="p-6 bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white">
@@ -223,19 +278,33 @@ const MyProjects = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-3">
-                    <a
-                      href={project.repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+                  <div className="flex gap-2">
+                    {/* Edit Button  */}
+                    <button
+                      onClick={()=> handleEdit(project._id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium shadow-sm hover:bg-blue-700 dark:hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-200"
                     >
-                      <Github className="w-4 h-4 mr-2" />
-                      View Code
-                    </a>
-                    <button className="inline-flex items-center justify-center px-4 py-2 border-2 border-gray-900 dark:border-gray-700 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-                      <ExternalLink className="w-4 h-4" />
+                      <Pencil className="w-4 h-4" />
+                      Edit
                     </button>
+                    
+                    {/* Delete Button  */}
+                    <button
+                      onClick={() => handleDelete(project._id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-600 dark:bg-red-500 text-white text-sm font-medium shadow-sm hover:bg-red-700 dark:hover:bg-red-600 hover:shadow-md hover:scale-105 transition-all duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
+                    
+                    {/* Details Button  */}
+                    <Link
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 border-gray-900 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm font-medium hover:bg-gray-900 hover:text-white dark:hover:bg-gray-700 dark:hover:border-gray-700 hover:shadow-md hover:scale-105 transition-all duration-200"
+                      href={`/dashboard/my-projects/${project._id}`}
+                    >
+                      <Eye className="w-4 h-4" />
+                      Details
+                    </Link>
                   </div>
                 </div>
               </div>

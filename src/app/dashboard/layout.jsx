@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
@@ -16,6 +18,7 @@ import {
   FileText,
   MessageSquare,
   MessagesSquare,
+  UserSearch,
   Trophy,
   Settings,
   Home,
@@ -23,6 +26,10 @@ import {
   Users,
   Sun,
   Moon,
+  Award,
+  UserPlus2,
+  ListVideo,
+  ChevronLeft,
 } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import api from "../../utils/api";
@@ -67,8 +74,25 @@ export default function Layout({ children }) {
     ...(role === "admin"
       ? [
           { name: "All Users", href: "/dashboard/all-users", icon: Users },
+          {
+            name: "Mentorship Request",
+            href: "/dashboard/mentor-approval",
+            icon: Settings,
+          },
           { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
-          { name: "Settings", href: "/dashboard/settings", icon: Settings },
+        ]
+      : role === "mentor"
+      ? [
+          {
+            name: "Session Request",
+            href: "/dashboard/sessionRequest",
+            icon: UserPlus2,
+          },
+          {
+            name: "Schedules a Session",
+            href: "/dashboard/sessionForm",
+            icon: FolderPlus,
+          },
         ]
       : role === "user"
       ? [
@@ -91,12 +115,26 @@ export default function Layout({ children }) {
             icon: MessageSquare,
           },
           {
-            name: "My Discussion",
+            name: "My Discussions",
             href: "/dashboard/my-discussion",
             icon: MessagesSquare,
           },
+          {
+            name: "Become a Mentor",
+            href: "/dashboard/become-mentor",
+            icon: Award,
+          },
+          {
+            name: "Find a Mentor",
+            href: "/dashboard/find-mentor",
+            icon: UserSearch,
+          },
+          {
+            name: "My Session",
+            href: "/dashboard/my-session",
+            icon: ListVideo,
+          },
           { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
-          { name: "Settings", href: "/dashboard/settings", icon: Settings },
         ]
       : []),
   ];
@@ -196,6 +234,12 @@ export default function Layout({ children }) {
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          <div>
+            <Link href="/">
+              <ChevronLeft />
+            </Link>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -228,7 +272,7 @@ export default function Layout({ children }) {
       </aside>
 
       {/* Fixed Back to Home Button */}
-      <div className="fixed bottom-6 left-6 w-64 z-50 hidden md:block">
+      {/* <div className="fixed bottom-6 left-6 w-64 z-50 hidden md:block">
         <Link
           href="/"
           className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
@@ -236,7 +280,7 @@ export default function Layout({ children }) {
           <Home className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
-      </div>
+      </div> */}
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">
@@ -269,6 +313,7 @@ export default function Layout({ children }) {
 
         <main className="">
           <div className="max-w-7xl mx-auto">{children}</div>
+          <ToastContainer position="top-center" />
         </main>
       </div>
     </div>

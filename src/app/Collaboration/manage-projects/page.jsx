@@ -4,18 +4,18 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "../../../utils/api";
 import useAuth from "../../hooks/useAuth";
-import { UserCheck, XCircle, Clock, ArrowRight } from "lucide-react";
+import { UserCheck, XCircle, Clock, ArrowRight, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const ManageProjectsPage = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState({}); // track loading per project
 
   useEffect(() => {
     const fetchProjects = async () => {
       if (!user?.email) return;
-
       try {
         const res = await api.get("/collaboration/manage-projects", {
           params: { ownerEmail: user.email },
@@ -23,22 +23,41 @@ const ManageProjectsPage = () => {
         setProjects(res.data);
       } catch (err) {
         console.error("Failed to fetch projects:", err);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchProjects();
   }, [user]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-screen text-gray-500 dark:text-gray-400">
-        Loading projects...
-      </div>
-    );
+  const handleDeleteProject = async (project) => {
+    const result = await Swal.fire({
+      title: `Delete "${project.title}"?`,
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
-  if (projects.length === 0)
+    if (result.isConfirmed) {
+      try {
+        setLoadingProjects((prev) => ({ ...prev, [project._id]: true }));
+        await api.delete(`/collaboration/delete-project/${project._id}`);
+        Swal.fire("Deleted!", "Project has been deleted.", "success");
+        setProjects((prev) =>
+          prev.filter((p) => p._id !== project._id)
+        );
+      } catch (err) {
+        console.error("Failed to delete project:", err);
+        Swal.fire("Error", "Failed to delete project. Try again.", "error");
+      } finally {
+        setLoadingProjects((prev) => ({ ...prev, [project._id]: false }));
+      }
+    }
+  };
+
+  if (!projects.length)
     return (
       <div className="flex flex-col justify-center items-center min-h-screen text-gray-700 dark:text-gray-400">
         <p className="text-lg mb-4">No projects owned yet.</p>
@@ -96,10 +115,13 @@ const ManageProjectsPage = () => {
                         {req.name} ({req.role})
                       </p>
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${statusStyles[req.status]}`}
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          statusStyles[req.status]
+                        }`}
                       >
                         {statusIcons[req.status]}
-                        {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                        {req.status.charAt(0).toUpperCase() +
+                          req.status.slice(1)}
                       </span>
                       {req.status === "rejected" && req.reason && (
                         <p className="text-red-500 text-sm mt-1">
@@ -117,15 +139,29 @@ const ManageProjectsPage = () => {
               )}
             </div>
 
-            {/* View Details Button */}
-            <button
-              onClick={() =>
-                router.push(`/Collaboration/manage-projects/${project._id}`)
-              }
-              className="mt-4 flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium shadow-md transition-all transform hover:scale-105"
-            >
-              View Details <ArrowRight size={18} />
-            </button>
+            {/* Buttons */}
+            <div className="flex flex-col gap-3 mt-4">
+              <button
+                onClick={() =>
+                  router.push(`/Collaboration/manage-projects/${project._id}`)
+                }
+                className="flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium shadow-md transition-all transform hover:scale-105"
+              >
+                View Details <ArrowRight size={18} />
+              </button>
+              <button
+                onClick={() => handleDeleteProject(project)}
+                disabled={loadingProjects[project._id]}
+                className={`flex items-center justify-center gap-2 px-5 py-2 rounded-full font-medium shadow-md transition-all transform ${
+                  loadingProjects[project._id]
+                    ? "bg-red-400 cursor-not-allowed"
+                    : "bg-red-600 hover:bg-red-700"
+                } text-white`}
+              >
+                <Trash2 size={18} />{" "}
+                {loadingProjects[project._id] ? "Deleting..." : "Delete Project"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

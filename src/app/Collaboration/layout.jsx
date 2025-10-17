@@ -23,7 +23,6 @@ export default function CollaborationHubLayout({ children }) {
   const { user, loading } = useAuth();
   const [isOwner, setIsOwner] = useState(false);
   const [ownerloading, setOwnerLoading] = useState(true);
-console.log(isOwner)
 
   const navItems = [
     { name: "Overview", href: "/Collaboration", icon: MessageSquare },

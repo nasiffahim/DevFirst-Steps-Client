@@ -1,34 +1,63 @@
-import React from 'react';
-import ProjectDetails from './ProjectDetails';
+"use client";
 
-const page = () => {
-    const project = {
-  _id: "1",
-  title: "A React Project for Beginners",
-  description:
-    "This project is designed to help new developers understand how to build and collaborate using React. We focus on learning best practices, GitHub collaboration, and modern UI design.",
-  githubRepo: "https://github.com/example/react-beginner",
-  projectType: "open source",
-  teamSize: "7",
-  collaborationType: "remote",
-  contactPreference: "discord",
-  skills: ["Express", "Python", "Node.js", "Next.js"],
-  teamMembers: [
-    { name: "Sarah Ahmed", position: "Project Lead / Frontend Developer" },
-    { name: "Jamil Khan", position: "Backend Developer" },
-    { name: "Anika Chowdhury", position: "UI/UX Designer" },
-    { name: "Rafiul Hasan", position: "Full Stack Developer" },
-    { name: "Nadia Rahman", position: "QA Engineer" },
-    { name: "Omar Faruk", position: "DevOps Engineer" },
-    { name: "Tanjim Islam", position: "Documentation & Community Manager" },
-  ],
-};
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import ProjectDetails from "./ProjectDetails";
 
+const Page = () => {
+  const { id } = useParams(); // get project id from route
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchProject = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/collaboration/${id}`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch project data");
+        }
+        const data = await res.json();
+        setProject(data);
+      } catch (err) {
+        console.error("Error fetching project:", err);
+        setError("Failed to load project details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [id]);
+
+  if (loading)
     return (
-        <div>
-            <ProjectDetails project={project}/>
-        </div>
+      <div className="flex justify-center items-center min-h-screen text-gray-600 dark:text-gray-300">
+        Loading project details...
+      </div>
     );
+
+  if (error)
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-500">
+        {error}
+      </div>
+    );
+
+  if (!project)
+    return (
+      <div className="flex justify-center items-center min-h-screen text-gray-500">
+        No project found.
+      </div>
+    );
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+      <ProjectDetails project={project} />
+    </div>
+  );
 };
 
-export default page;
+export default Page;

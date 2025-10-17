@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import api from "../../../utils/api";
 
 const roles = [
   "Frontend Developer",
@@ -18,7 +19,7 @@ export default function JoinProjectForm({ projectId, user, onClose }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!role) return toast.error("Please select a preferred role");
 
@@ -26,20 +27,27 @@ export default function JoinProjectForm({ projectId, user, onClose }) {
 
     const joinRequestData = {
       projectId,
+      userEmail: user.email,
       name: user.name,
-      email: user.email,
       role,
       message,
-      photoURL: user.photoURL,
+      photoURL: user.photoURL || "",
     };
 
-    console.log(joinRequestData);
-
-    setTimeout(() => {
-      toast.success("Join request submitted!");
+    try {
+      const res = await api.post("/collaboration/join", joinRequestData);
+      if (res.status === 201) {
+        toast.success("Join request submitted!");
+        onClose?.();
+      } else {
+        toast.error(res.data?.message || "Failed to send join request.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Server error occurred.");
+    } finally {
       setLoading(false);
-      onClose?.();
-    }, 1000);
+    }
   };
 
   return (

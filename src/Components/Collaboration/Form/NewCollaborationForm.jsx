@@ -4,8 +4,12 @@ import { useState } from "react";
 import { PlusCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../../utils/api";
+import useAuth from "../../../app/hooks/useAuth";
 
 export default function NewCollaborationForm() {
+  const auth = useAuth();
+  const user = auth?.user;
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -21,7 +25,6 @@ export default function NewCollaborationForm() {
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
 
-  // Common tech skills for suggestions
   const skillSuggestions = [
     "React",
     "Next.js",
@@ -51,7 +54,7 @@ export default function NewCollaborationForm() {
     "AWS",
   ];
 
-  // Handle input change and filter suggestions
+  // Handle skill input
   const handleSkillInput = (e) => {
     const value = e.target.value;
     setSkillInput(value);
@@ -61,13 +64,12 @@ export default function NewCollaborationForm() {
           skill.toLowerCase().includes(value.toLowerCase()) &&
           !formData.skills.includes(skill)
       );
-      setFilteredSkills(filtered.slice(0, 6)); // Show up to 6 matches
+      setFilteredSkills(filtered.slice(0, 6));
     } else {
       setFilteredSkills([]);
     }
   };
 
-  // Add a skill manually or from suggestion
   const addSkill = (skill) => {
     if (skill && !formData.skills.includes(skill)) {
       setFormData((prev) => ({ ...prev, skills: [...prev.skills, skill] }));
@@ -83,31 +85,56 @@ export default function NewCollaborationForm() {
     }));
   };
 
+  // Validate
+  const validateForm = () => {
+    const { title, description, projectType, collaborationType, contactPreference } = formData;
+
+    if (!title.trim()) return toast.error("Project title is required.");
+    if (!description.trim()) return toast.error("Description is required.");
+    if (!projectType) return toast.error("Please select a project type.");
+    if (!collaborationType) return toast.error("Please select a collaboration type.");
+    if (!contactPreference) return toast.error("Please select a contact preference.");
+    if (!user) return toast.error("You must be logged in to create a collaboration.");
+
+    return true;
+  };
+
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setLoading(true);
-    toast.info("🚧 This feature is coming soon!");
-    console.log(formData)
-    setLoading(false);
-    // try {
-    //   await api.post("/collaboration/create", formData);
-    //   toast.success("🎉 Collaboration Created Successfully!");
-    //   setFormData({
-    //     title: "",
-    //     description: "",
-    //     githubRepo: "",
-    //     skills: [],
-    //     projectType: "",
-    //     teamSize: "",
-    //     collaborationType: "",
-    //     contactPreference: "",
-    //   });
-    // } catch (err) {
-    //   toast.error("Something went wrong. Please try again!");
-    //   console.error(err);
-    // } finally {
-    //   setLoading(false);
-    // }
+
+    const payload = {
+      ...formData,
+      ownerName: user?.name || user?.displayName || "Unknown",
+      ownerEmail: user?.email,
+      ownerPhoto: user?.photoURL || "",
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const res = await api.post("/collaboration/create", payload);
+      toast.success(" Collaboration Created Successfully!");
+
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        githubRepo: "",
+        skills: [],
+        projectType: "",
+        teamSize: "",
+        collaborationType: "",
+        contactPreference: "",
+      });
+    } catch (err) {
+      toast.error("Something went wrong. Please try again!");
+      console.error("Error creating collaboration:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -149,7 +176,7 @@ export default function NewCollaborationForm() {
           }
         />
 
-        {/* Skills Needed */}
+        {/* Skills */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Tech Stack / Skills Needed
@@ -176,7 +203,7 @@ export default function NewCollaborationForm() {
                 value={skillInput}
                 onChange={handleSkillInput}
                 onKeyDown={(e) => {
-                  if (["Enter", ",", "Comma"].includes(e.key) && skillInput.trim()) {
+                  if (["Enter", "Comma", ","].includes(e.key) && skillInput.trim()) {
                     e.preventDefault();
                     addSkill(skillInput.trim());
                   }
@@ -186,7 +213,6 @@ export default function NewCollaborationForm() {
               />
             </div>
 
-            {/* Suggestion Dropdown */}
             {filteredSkills.length > 0 && (
               <ul className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg mt-1 w-full max-h-40 overflow-y-auto">
                 {filteredSkills.map((skill, idx) => (
@@ -272,7 +298,7 @@ export default function NewCollaborationForm() {
   );
 }
 
-/* ——— Reusable Input Components ——— */
+/* ——— Reusable Inputs ——— */
 const InputField = ({ label, ...props }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

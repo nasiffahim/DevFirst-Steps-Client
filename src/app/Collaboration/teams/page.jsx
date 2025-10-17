@@ -1,172 +1,211 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
+import Image from "next/image";
+import api from "../../../utils/api";
+import { X } from "lucide-react";
 
 const Page = () => {
   const { user } = useAuth();
-  const role = "pending"; // Change to "member" to test member view
-  const [joinRequests, setJoinRequests] = useState([
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      photoURL: "https://randomuser.me/api/portraits/women/1.jpg",
-      role: "Frontend Developer",
-      message: "Excited to contribute!",
-      status: "Pending",
-      rejectionReason: "",
-    },
-    {
-      id: 2,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      photoURL: "https://randomuser.me/api/portraits/men/2.jpg",
-      role: "Backend Developer",
-      message: "I can help with APIs and database.",
-      status: "Approved",
-      rejectionReason: "",
-    },
-    {
-      id: 3,
-      name: "Clara Lee",
-      email: "clara@example.com",
-      photoURL: "https://randomuser.me/api/portraits/women/3.jpg",
-      role: "UI/UX Designer",
-      message: "Love designing user interfaces.",
-      status: "Rejected",
-      rejectionReason: "Not enough experience",
-    },
-  ]);
-
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-  const [currentRejectId, setCurrentRejectId] = useState(null);
-  const [reason, setReason] = useState("");
-
-  const updateStatus = (id, newStatus, rejectionReason = "") => {
-    setJoinRequests((prev) =>
-      prev.map((user) =>
-        user.id === id
-          ? { ...user, status: newStatus, rejectionReason }
-          : user
-      )
-    );
-  };
-
-  const handleRejectClick = (id) => {
-    setCurrentRejectId(id);
-    setReason("");
-    setRejectModalOpen(true);
-  };
-
-  const handleRejectSubmit = () => {
-    updateStatus(currentRejectId, "Rejected", reason);
-    setRejectModalOpen(false);
-  };
-
-  // Filter requests based on role
-  const visibleRequests = joinRequests.filter((req) => {
-    if (role === "owner") return true;
-    if (req.status === "Approved") return true;
-    if (req.email === user?.email) return true;
-    return false;
+  const [teams, setTeams] = useState({
+    joined: [],
+    pending: [],
+    rejected: [],
   });
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+  // 🔹 Fetch user's team data
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchTeams = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get(
+          `/collaboration/my-teams?userEmail=${user.email}`
+        );
+        setTeams(res.data);
+      } catch (err) {
+        console.error("Failed to load team data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeams();
+  }, [user?.email]);
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen text-gray-500 dark:text-gray-400">
+        Loading your teams...
+      </div>
+    );
+
+  // 🔹 Reusable Section
+  const Section = ({ title, projects, emptyMsg }) => (
+    <div className="mb-10">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
+      {projects.length === 0 ? (
+        <p className="text-gray-600 dark:text-gray-400">{emptyMsg}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projects.map((proj) => (
+            <div
+              key={proj._id}
+              onClick={() => setSelectedProject(proj)}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow hover:shadow-lg cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {proj.title}
+                </h3>
+                <span
+                  className={`text-xs px-3 py-1 rounded-full ${
+                    proj.status === "pending"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                      : proj.status === "rejected"
+                      ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                      : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                  }`}
+                >
+                  {proj.status || "Member"}
+                </span>
+              </div>
+
+              <p className="text-gray-700 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                {proj.description || "No description provided."}
+              </p>
+
+              <div className="flex -space-x-2">
+                {proj.members?.slice(0, 5).map((m, idx) => (
+                  <Image
+                    key={idx}
+                    src={m.avatar || "/default-avatar.png"}
+                    alt={m.name}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 object-cover"
+                  />
+                ))}
+              </div>
+
+              {proj.status === "rejected" && proj.reason && (
+                <p className="mt-3 text-sm text-red-500">
+                  Rejected: {proj.reason}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Project Join Requests
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
+        My Teams & Collaboration Requests
       </h1>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-900">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">User</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Email</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Role</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Message</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Status</th>
-              {role === "owner" && <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Actions</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {visibleRequests.map((user) => (
-              <tr key={user.id} className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                <td className="px-4 py-3 flex items-center gap-3">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
-                      {user.name.charAt(0)}
-                    </div>
-                  )}
-                  <span className="text-gray-900 dark:text-gray-100 font-medium">{user.name}</span>
-                </td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{user.email}</td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{user.role}</td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{user.message}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    user.status === "Pending"
-                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                      : user.status === "Approved"
-                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                  }`}>
-                    {user.status}
-                  </span>
-                </td>
-                {role === "owner" && user.status === "Pending" && (
-                  <td className="px-4 py-3 flex gap-2">
-                    <button
-                      onClick={() => updateStatus(user.id, "Approved")}
-                      className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleRejectClick(user.id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
-                    >
-                      Reject
-                    </button>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Section
+        title="Joined / Owned Projects"
+        projects={teams.joined}
+        emptyMsg="You haven't joined or created any projects yet."
+      />
+      <Section
+        title="Pending Requests"
+        projects={teams.pending}
+        emptyMsg="You don't have any pending collaboration requests."
+      />
+      <Section
+        title="Rejected Projects"
+        projects={teams.rejected}
+        emptyMsg="No rejected requests so far."
+      />
 
-      {/* Reject Modal */}
-      {rejectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/50 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Reject Join Request
+      {/* 🔹 Detail Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="relative bg-white dark:bg-gray-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <button
+              onClick={() => setSelectedProject(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {selectedProject.title}
             </h2>
-            <textarea
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={6}
-              placeholder="Write rejection reason..."
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-            />
-            <div className="mt-4 flex justify-end gap-3">
-              <button
-                onClick={() => setRejectModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRejectSubmit}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Reject
-              </button>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {selectedProject.description || "No description available."}
+            </p>
+
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                Owner:
+              </h3>
+              <p className="text-gray-700 dark:text-gray-400">
+                {selectedProject.owner?.name || "Unknown"} (
+                {selectedProject.owner?.email})
+              </p>
             </div>
+
+            {selectedProject.skills?.length > 0 && (
+              <div className="mb-4">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                  Skills Needed:
+                </h3>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {selectedProject.skills.map((skill, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedProject.members?.length > 0 && (
+              <div className="mb-4">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                  Members:
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {selectedProject.members.map((m, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg"
+                    >
+                      <Image
+                        src={m.avatar || "/default-avatar.png"}
+                        alt={m.name}
+                        width={24}
+                        height={24}
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {m.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedProject.status === "rejected" &&
+              selectedProject.reason && (
+                <p className="mt-3 text-sm text-red-500">
+                  Rejection Reason: {selectedProject.reason}
+                </p>
+              )}
           </div>
         </div>
       )}

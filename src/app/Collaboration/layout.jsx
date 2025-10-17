@@ -25,16 +25,16 @@ export default function CollaborationHubLayout({ children }) {
   const [ownerloading, setOwnerLoading] = useState(true);
 
   const navItems = [
-    { name: "Overview", href: "/collaboration", icon: MessageSquare },
+    { name: "Overview", href: "/Collaboration", icon: MessageSquare },
     // { name: "Team Feed", href: "/collaboration-hub", icon: MessageSquare },
-    { name: "My Teams", href:"/collaboration/teams", icon: Users },
+    { name: "My Teams", href:"/Collaboration/teams", icon: Users },
     {
       name: "Start New Collaboration",
-      href: "/collaboration/starting-collaboration",
+      href: "/Collaboration/starting-collaboration",
       icon: UserPlus,
     },
     ...(isOwner
-    ? [{ name: "Manage Projects", href: "/collaboration/manage-projects", icon: FolderKanban }]
+    ? [{ name: "Manage Projects", href: "/Collaboration/manage-projects", icon: FolderKanban }]
     : []),
   ];
 

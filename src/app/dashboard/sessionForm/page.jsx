@@ -5,14 +5,10 @@ import { Calendar, Link2, MessageSquare, User, Mail } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import api from "../../../utils/api";
 
-export default function ScheduleSessionForm({
-  mentorEmail,
-  menteeEmail: initialMenteeEmail,
-  requestId,
-}) {
+export default function ScheduleSessionForm() {
   const { user } = useAuth();
   const [menteeName, setMenteeName] = useState("");
-  const [menteeEmail, setMenteeEmail] = useState(initialMenteeEmail || "");
+  const [menteeEmail, setMenteeEmail] = useState("");
   const [sessionLink, setSessionLink] = useState("");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +16,12 @@ export default function ScheduleSessionForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!menteeName.trim() || !menteeEmail.trim() || !sessionLink.trim() || !comment.trim()) {
+    if (
+      !menteeName.trim() ||
+      !menteeEmail.trim() ||
+      !sessionLink.trim() ||
+      !comment.trim()
+    ) {
       return Swal.fire("Error", "All fields are required", "error");
     }
 
@@ -37,7 +38,7 @@ export default function ScheduleSessionForm({
         sessionLink: sessionLink.trim(),
         comment: comment.trim(),
         mentorEmail: user?.email,
-        requestId,
+        createdAt: new Date(),
       };
 
       console.log("Sending data:", payload);
@@ -159,7 +160,8 @@ export default function ScheduleSessionForm({
 
         <div className="mt-6 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-xl p-4 sm:p-5">
           <p className="text-sm text-blue-800 dark:text-blue-300 text-center">
-            <span className="font-semibold">💡 Tip:</span> Make sure to include the meeting date and time in your session notes!
+            <span className="font-semibold">💡 Tip:</span> Make sure to include
+            the meeting date and time in your session notes!
           </p>
         </div>
       </div>

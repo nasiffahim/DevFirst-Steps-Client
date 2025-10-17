@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "../../../../utils/api";
 import { CheckCircle, XCircle } from "lucide-react";
+import { toast } from "react-toastify";
 
 const ProjectJoinRequests = () => {
   const { id } = useParams(); // projectId
@@ -41,7 +42,7 @@ const ProjectJoinRequests = () => {
       let body = {};
       if (action === "reject") {
         if (!rejectionReason) {
-          alert("Please enter a rejection reason.");
+          toast.error("Please enter a rejection reason.");
           return;
         }
         body = { reason: rejectionReason };

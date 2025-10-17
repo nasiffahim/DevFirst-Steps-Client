@@ -143,7 +143,7 @@ const ManageProjectsPage = () => {
             <div className="flex flex-col gap-3 mt-4">
               <button
                 onClick={() =>
-                  router.push(`/Collaboration/manage-projects/${project._id}`)
+                  router.push(`/collaboration/manage-projects/${project._id}`)
                 }
                 className="flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium shadow-md transition-all transform hover:scale-105"
               >

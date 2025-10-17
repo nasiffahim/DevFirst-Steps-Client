@@ -11,8 +11,8 @@ export default function CollaborationCard({ collaboration }) {
     owner,
     description,
     skills = [],
-    currentMembers = 1,
-    teamSizeGoal = 5,
+    teamSize,
+    members
   } = collaboration;
 
   return (
@@ -32,7 +32,7 @@ export default function CollaborationCard({ collaboration }) {
         <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-sm text-gray-700 dark:text-gray-300">
           <Users className="w-4 h-4" />
           <span>
-            {currentMembers}/{teamSizeGoal}
+            {members.length}/{teamSize}
           </span>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function CollaborationCard({ collaboration }) {
       {/* Footer / Join Button */}
       <div className="px-6 pb-6 pt-2 flex justify-end mt-auto">
         <Link
-          href={`/Collaboration/ProjectDetails/${_id}`}
+          href={`/collaboration/ProjectDetails/${_id}`}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg"
         >
           View Details

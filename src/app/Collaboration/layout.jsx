@@ -25,16 +25,16 @@ export default function CollaborationHubLayout({ children }) {
   const [ownerloading, setOwnerLoading] = useState(true);
 
   const navItems = [
-    { name: "Overview", href: "/Collaboration", icon: MessageSquare },
-    { name: "Team Feed", href: "/collaboration-hub", icon: MessageSquare },
-    { name: "My Teams", href:"/Collaboration/teams", icon: Users },
+    { name: "Overview", href: "/collaboration", icon: MessageSquare },
+    // { name: "Team Feed", href: "/collaboration-hub", icon: MessageSquare },
+    { name: "My Teams", href:"/collaboration/teams", icon: Users },
     {
       name: "Start New Collaboration",
-      href: "/Collaboration/starting-collaboration",
+      href: "/collaboration/starting-collaboration",
       icon: UserPlus,
     },
     ...(isOwner
-    ? [{ name: "Manage Projects", href: "/Collaboration/manage-projects", icon: FolderKanban }]
+    ? [{ name: "Manage Projects", href: "/collaboration/manage-projects", icon: FolderKanban }]
     : []),
   ];
 
@@ -105,7 +105,7 @@ export default function CollaborationHubLayout({ children }) {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed top-16 bottom-4 w-72 backdrop-blur-2xl bg-white/20 dark:bg-gray-800/30 border border-white/30 dark:border-gray-700/40 shadow-2xl transform transition-all duration-300 z-50
+        className={`  backdrop-blur-2xl bg-white/20 dark:bg-gray-800/30 border border-white/30 dark:border-gray-700/40 shadow-2xl transform transition-all duration-300 
           ${
             sidebarOpen
               ? "translate-x-0 opacity-100"
@@ -153,7 +153,7 @@ export default function CollaborationHubLayout({ children }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 min-h-screen md:ml-80  px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+      <div className="flex-1 min-h-screen   px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         {/* Mobile menu button */}
         <button
           className="fixed top-20 left-4 md:hidden p-2 rounded-lg bg-white/50 dark:bg-gray-700/50 backdrop-blur-md text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-white/70 dark:hover:bg-gray-700/70 transition-all z-50"

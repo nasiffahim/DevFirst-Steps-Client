@@ -15,7 +15,6 @@ const Page = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
-console.log(teams)
   // 🔹 Fetch user's team data
   useEffect(() => {
     if (!user?.email) return;
@@ -113,17 +112,17 @@ console.log(teams)
       </h1>
 
       <Section
-        title="✅ Joined / Owned Projects"
+        title="Joined / Owned Projects"
         projects={teams.joined}
         emptyMsg="You haven't joined or created any projects yet."
       />
       <Section
-        title="🕓 Pending Requests"
+        title="Pending Requests"
         projects={teams.pending}
         emptyMsg="You don't have any pending collaboration requests."
       />
       <Section
-        title="❌ Rejected Projects"
+        title="Rejected Projects"
         projects={teams.rejected}
         emptyMsg="No rejected requests so far."
       />

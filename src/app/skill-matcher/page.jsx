@@ -11,6 +11,7 @@ export default function SkillMatcher() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+  const [aiprojects, aisetProjects] = useState([]);
 
     useEffect(() => {
         const fetchUserSkills = async () => {

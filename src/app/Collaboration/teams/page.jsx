@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import Image from "next/image";
 import api from "../../../utils/api";
-import { X } from "lucide-react";
+import { X, FolderOpen, Clock, Users } from "lucide-react";
 
 const Page = () => {
   const { user } = useAuth();
@@ -15,6 +15,7 @@ const Page = () => {
   });
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
+
   // 🔹 Fetch user's team data
   useEffect(() => {
     if (!user?.email) return;
@@ -43,14 +44,31 @@ const Page = () => {
       </div>
     );
 
+  // 🔹 Modern Empty Card Component
+  const EmptyCard = ({ icon: Icon, title, message }) => (
+    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-10 text-center bg-white/50 dark:bg-gray-900/40 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+      <div className="bg-blue-100 dark:bg-blue-900/40 p-4 rounded-full mb-4">
+        <Icon className="text-blue-600 dark:text-blue-300 w-8 h-8" />
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        {title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 text-sm">{message}</p>
+    </div>
+  );
+
   // 🔹 Reusable Section
-  const Section = ({ title, projects, emptyMsg }) => (
+  const Section = ({ title, projects, emptyMsg, icon }) => (
     <div className="mb-10">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
         {title}
       </h2>
       {projects.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-400">{emptyMsg}</p>
+        <EmptyCard
+          icon={icon}
+          title="Nothing Here Yet"
+          message={emptyMsg}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map((proj) => (
@@ -114,17 +132,20 @@ const Page = () => {
       <Section
         title="Joined / Owned Projects"
         projects={teams.joined}
-        emptyMsg="You haven't joined or created any projects yet."
+        emptyMsg="You haven't joined or created any projects yet. Explore collaborations and start contributing today!"
+        icon={Users}
       />
       <Section
         title="Pending Requests"
         projects={teams.pending}
-        emptyMsg="You don't have any pending collaboration requests."
+        emptyMsg="You don't have any pending collaboration requests. When you request to join, they’ll appear here."
+        icon={Clock}
       />
       <Section
         title="Rejected Projects"
         projects={teams.rejected}
-        emptyMsg="No rejected requests so far."
+        emptyMsg="No rejected requests so far. Keep building and collaborating!"
+        icon={FolderOpen}
       />
 
       {/* 🔹 Detail Modal */}

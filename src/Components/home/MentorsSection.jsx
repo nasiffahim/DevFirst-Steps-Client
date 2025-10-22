@@ -3,22 +3,21 @@ import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay } from "swiper/modules";
 import { Award, Star, Mail, Code } from "lucide-react";
-import useAxiosSecure from "../../app/hooks/useAxiosSecure";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import Link from "next/link";
 import useAuth from "../../app/hooks/useAuth";
+import api from "../../utils/api";
 
 const MentorHeroSection = () => {
   const { user } = useAuth();
   const [mentors, setMentors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
     const fetchMentors = async () => {
       try {
-        const res = await axiosSecure.get("/mentors");
+        const res = await api.get("/mentors");
         setMentors(res.data);
 
         setIsLoading(false);

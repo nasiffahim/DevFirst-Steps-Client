@@ -99,10 +99,11 @@ const Navbar = () => {
           href: "/projects",
         },
         {
-          name: "AI Code Review",
+          name: "AI Project Suggestion",
           description:
-            "Get AI-powered feedback on your code contributions and pull requests.",
+            "Generate AI-powered project ideas based on your skills.",
           icon: "🤖",
+          href: "/project-suggestions-ai",
         },
         {
           name: "Learning Path",
@@ -130,13 +131,6 @@ const Navbar = () => {
           icon: "⚡",
           href: "/skill-matcher",
         },
-        {
-  name: "AI Project Suggestion",
-  description: "Generate AI-powered project ideas based on your skills.",
-  icon: "⚡",
-  href: "project-suggestions-ai",
-}
-
       ],
     },
     {

@@ -130,6 +130,13 @@ const Navbar = () => {
           icon: "⚡",
           href: "/skill-matcher",
         },
+        {
+  name: "AI Project Suggestion",
+  description: "Generate AI-powered project ideas based on your skills.",
+  icon: "⚡",
+  href: "project-suggestions-ai",
+}
+
       ],
     },
     {

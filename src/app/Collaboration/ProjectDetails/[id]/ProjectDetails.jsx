@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FaGithub } from "react-icons/fa6";
-import { Users, Globe2, Briefcase, MessageCircle, X } from "lucide-react";
+import { Users, Globe2, Briefcase, MessageCircle, X, GitBranch } from "lucide-react";
 import Link from "next/link";
 import JoinProjectForm from "../../../../Components/Collaboration/Form/JoinProjectForm";
 import useAuth from "../../../hooks/useAuth";
@@ -108,50 +108,87 @@ export default function ProjectDetails({ project }) {
         </div>
 
         {/* Team Members Section */}
-{project.members && project.members.length > 0 && (
-  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
-    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-      Team Members
-    </h2>
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {project.members.map((member, idx) => (
-        <div
-          key={idx}
-          className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
-        >
-          {/* Avatar */}
-          {member.avatar ? (
-            <img
-              src={member.avatar}
-              alt={member.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
-              {member.name?.charAt(0) || "U"}
+        {project.members && project.members.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+              Team Members
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {project.members.map((member, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
+                >
+                  {/* Avatar */}
+                  {member.avatar ? (
+                    <img
+                      src={member.avatar}
+                      alt={member.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
+                      {member.name?.charAt(0) || "U"}
+                    </div>
+                  )}
+
+                  {/* Info */}
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">
+                      {member.name || "Unknown User"}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {member.email || "No email"}
+                    </p>
+                    {member.role && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                        {member.role}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-
-          {/* Name, Email & Role */}
-          <div>
-            <p className="text-gray-900 dark:text-gray-100 font-medium">
-              {member.name || "Unknown User"}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {member.email || "No email"}
-            </p>
-            {member.role && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                {member.role}
-              </p>
-            )}
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
 
+        {/* 🧑‍💻 GitHub Contributors Section */}
+        {project.githubContributors && project.githubContributors.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <GitBranch className="w-5 h-5 text-blue-500" />
+              GitHub Contributors
+            </h2>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {project.githubContributors.map((contributor, idx) => (
+                <Link
+                  key={idx}
+                  href={contributor.html_url}
+                  target="_blank"
+                  className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md hover:scale-[1.02] transition-all"
+                >
+                  {/* Avatar */}
+                  <img
+                    src={contributor.avatar_url}
+                    alt={contributor.login}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+
+                  {/* Info */}
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">
+                      {contributor.login}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {contributor.contributions} commits
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modal */}

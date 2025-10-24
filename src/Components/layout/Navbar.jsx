@@ -223,7 +223,7 @@ const Navbar = () => {
           {
             name: "Collaboration Hub",
             hasDropdown: false,
-            href: "/collaboration",
+            href: "/Collaboration",
           },
         ]
       : []),

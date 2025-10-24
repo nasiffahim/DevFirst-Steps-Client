@@ -27,15 +27,15 @@ export default function CollaborationHubLayout({ children }) {
 
   // 🔹 Navigation Links
   const navItems = [
-    { name: "Overview", href: "/collaboration", icon: MessageSquare },
-    { name: "My Teams", href:"/collaboration/teams", icon: Users },
+    { name: "Overview", href: "/Collaboration", icon: MessageSquare },
+    { name: "My Teams", href:"/Collaboration/teams", icon: Users },
     {
       name: "Start New Collaboration",
-      href: "/collaboration/starting-collaboration",
+      href: "/Collaboration/starting-collaboration",
       icon: UserPlus,
     },
     ...(isOwner
-    ? [{ name: "Manage Projects", href: "/collaboration/manage-projects", icon: FolderKanban }]
+    ? [{ name: "Manage Projects", href: "/Collaboration/manage-projects", icon: FolderKanban }]
     : []),
   ];
 

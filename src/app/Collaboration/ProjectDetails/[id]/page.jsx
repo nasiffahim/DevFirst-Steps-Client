@@ -9,6 +9,7 @@ const Page = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  console.log(project)
 
   useEffect(() => {
     if (!id) return;

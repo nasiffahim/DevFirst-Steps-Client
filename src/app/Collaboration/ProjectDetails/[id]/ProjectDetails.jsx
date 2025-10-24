@@ -1,27 +1,85 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGithub } from "react-icons/fa6";
-import { Users, Globe2, Briefcase, MessageCircle, X } from "lucide-react";
+import { Users, Globe2, Briefcase, MessageCircle, X, GitBranch } from "lucide-react";
 import Link from "next/link";
 import JoinProjectForm from "../../../../Components/Collaboration/Form/JoinProjectForm";
 import useAuth from "../../../hooks/useAuth";
+import api from "../../../../utils/api";
+import CommitPercentageCard from "./CommitPercentageCard.jsx";
 
 export default function ProjectDetails({ project }) {
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
+  const [commitPercentage, setCommitPercentage] = useState(null);
+  const [loadingCommits, setLoadingCommits] = useState(false);
+  const [commitError, setCommitError] = useState("");
+
+  // Fetch user's commit percentage
+useEffect(() => {
+  const fetchCommitPercentage = async () => {
+    setLoadingCommits(true);
+    setCommitError("");
+    
+    try {
+      const response = await fetch(
+        `http://localhost:5000/collaboration/commitPercentage?projectId=${project._id}&userEmail=${user.email}`
+      );
+
+      if (!response.ok) {
+        // Handle different error cases
+        if (response.status === 404) {
+          const errorData = await response.json();
+          
+          // If user is not a contributor yet, that's okay - set to 0%
+          if (errorData.message?.includes("not found in GitHub contributors")) {
+            setCommitPercentage(0);
+            console.log("User has not contributed to this project yet");
+            return;
+          }
+          
+          // Other 404 errors (project not found, user not found, etc.)
+          setCommitError("Could not load commit data");
+          console.error("Error:", errorData.message);
+          return;
+        }
+        
+        // Other errors (403, 500, etc.)
+        console.error("Error fetching commit percentage:", response.statusText);
+        setCommitError("Failed to load commit data");
+        return;
+      }
+
+      const data = await response.json();
+      setCommitPercentage(data.commitPercentage);
+    } catch (err) {
+      console.error("Error fetching commit percentage:", err);
+      setCommitError("Network error loading commit data");
+    } finally {
+      setLoadingCommits(false);
+    }
+  };
+
+  if (project?._id && user?.email) {
+    fetchCommitPercentage();
+  }
+}, [project, user]);
 
   if (!project) return null;
 
-  // --- Dynamic button states ---
   const isOwner = user?.email === project.ownerEmail;
   const teamIsFull = project.members?.length >= Number(project.teamSize);
 
-  const joinDisabled = isOwner || teamIsFull;
+  // Disable join button if user is owner, team full, or has commits
+  const joinDisabled = isOwner || teamIsFull || (commitPercentage && commitPercentage > 0);
+
   const buttonLabel = isOwner
     ? "You are the Owner"
     : teamIsFull
     ? "Team is Full"
+    : commitPercentage && commitPercentage > 0
+    ? "Already Contributed"
     : "Join Team";
 
   return (
@@ -36,9 +94,10 @@ export default function ProjectDetails({ project }) {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-2xl">
                 {project.description}
-              </p>
-            </div>
+              </p>             
+            </div>           
 
+            {/* Join Button */}
             <button
               disabled={joinDisabled}
               onClick={() => !joinDisabled && setModalOpen(true)}
@@ -66,35 +125,24 @@ export default function ProjectDetails({ project }) {
           )}
         </div>
 
+        {/* Commit Percentage  */}
+        <CommitPercentageCard 
+          commitPercentage={commitPercentage}
+          loadingCommits={loadingCommits}
+          commitError={commitError}
+        />
+
         {/* Project Details Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <DetailCard
-            icon={<Briefcase className="w-5 h-5" />}
-            label="Project Type"
-            value={project.projectType}
-          />
-          <DetailCard
-            icon={<Users className="w-5 h-5" />}
-            label="Team Size Goal"
-            value={`${project.teamSize} Members`}
-          />
-          <DetailCard
-            icon={<Globe2 className="w-5 h-5" />}
-            label="Collaboration Type"
-            value={project.collaborationType}
-          />
-          <DetailCard
-            icon={<MessageCircle className="w-5 h-5" />}
-            label="Contact Preference"
-            value={project.contactPreference}
-          />
+          <DetailCard icon={<Briefcase className="w-5 h-5" />} label="Project Type" value={project.projectType} />
+          <DetailCard icon={<Users className="w-5 h-5" />} label="Team Size Goal" value={`${project.teamSize} Members`} />
+          <DetailCard icon={<Globe2 className="w-5 h-5" />} label="Collaboration Type" value={project.collaborationType} />
+          <DetailCard icon={<MessageCircle className="w-5 h-5" />} label="Contact Preference" value={project.contactPreference} />
         </div>
 
         {/* Skills Section */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Tech Stack / Skills Needed
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Tech Stack / Skills Needed</h2>
           <div className="flex flex-wrap gap-3">
             {project.skills?.map((skill, idx) => (
               <span
@@ -108,50 +156,64 @@ export default function ProjectDetails({ project }) {
         </div>
 
         {/* Team Members Section */}
-{project.members && project.members.length > 0 && (
-  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
-    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-      Team Members
-    </h2>
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {project.members.map((member, idx) => (
-        <div
-          key={idx}
-          className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
-        >
-          {/* Avatar */}
-          {member.avatar ? (
-            <img
-              src={member.avatar}
-              alt={member.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
-              {member.name?.charAt(0) || "U"}
+        {project.members && project.members.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Team Members</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {project.members.map((member, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all"
+                >
+                  {member.avatar ? (
+                    <img
+                      src={member.avatar}
+                      alt={member.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-lg">
+                      {member.name?.charAt(0) || "U"}
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{member.name || "Unknown User"}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{member.email || "No email"}</p>
+                    {member.role && <p className="text-sm text-gray-500 dark:text-gray-400 italic">{member.role}</p>}
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-
-          {/* Name, Email & Role */}
-          <div>
-            <p className="text-gray-900 dark:text-gray-100 font-medium">
-              {member.name || "Unknown User"}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {member.email || "No email"}
-            </p>
-            {member.role && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                {member.role}
-              </p>
-            )}
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
 
+        {/* GitHub Contributors Section */}
+        {project.githubContributors && project.githubContributors.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+              <GitBranch className="w-5 h-5 text-blue-500" />
+              GitHub Contributors
+            </h2>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {project.githubContributors.map((contributor, idx) => (
+                <Link
+                  key={idx}
+                  href={contributor.html_url}
+                  target="_blank"
+                  className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md hover:scale-[1.02] transition-all"
+                >
+                  <img src={contributor.avatar_url} alt={contributor.login} className="w-12 h-12 rounded-full object-cover" />
+                  <div>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{contributor.login}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{contributor.contributions} commits</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
@@ -184,14 +246,10 @@ export default function ProjectDetails({ project }) {
 function DetailCard({ icon, label, value }) {
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 flex items-start gap-4 hover:shadow-md transition-all">
-      <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
-        {icon}
-      </div>
+      <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{icon}</div>
       <div>
         <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-        <p className="text-base font-medium text-gray-900 dark:text-gray-100 capitalize">
-          {value}
-        </p>
+        <p className="text-base font-medium text-gray-900 dark:text-gray-100 capitalize">{value}</p>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import Link from "next/link";
 import JoinProjectForm from "../../../../Components/Collaboration/Form/JoinProjectForm";
 import useAuth from "../../../hooks/useAuth";
 import api from "../../../../utils/api";
+import CommitPercentageCard from "./CommitPercentageCard.jsx";
 
 export default function ProjectDetails({ project }) {
   const { user } = useAuth();
@@ -18,21 +19,45 @@ export default function ProjectDetails({ project }) {
   // Fetch user's commit percentage
 useEffect(() => {
   const fetchCommitPercentage = async () => {
+    setLoadingCommits(true);
+    setCommitError("");
+    
     try {
       const response = await fetch(
         `http://localhost:5000/collaboration/commitPercentage?projectId=${project._id}&userEmail=${user.email}`
       );
 
-      // ✅ You must call .json() on the Response object
       if (!response.ok) {
+        // Handle different error cases
+        if (response.status === 404) {
+          const errorData = await response.json();
+          
+          // If user is not a contributor yet, that's okay - set to 0%
+          if (errorData.message?.includes("not found in GitHub contributors")) {
+            setCommitPercentage(0);
+            console.log("User has not contributed to this project yet");
+            return;
+          }
+          
+          // Other 404 errors (project not found, user not found, etc.)
+          setCommitError("Could not load commit data");
+          console.error("Error:", errorData.message);
+          return;
+        }
+        
+        // Other errors (403, 500, etc.)
         console.error("Error fetching commit percentage:", response.statusText);
+        setCommitError("Failed to load commit data");
         return;
       }
 
-      const data = await response.json(); // <- parse JSON here
+      const data = await response.json();
       setCommitPercentage(data.commitPercentage);
     } catch (err) {
       console.error("Error fetching commit percentage:", err);
+      setCommitError("Network error loading commit data");
+    } finally {
+      setLoadingCommits(false);
     }
   };
 
@@ -69,24 +94,8 @@ useEffect(() => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-2xl">
                 {project.description}
-              </p>
-
-             
-            </div>
-            <div>
-               {/* Commit Percentage */}
-              {loadingCommits && (
-                <p className="mt-2 text-sm text-gray-500">Loading your commit data...</p>
-              )}
-              {commitPercentage !== null && !loadingCommits && commitPercentage > 0 && (
-                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-                  You have already contributed <strong>{commitPercentage}%</strong> to this project
-                </p>
-              )}
-              {commitError && (
-                <p className="mt-2 text-sm text-red-500">{commitError}</p>
-              )}
-            </div>
+              </p>             
+            </div>           
 
             {/* Join Button */}
             <button
@@ -115,6 +124,13 @@ useEffect(() => {
             </Link>
           )}
         </div>
+
+        {/* Commit Percentage  */}
+        <CommitPercentageCard 
+          commitPercentage={commitPercentage}
+          loadingCommits={loadingCommits}
+          commitError={commitError}
+        />
 
         {/* Project Details Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

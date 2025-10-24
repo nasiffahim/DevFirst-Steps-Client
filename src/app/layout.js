@@ -4,7 +4,7 @@ import Navbar from "../Components/layout/Navbar";
 import AuthProvider from "./providers/AuthProvider.jsx";
 import Footer from "../Components/layout/Footer";
 import { ThemeProvider } from "next-themes";
-import AiChat from"../Components/shared/Chatbot"; 
+import AiChat from "../Components/shared/Chatbot";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,13 +28,14 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
         />
+        <link href="https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&display=swap" rel="stylesheet" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200`}
       >
-        <ThemeProvider 
-          attribute="class" 
-          defaultTheme="system" 
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange={false}
         >
@@ -43,7 +44,7 @@ export default function RootLayout({ children }) {
               <Navbar />
               <main className="flex-grow bg-white dark:bg-gray-900">
                 {children}
-            <AiChat></AiChat>
+                <AiChat></AiChat>
               </main>
               <Footer />
             </div>

@@ -46,10 +46,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 rounded-lg flex items-center justify-center transition-colors duration-300">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white dark:text-gray-100 transition-colors duration-300">
+              <h3 className="text-xl text-gray-900 dark:text-white whitespace-nowrap" style={{ fontFamily: '"BBH Sans Hegarty", sans-serif' }}>
                 DevFirst Steps
               </h3>
             </div>

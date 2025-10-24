@@ -140,7 +140,7 @@ const HeroSection = () => {
     <div className="max-w-6xl mx-auto px-6 text-center relative z-20">
       
       {/* Main heading */}
-      <h1 className="text-5xl md:text-7xl font-bold mt-12 pb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-400 dark:to-white bg-clip-text text-transparent hero-fade-in-up">
+      <h1 className="text-5xl md:text-7xl mt-12 pb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-400 dark:to-white bg-clip-text text-transparent hero-fade-in-up " style={{ fontFamily: '"BBH Sans Hegarty", sans-serif' }}>
         DevFirst Steps
       </h1>
 

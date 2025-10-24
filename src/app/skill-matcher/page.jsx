@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import { Zap, Github, Star, GitFork, Code, TrendingUp, AlertCircle, Loader2, ExternalLink, Plus, Brain, User } from 'lucide-react'
+import api from '../../utils/api'
 
 export default function SkillMatcher() {
     const { user } = useAuth();
@@ -14,48 +15,47 @@ export default function SkillMatcher() {
   const [aiprojects, aisetProjects] = useState([]);
 
     useEffect(() => {
-        const fetchUserSkills = async () => {
-            if (!email) return;
+    const fetchUserSkills = async () => {
+        if (!email) return;
+        
+        setLoading(true);
+        setError(null);
+        
+        try {
+            const response = await api.get("/single_user", {
+                params: { emailParams: email },
+            });
+            const userSkills = response.data.skills || [];
+            setSkills(userSkills);
             
-            setLoading(true);
-            setError(null);
-            
-            try {
-                const response = await fetch(`http://localhost:5000/single_user?emailParams=${email}`);
-                const data = await response.json();
-                const userSkills = data.skills || [];
-                setSkills(userSkills);
-                
-                // Fetch matching projects if skills exist
-                if (userSkills.length > 0) {
-                    await fetchMatchingProjects(userSkills);
-                } else {
-                    // Stop loading if no skills found
-                    setLoading(false);
-                }
-            } catch (err) {
-                console.error('Error fetching user skills:', err);
-                setError('Failed to fetch user data');
+            if (userSkills.length > 0) {
+                await fetchMatchingProjects(userSkills);
+            } else {
                 setLoading(false);
             }
-        };
-
-        fetchUserSkills();
-    }, [email]);
-
-    const fetchMatchingProjects = async (userSkills) => {
-        try {
-            const skillsParam = userSkills.join(',');
-            const response = await fetch(`http://localhost:5000/skill_matcher?skills=${skillsParam}`);
-            const data = await response.json();
-            setProjects(data.projects || []);
         } catch (err) {
-            console.error('Error fetching projects:', err);
-            setError('Failed to fetch matching projects');
-        } finally {
+            console.error("Error fetching user skills:", err);
+            setError("Failed to fetch user data");
             setLoading(false);
         }
     };
+
+    fetchUserSkills();
+}, [email]);
+
+const fetchMatchingProjects = async (userSkills) => {
+    try {
+        const response = await api.get("/skill_matcher", {
+            params: { skills: userSkills.join(",") },
+        });
+        setProjects(response.data.projects || []);
+    } catch (err) {
+        console.error("Error fetching projects:", err);
+        setError("Failed to fetch matching projects");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleAddSkills = () => {
         if (!user) {

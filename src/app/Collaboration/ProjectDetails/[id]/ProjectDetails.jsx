@@ -21,41 +21,43 @@ useEffect(() => {
   const fetchCommitPercentage = async () => {
     setLoadingCommits(true);
     setCommitError("");
-    
+
     try {
-      const response = await fetch(
-        `http://localhost:5000/collaboration/commitPercentage?projectId=${project._id}&userEmail=${user.email}`
+      const response = await api.get(
+        `/collaboration/commitPercentage`,
+        {
+          params: {
+            projectId: project._id,
+            userEmail: user.email,
+          },
+        }
       );
 
-      if (!response.ok) {
-        // Handle different error cases
-        if (response.status === 404) {
-          const errorData = await response.json();
-          
-          // If user is not a contributor yet, that's okay - set to 0%
-          if (errorData.message?.includes("not found in GitHub contributors")) {
+      setCommitPercentage(response.data.commitPercentage);
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response;
+
+        // Handle specific error cases
+        if (status === 404) {
+          if (data.message?.includes("not found in GitHub contributors")) {
             setCommitPercentage(0);
             console.log("User has not contributed to this project yet");
             return;
           }
-          
-          // Other 404 errors (project not found, user not found, etc.)
+
           setCommitError("Could not load commit data");
-          console.error("Error:", errorData.message);
+          console.error("Error:", data.message);
           return;
         }
-        
-        // Other errors (403, 500, etc.)
-        console.error("Error fetching commit percentage:", response.statusText);
-        setCommitError("Failed to load commit data");
-        return;
-      }
 
-      const data = await response.json();
-      setCommitPercentage(data.commitPercentage);
-    } catch (err) {
-      console.error("Error fetching commit percentage:", err);
-      setCommitError("Network error loading commit data");
+        console.error("Error fetching commit percentage:", data?.message || error.message);
+        setCommitError("Failed to load commit data");
+      } else {
+        // Network or unexpected error
+        console.error("Network error fetching commit percentage:", error.message);
+        setCommitError("Network error loading commit data");
+      }
     } finally {
       setLoadingCommits(false);
     }
@@ -65,6 +67,7 @@ useEffect(() => {
     fetchCommitPercentage();
   }
 }, [project, user]);
+
 
   if (!project) return null;
 

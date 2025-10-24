@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ProjectDetails from "./ProjectDetails";
+import api from "../../../../utils/api";
 
 const Page = () => {
   const { id } = useParams(); // get project id from route
@@ -12,26 +13,22 @@ const Page = () => {
   console.log(project)
 
   useEffect(() => {
-    if (!id) return;
+  if (!id) return;
 
-    const fetchProject = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/collaboration/${id}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch project data");
-        }
-        const data = await res.json();
-        setProject(data);
-      } catch (err) {
-        console.error("Error fetching project:", err);
-        setError("Failed to load project details.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProject = async () => {
+    try {
+      const res = await api.get(`/collaboration/${id}`);
+      setProject(res.data); // Axios automatically parses JSON
+    } catch (err) {
+      console.error("Error fetching project:", err);
+      setError("Failed to load project details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProject();
-  }, [id]);
+  fetchProject();
+}, [id]);
 
   if (loading)
     return (

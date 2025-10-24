@@ -82,7 +82,7 @@ const AiProjectSuggestions = () => {
     setStreamStatus("Generating project ideas...");
 
     try {
-      const response = await fetch("http://localhost:5000/get-projects", {
+      const response = await fetch("https://apidev-first-steps.vercel.app/get-projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

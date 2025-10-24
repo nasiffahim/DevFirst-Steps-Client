@@ -53,7 +53,9 @@ const Navbar = () => {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
           <div className="flex justify-between items-center h-16">
-            <AnimatedLogo />
+            <Link href="/">
+              <AnimatedLogo />
+            </Link>
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
           </div>
         </div>
@@ -239,7 +241,9 @@ const Navbar = () => {
       >
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <AnimatedLogo />
+          <Link href="/">
+           <AnimatedLogo />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">

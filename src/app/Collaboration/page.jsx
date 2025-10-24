@@ -39,7 +39,7 @@ const Page = () => {
   });
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Search Bar */}
       <div className="max-w-xl mx-auto mb-6 relative">
         <span className="absolute inset-y-0 left-4 flex items-center text-gray-400 dark:text-gray-500">

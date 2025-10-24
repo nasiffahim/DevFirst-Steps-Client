@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, Laptop, Braces, CodeXml } from 'lucide-react';
+import { Terminal, Laptop, Braces, Code2 } from 'lucide-react';
 
 export default function AnimatedLogo() {
   return (
@@ -14,7 +14,7 @@ export default function AnimatedLogo() {
         
         {/* Icons - First appearance */}
         <span className="absolute inset-0 animate-slide-icons-1 opacity-0">
-          <CodeXml className="absolute w-8 h-8 text-blue-500" style={{ left: '5px', top: '4px', transform: 'rotate(-8deg) scale(1.2)', opacity: 0.95 }} />
+          <Code2 className="absolute w-8 h-8 text-blue-500" style={{ left: '5px', top: '4px', transform: 'rotate(-8deg) scale(1.2)', opacity: 0.95 }} />
           <Terminal className="absolute w-5 h-5 text-purple-400" style={{ left: '48px', top: '12px', transform: 'rotate(5deg) scale(0.85)', opacity: 0.7 }} />
           <Laptop className="absolute w-7 h-7 text-indigo-500" style={{ left: '75px', top: '6px', transform: 'rotate(-4deg) scale(1.05)', opacity: 0.85 }} />
           <Braces className="absolute w-5 h-5 text-violet-400" style={{ left: '115px', top: '14px', transform: 'rotate(7deg) scale(0.7)', opacity: 0.65 }} />
@@ -29,7 +29,7 @@ export default function AnimatedLogo() {
 
         {/* Icons - Second appearance */}
         <span className="absolute inset-0 animate-slide-icons-2 opacity-0">
-          <CodeXml className="absolute w-8 h-8 text-blue-500" style={{ left: '5px', top: '4px', transform: 'rotate(-8deg) scale(1.2)', opacity: 0.95 }} />
+          <Code2 className="absolute w-8 h-8 text-blue-500" style={{ left: '5px', top: '4px', transform: 'rotate(-8deg) scale(1.2)', opacity: 0.95 }} />
           <Terminal className="absolute w-5 h-5 text-purple-400" style={{ left: '48px', top: '12px', transform: 'rotate(5deg) scale(0.85)', opacity: 0.7 }} />
           <Laptop className="absolute w-7 h-7 text-indigo-500" style={{ left: '75px', top: '6px', transform: 'rotate(-4deg) scale(1.05)', opacity: 0.85 }} />
           <Braces className="absolute w-5 h-5 text-violet-400" style={{ left: '115px', top: '14px', transform: 'rotate(7deg) scale(0.7)', opacity: 0.65 }} />

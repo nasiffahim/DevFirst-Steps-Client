@@ -211,7 +211,7 @@ const ManageProjectsPage = () => {
               <div className="p-6 pt-0 flex flex-col gap-2">
                 <button
                   onClick={() =>
-                    router.push(`/collaboration/manage-projects/${project._id}`)
+                    router.push(`/Collaboration/manage-projects/${project._id}`)
                   }
                   className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
                 >

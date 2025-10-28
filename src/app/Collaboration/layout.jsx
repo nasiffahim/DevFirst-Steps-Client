@@ -109,15 +109,12 @@ export default function CollaborationHubLayout({ children }) {
       <aside
         ref={sidebarRef}
         className={`fixed md:static left-0 top-0 w-72 md:w-64 flex flex-col 
-          bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl
-          border-r border-gray-200/60 dark:border-gray-700/60 
-          shadow-2xl shadow-blue-500/5 dark:shadow-blue-500/10
-          transform transition-all duration-300 ease-out
-          ${
-            sidebarOpen
-              ? "translate-x-0 opacity-100"
-              : "-translate-x-full opacity-0 md:translate-x-0 md:opacity-100"
-          }`}
++   bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl
++   border-r border-gray-200/60 dark:border-gray-700/60 
++   shadow-2xl shadow-blue-500/5 dark:shadow-blue-500/10
++   transform transition-transform duration-300 ease-out z-50
++   ${sidebarOpen ? "translate-x-0 top-12" : "-translate-x-full md:translate-x-0"}
++ `}
       >
         {/* Header with gradient accent */}
         <div className="relative px-6 py-5 border-b border-gray-200/60 dark:border-gray-700/60">

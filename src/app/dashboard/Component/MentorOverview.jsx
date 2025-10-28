@@ -2,268 +2,231 @@
 
 import React, { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
-import projectAnim from "../../../../public/Animation/No-project.json";
-import blogAnim from "../../../../public/Animation/no-blogs.json";
-import Lottie from "lottie-react";
-import { Button } from "../../../Components/ui/button";
-import Image from "next/image";
-
 import {
-  FolderKanban,
-  Sparkles,
-  Users as UsersIcon,
+  CalendarDays,
+  MessageSquare,
+  CheckCircle,
+  Clock,
   TrendingUp,
-  ArrowUpRight,
-  BookmarkCheck,
-  FileText,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import api from "../../../utils/api";
-import BlogCard from "./BlogCard";
-import ProjectCard from "./ProjectCard";
+import Swal from "sweetalert2";
 
 const MentorOverview = () => {
   const { user, loading } = useAuth();
-  const email = user?.email;
-  const [role, setRole] = useState(null);
-  const [roleLoading, setRoleLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState(null);
+  const [stats, setStats] = useState({
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    scheduled: 0,
+  });
+  const [recentRequests, setRecentRequests] = useState([]);
+  const [upcomingSessions, setUpcomingSessions] = useState([]);
   const [dashboardLoading, setDashboardLoading] = useState(true);
-  console.log(dashboardData);
-
-  const router = useRouter();
 
   useEffect(() => {
-    if (!email) return;
+    if (!user?.email) return;
 
     const fetchDashboardData = async () => {
       try {
-        const res = await api.get("/api/user/dashboard", {
-          params: { email }, // if your API expects user email
+        // Fetch session requests & scheduled sessions together
+        const [reqRes, sessionRes] = await Promise.allSettled([
+          api.get(`/session-requests?email=${user.email}`),
+          api.get(`/schedule-session?email=${user.email}`),
+        ]);
+
+        const requests = reqRes.status === "fulfilled" ? reqRes.value.data : [];
+        const sessions =
+          sessionRes.status === "fulfilled" ? sessionRes.value.data : [];
+
+        // Calculate status-based stats
+        const pending = requests.filter((r) => r.status === "pending").length;
+        const approved = requests.filter((r) => r.status === "approved").length;
+        const rejected = requests.filter((r) => r.status === "rejected").length;
+
+        setStats({
+          pending,
+          approved,
+          rejected,
+          scheduled: sessions.length,
         });
-        setDashboardData(res.data);
+
+        // Limit recent data
+
+        setRecentRequests(
+          requests
+            .slice()
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 5)
+        );
+
+        setUpcomingSessions(
+          sessions
+            .slice()
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 5)
+        );
       } catch (err) {
-        console.error("Failed to fetch dashboard data", err);
+        console.error("Dashboard fetch failed:", err);
+        Swal.fire("Error", "Failed to load mentor dashboard data.", "error");
       } finally {
         setDashboardLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [email]);
+  }, [user?.email]);
 
-  // fetch user role
-  useEffect(() => {
-    if (!email) return;
-
-    const fetchRole = async () => {
-      try {
-        const res = await api.get("/user-role", {
-          params: { email },
-        });
-        setRole(res.data.role);
-      } catch (err) {
-        console.error("Failed to fetch role", err);
-      } finally {
-        setRoleLoading(false);
-      }
-    };
-
-    fetchRole();
-  }, [email]);
-
-  if (loading || roleLoading || dashboardLoading) {
+  // 🔄 Loading state
+  if (loading || dashboardLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
         <div className="w-10 h-10 border-4 border-gray-300 dark:border-gray-700 border-t-gray-800 dark:border-t-gray-300 rounded-full animate-spin"></div>
         <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">
-          Loading your dashboard...
+          Loading your mentor dashboard...
         </p>
       </div>
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-950">
-        <div className="text-center bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
-          <p className="text-gray-600 dark:text-gray-400">
-            Please log in to access the dashboard.
-          </p>
+  return (
+    <div className="max-w-6xl mx-auto p-6 space-y-10">
+      {/* 👋 Welcome Banner */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold mb-2">
+              Welcome back, {user?.displayName || "Mentor"} 👋
+            </h1>
+            <p className="text-gray-300 text-sm">
+              Here’s a quick summary of your mentorship activities.
+            </p>
+          </div>
+          <TrendingUp className="w-12 h-12 text-gray-400 opacity-60" />
         </div>
       </div>
-    );
-  }
 
-  const statsArray = [
-    {
-      label: "Bookmarks",
-      value: dashboardData?.stats?.bookmarks ?? 0,
-      color: "from-blue-500 to-blue-700",
-      icon: BookmarkCheck,
-    },
-    {
-      label: "Projects",
-      value: dashboardData?.stats?.projects ?? 0,
-      color: "from-green-500 to-green-700",
-      icon: FolderKanban,
-    },
-    {
-      label: "Blogs",
-      value: dashboardData?.stats?.blogs ?? 0,
-      color: "from-purple-500 to-purple-700",
-      icon: FileText,
-    },
-    {
-      label: "Project Matches",
-      value: dashboardData?.stats?.projectMatches ?? 0,
-      color: "from-orange-500 to-orange-700",
-      icon: Sparkles,
-    },
-  ];
+      {/* 📊 Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          label="Pending Requests"
+          value={stats.pending}
+          color="from-yellow-400 to-yellow-600"
+          icon={Clock}
+        />
+        <StatCard
+          label="Approved Requests"
+          value={stats.approved}
+          color="from-green-400 to-green-600"
+          icon={CheckCircle}
+        />
+        <StatCard
+          label="Rejected Requests"
+          value={stats.rejected}
+          color="from-red-400 to-red-600"
+          icon={MessageSquare}
+        />
+        <StatCard
+          label="Scheduled Sessions"
+          value={stats.scheduled}
+          color="from-blue-400 to-blue-600"
+          icon={CalendarDays}
+        />
+      </div>
 
-  return (
-    <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-      {/* Welcome Banner - User Only */}
-      {role === "mentor" && (
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 text-white shadow-lg border border-gray-800 dark:border-gray-700">
-          <div className="flex items-center justify-between">
+      {/* 📨 Recent Session Requests */}
+      <DataSection
+        title="Recent Session Requests"
+        emptyText="No recent requests found."
+        items={recentRequests}
+        renderItem={(req) => (
+          <>
             <div>
-              <h1 className="text-2xl font-bold mb-2">
-                Welcome back,  {user?.name || "Mentor"}! 👋
-              </h1>
-              <p className="text-gray-300 text-sm">
-                Here's what's happening with your projects and blogs today.
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {req.title}
+              </p>
+              <p className="text-sm text-gray-500">{req.menteeEmail}</p>
+            </div>
+            <span
+              className={`px-3 py-1 text-xs rounded-full ${
+                req.status === "approved"
+                  ? "bg-green-100 text-green-800"
+                  : req.status === "rejected"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }`}
+            >
+              {req.status}
+            </span>
+          </>
+        )}
+      />
+
+      {/* 📅 Upcoming Sessions */}
+      <DataSection
+        title="Upcoming Scheduled Sessions"
+        emptyText="No upcoming sessions yet."
+        items={upcomingSessions}
+        renderItem={(s) => (
+          <>
+            <div>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {s.comment || "Mentorship Session"}
+              </p>
+              <p className="text-sm text-gray-500">
+                <a
+                  href={s.sessionLink}
+                  target="_blank"
+                  className="text-blue-600 hover:underline"
+                >
+                  Join Session
+                </a>
               </p>
             </div>
-            <TrendingUp className="w-12 h-12 text-gray-400 opacity-50" />
-          </div>
-        </div>
-      )}
-
-      {/* Stats Cards - User */}
-      {role === "mentor" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {statsArray.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={idx}
-                className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:shadow-gray-900/50 transition-all duration-200 group"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div
-                    className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}
-                  >
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-gray-400 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {item.value}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {item.label}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Blogs Section */}
-      {role === "mentor" && (
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Latest Blogs
-            </h2>
-            <button
-              onClick={() => router.push("/dashboard/my-blogs")}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
-            >
-              View all
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardData?.latest?.blogs?.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <Lottie
-                  animationData={blogAnim}
-                  loop
-                  className="h-48 opacity-80"
-                />
-                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">
-                  No blogs yet
-                </p>
-                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">
-                  Start sharing your knowledge with the community
-                </p>
-                <Button
-                  onClick={() => router.push("/dashboard/add-blogs")}
-                  className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
-                >
-                  Write Your First Blog
-                </Button>
-              </div>
-            ) : (
-              dashboardData?.latest?.blogs?.map((b) => (
-                <BlogCard key={b.id} blog={b} />
-              ))
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Projects Section */}
-      {role === "mentor" && (
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Latest Projects
-            </h2>
-            <button
-              onClick={() => router.push("/dashboard/my-projects")}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
-            >
-              View all
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardData?.latest?.projects?.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <Lottie
-                  animationData={projectAnim}
-                  loop
-                  className="h-48 opacity-80"
-                />
-                <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-medium">
-                  No projects yet
-                </p>
-                <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-1">
-                  Create your first project and showcase your work
-                </p>
-                <Button
-                  onClick={() => router.push("/dashboard/add-projects")}
-                  className="mt-6 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors px-6 py-2 rounded-lg shadow-sm"
-                >
-                  Add Your First Project
-                </Button>
-              </div>
-            ) : (
-              dashboardData?.latest?.projects?.map((p) => (
-                <ProjectCard key={p.id} project={p} />
-              ))
-            )}
-          </div>
-        </section>
-      )}
+            <p className="text-sm text-gray-500">
+              {new Date(s.createdAt).toLocaleDateString()}
+            </p>
+          </>
+        )}
+      />
     </div>
   );
 };
+
+/* ✅ Reusable StatCard Component */
+const StatCard = ({ label, value, color, icon: Icon }) => (
+  <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md transition-all duration-200">
+    <div
+      className={`w-12 h-12 mb-4 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center`}
+    >
+      <Icon className="w-6 h-6 text-white" />
+    </div>
+    <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+    <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+  </div>
+);
+
+/* ✅ Reusable Data Section Component */
+const DataSection = ({ title, emptyText, items, renderItem }) => (
+  <section>
+    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      {title}
+    </h2>
+    {items.length === 0 ? (
+      <p className="text-gray-500 text-center py-6">{emptyText}</p>
+    ) : (
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+        {items.map((item) => (
+          <div
+            key={item._id}
+            className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 p-4 last:border-b-0"
+          >
+            {renderItem(item)}
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+);
 
 export default MentorOverview;

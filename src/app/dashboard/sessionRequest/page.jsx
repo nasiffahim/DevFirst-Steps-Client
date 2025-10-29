@@ -25,28 +25,28 @@ export default function SessionRequests() {
 
   // ✅ Fetch all session requests
   const fetchRequests = async () => {
-  try {
-    setLoading(true);
-    const res = await api.get("/session-requests", {
-      params: {
-        email: user?.email
-      }
-    });
-    // Filter out rejected requests
-    const filteredRequests = res.data.filter(
-      (req) => req.status !== "rejected"
-    );
-    setRequests(filteredRequests);
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Failed!",
-      text: "Could not fetch session requests.",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const res = await api.get("/session-requests", {
+        params: {
+          email: user?.email,
+        },
+      });
+      // Filter out rejected requests
+      const filteredRequests = res.data.filter(
+        (req) => req.status !== "rejected"
+      );
+      setRequests(filteredRequests);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Failed!",
+        text: "Could not fetch session requests.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ Handle status change
   const handleStatus = async (id, status) => {
@@ -66,6 +66,14 @@ export default function SessionRequests() {
     if (confirm.isConfirmed) {
       try {
         await api.patch(`/session-requests/${id}`, { status });
+
+        if (user?.email) {
+          await api.post("/update-activity", {
+            email: user?.email,
+            activityType:
+              status === "approved" ? "approve-addition" : "reject-addition",
+          });
+        }
 
         await Swal.fire({
           icon: "success",
@@ -277,7 +285,9 @@ export default function SessionRequests() {
                           {formatDate(req.createdAt)}
                         </div>
                       </td>
-                      <td className="px-6 py-4">{getStatusBadge(req.status)}</td>
+                      <td className="px-6 py-4">
+                        {getStatusBadge(req.status)}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           {req.status === "approved" ? (
@@ -288,7 +298,9 @@ export default function SessionRequests() {
                           ) : (
                             <>
                               <button
-                                onClick={() => handleStatus(req._id, "approved")}
+                                onClick={() =>
+                                  handleStatus(req._id, "approved")
+                                }
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
                                 title="Approve session"
                               >
@@ -296,7 +308,9 @@ export default function SessionRequests() {
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleStatus(req._id, "rejected")}
+                                onClick={() =>
+                                  handleStatus(req._id, "rejected")
+                                }
                                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
                                 title="Reject session"
                               >
@@ -421,7 +435,6 @@ export default function SessionRequests() {
             </div>
           </div>
         )}
-        
       </div>
     </div>
   );

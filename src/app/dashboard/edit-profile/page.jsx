@@ -67,7 +67,6 @@ export default function EditProfilePage() {
     try {
       await api.put(`/update_user?email=${email}`, { ...formData }); // email in query, data in body
       Swal.fire({
-        position: "top-end",
         icon: "success",
         title: "Profile updated successfully",
         showConfirmButton: false,

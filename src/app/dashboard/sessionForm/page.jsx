@@ -44,6 +44,7 @@ export default function ScheduleSessionForm() {
       console.log("Sending data:", payload);
 
       const res = await api.post("/schedule-session", payload);
+      // added badge point 
       if (user?.email) {
         await api.post("/update-activity", {
           email: user?.email,

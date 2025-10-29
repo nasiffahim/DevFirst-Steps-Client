@@ -66,7 +66,7 @@ export default function SessionRequests() {
     if (confirm.isConfirmed) {
       try {
         await api.patch(`/session-requests/${id}`, { status });
-
+        // added badge point
         if (user?.email) {
           await api.post("/update-activity", {
             email: user?.email,

@@ -66,6 +66,14 @@ export default function EditProfilePage() {
 
     try {
       await api.put(`/update_user?email=${email}`, { ...formData }); // email in query, data in body
+
+      // added badge point
+      if (email) {
+        await api.post("/update-activity", {
+          email: email,
+          activityType: "userProfileUpdate-addition",
+        });
+      }
       Swal.fire({
         icon: "success",
         title: "Profile updated successfully",

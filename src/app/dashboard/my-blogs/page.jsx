@@ -173,7 +173,7 @@ const MyBlogs = () => {
             {blogs.map((blog) => (
               <article
                 key={blog._id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full"
               >
                 {/* Thumbnail */}
                 <div className="relative w-full h-48 flex-shrink-0">

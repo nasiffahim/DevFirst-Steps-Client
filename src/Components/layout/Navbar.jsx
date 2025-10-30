@@ -111,6 +111,7 @@ const Navbar = () => {
           description:
             "Find beginner-friendly issues across thousands of repositories.",
           icon: "🐛",
+          href: "/beginner-projects"
         },
         {
           name: "Analytics Dashboard",

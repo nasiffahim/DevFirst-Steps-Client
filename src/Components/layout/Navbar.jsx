@@ -143,29 +143,34 @@ const Navbar = () => {
           description:
             "Discover React, Node.js, Vue, and other JavaScript projects.",
           icon: "💛",
+          href:"javascript-hub"
         },
         {
           name: "Python Projects",
           description:
             "Explore Django, Flask, ML, and data science repositories.",
           icon: "🐍",
+          href:"python-projects"
         },
         {
           name: "DevOps Tools",
           description:
             "Infrastructure, CI/CD, and automation project opportunities.",
           icon: "🔧",
+          href:"devOps-tools"
         },
         {
           name: "Mobile Development",
           description: "React Native, Flutter, and native mobile app projects.",
           icon: "📱",
+          href:"mobile-development"
         },
         {
           name: "AI & Machine Learning",
           description:
             "Cutting-edge ML, AI, and data science project contributions.",
           icon: "🧠",
+          href:"aiml-machine"
         },
       ],
     },

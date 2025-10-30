@@ -111,6 +111,7 @@ const Navbar = () => {
           description:
             "Find beginner-friendly issues across thousands of repositories.",
           icon: "🐛",
+          href: "/beginner-projects"
         },
         {
           name: "Analytics Dashboard",
@@ -143,29 +144,34 @@ const Navbar = () => {
           description:
             "Discover React, Node.js, Vue, and other JavaScript projects.",
           icon: "💛",
+          href:"javascript-hub"
         },
         {
           name: "Python Projects",
           description:
             "Explore Django, Flask, ML, and data science repositories.",
           icon: "🐍",
+          href:"python-projects"
         },
         {
           name: "DevOps Tools",
           description:
             "Infrastructure, CI/CD, and automation project opportunities.",
           icon: "🔧",
+          href:"devOps-tools"
         },
         {
           name: "Mobile Development",
           description: "React Native, Flutter, and native mobile app projects.",
           icon: "📱",
+          href:"mobile-development"
         },
         {
           name: "AI & Machine Learning",
           description:
             "Cutting-edge ML, AI, and data science project contributions.",
           icon: "🧠",
+          href:"aiml-machine"
         },
       ],
     },
@@ -234,7 +240,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-200">
+    <nav className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 sticky top-0 z-100 transition-colors duration-200">
       <div
         ref={containerRef}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 relative"

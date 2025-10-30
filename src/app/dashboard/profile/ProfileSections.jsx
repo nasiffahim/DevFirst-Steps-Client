@@ -4,7 +4,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa6";
 
 /* ---------------- EXPERIENCE SECTION ---------------- */
 export function ExperienceSection({ experienceList }) {
-  if (!experienceList || experienceList.length === 0) return null;
+  if (!Array.isArray(experienceList) || experienceList.length === 0) return null;
 
   return (
     <div className="border rounded-2xl bg-white dark:bg-gray-900 shadow-md max-w-2xl mx-auto mt-8">

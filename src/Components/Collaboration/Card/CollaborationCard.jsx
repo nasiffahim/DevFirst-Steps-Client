@@ -87,7 +87,7 @@ export default function CollaborationCard({ collaboration }) {
         {/* Action Button */}
         <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
           <button
-            onClick={() => router.push(`/collaboration/ProjectDetails/${_id}`)}
+            onClick={() => router.push(`/Collaboration/ProjectDetails/${_id}`)}
             className="w-full px-5 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 dark:hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
           >
             View Details

@@ -84,6 +84,29 @@ export default function Layout({ children }) {
       : role === "mentor"
       ? [
           {
+            name: "Add Projects",
+            href: "/dashboard/add-projects",
+            icon: FolderPlus,
+          },
+          {
+            name: "My Projects",
+            href: "/dashboard/my-projects",
+            icon: FolderOpen,
+          },
+          { name: "Bookmarks", href: "/dashboard/bookmarks", icon: Bookmark },
+          { name: "Add Blogs", href: "/dashboard/add-blogs", icon: PenSquare },
+          { name: "My Blogs", href: "/dashboard/my-blogs", icon: FileText },
+          {
+            name: "Start a Discussion",
+            href: "/dashboard/discussion",
+            icon: MessageSquare,
+          },
+          {
+            name: "My Discussions",
+            href: "/dashboard/my-discussion",
+            icon: MessagesSquare,
+          },
+          {
             name: "Session Request",
             href: "/dashboard/sessionRequest",
             icon: UserPlus2,
@@ -93,6 +116,7 @@ export default function Layout({ children }) {
             href: "/dashboard/sessionForm",
             icon: FolderPlus,
           },
+          { name: "Leaderboard", href: "/dashboard/leaderboard", icon: Trophy },
         ]
       : role === "user"
       ? [
@@ -270,17 +294,6 @@ export default function Layout({ children }) {
           })}
         </nav>
       </aside>
-
-      {/* Fixed Back to Home Button */}
-      {/* <div className="fixed bottom-6 left-6 w-64 z-50 hidden md:block">
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 w-full bg-gray-900 dark:bg-gray-800 text-white py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors shadow-lg"
-        >
-          <Home className="w-4 h-4" />
-          <span>Back to Home</span>
-        </Link>
-      </div> */}
 
       {/* Main content */}
       <div className="flex-1 min-h-screen">

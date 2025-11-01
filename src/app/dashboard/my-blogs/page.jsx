@@ -173,7 +173,7 @@ const MyBlogs = () => {
             {blogs.map((blog) => (
               <article
                 key={blog._id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-2xl dark:hover:shadow-gray-900/70 transform hover:-translate-y-2 transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full"
               >
                 {/* Thumbnail */}
                 <div className="relative w-full h-48 flex-shrink-0">
@@ -251,14 +251,14 @@ const MyBlogs = () => {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleEdit(blog._id)}
-                        className="flex items-center gap-1 text-green-700 bg-green-100 px-3 py-1.5 text-xs rounded-lg hover:bg-green-200 transition"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium shadow-sm hover:bg-blue-700 dark:hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-200"
                       >
                         <Edit className="w-3.5 h-3.5" /> Edit
                       </button>
 
                       <button
                         onClick={() => handleDelete(blog._id)}
-                        className="flex items-center gap-1 text-red-700 bg-red-100 px-3 py-1.5 text-xs rounded-lg hover:bg-red-200 transition"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-600 dark:bg-red-500 text-white text-sm font-medium shadow-sm hover:bg-red-700 dark:hover:bg-red-600 hover:shadow-md hover:scale-105 transition-all duration-200"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Delete
                       </button>
@@ -266,7 +266,7 @@ const MyBlogs = () => {
 
                     <Link
                       href={`/dashboard/my-blogs/${blog._id}`}
-                      className="px-4 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="px-4 py-2.5  bg-gray-900 text-nowrap dark:bg-white text-white dark:text-gray-900 text-sm font-medium  rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                       Read Full
                     </Link>
